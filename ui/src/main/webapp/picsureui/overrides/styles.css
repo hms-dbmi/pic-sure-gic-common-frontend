@@ -2,3 +2,8 @@
 #frmAuth0Login {
 	width: 400px;
 }
+
+/* BCH logo is not square */
+.a0-button-ldap-connector {
+	padding-left: 9px;
+}
