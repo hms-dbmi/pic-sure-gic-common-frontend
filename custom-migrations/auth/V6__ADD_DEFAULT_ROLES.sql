@@ -1,4 +1,4 @@
-use auth2;
+use auth;
 
 SET @uuidRule = REPLACE(UUID(),'-','');
 INSERT INTO access_rule VALUES (
