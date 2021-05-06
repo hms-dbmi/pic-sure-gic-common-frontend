@@ -8,8 +8,6 @@ define(["picSure/settings", "text!overrides/not_authorized.hbs", "handlebars"], 
 		 *
 		 */
 		authorization : undefined,
-
-		client_id : settings.client_id,
 		/*
 		 * This allows you to modify the DOM rendered on the login screen.
 		 *
