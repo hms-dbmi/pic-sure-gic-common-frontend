@@ -1,7 +1,7 @@
 use auth;
 
 INSERT INTO access_rule (uuid, name, description, rule, type, value, checkMapKeyOnly, checkMapNode, subAccessRuleParent_uuid, isGateAnyRelation, isEvaluateOnlyByGates)
-	VALUES (unhex(REPLACE(uuid(),'-','')), 'HPDS Aggregate Counts', 'HPDS Counts', '$..expectedResultType', 1, 'COUNT', 0x00, 0x00, NULL, 0x00, 0x00);
+	VALUES (unhex(REPLACE(uuid(),'-','')), 'HPDS Aggregate Counts', 'HPDS Counts', '$..expectedResultType', 4, 'COUNT', 0x00, 0x00, NULL, 0x00, 0x00);
 
 INSERT INTO privilege (uuid, name, description, application_id)
 	VALUES (unhex(REPLACE(uuid(),'-','')),
