@@ -1,28 +1,29 @@
-define([ "text!overrides/output/outputPanel.hbs",  "common/transportErrors" ],
-function( outputTemplate, transportErrors){
+define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors" ],
+function(BB, outputTemplate, transportErrors){
 	
 	var resources = {};
 	
-	$.ajax({
-		url: window.location.origin + '/picsure/info/resources',
-		headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
-		contentType: 'application/json',
-		type:'GET',
-		success: function(data){
-			resourceData = JSON.parse(data);
-			_.each(resourceData, (resource) => {
-				
-				resources[resource.uuid] = {
-						uuid: resource.uuid,
-						name: resource.name,
-						description: resource.description,
-						patientCount: 0,
-						spinnerClasses: "spinner-center ",
-						spinning: false
-				};
-			});
-		}
-	});
+	if(sessionStorage.getItem("session")){
+		$.ajax({
+			url: window.location.origin + '/picsure/resource',
+			headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
+			contentType: 'application/json',
+			type:'GET',
+			success: function(resourceData){
+				_.each(resourceData, (resource) => {
+					
+					resources[resource.uuid] = {
+							uuid: resource.uuid,
+							name: resource.name,
+							description: resource.description,
+							patientCount: 0,
+							spinnerClasses: "spinner-center ",
+							spinning: false
+					};
+				});
+			}
+		});
+	}
 	
     
     return {
@@ -98,9 +99,9 @@ function( outputTemplate, transportErrors){
 		errorCallback: function(resource, message, defaultOutput){
 			var model = defaultOutput.model;
 			
-			resources[resource.id].queryRan = true;
-			resources[resource.id].patientCount = '-';
-			resources[resource.id].spinning = false;
+			resources[resource.uuid].queryRan = true;
+			resources[resource.uuid].patientCount = '-';
+			resources[resource.uuid].spinning = false;
 			
 			$("#results-" + resource.name + "-count").html('-'); 
 			
