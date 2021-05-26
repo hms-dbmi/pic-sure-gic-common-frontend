@@ -1,50 +1,38 @@
 <div id="patient-count-box">
 	<div id="enrolled-patients" title="Total number of patients in GIC institutions matching your query.">
-		<span class="center large" id="spinner-total">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
+		<span class="center large" id="patient-spinner-total">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 		<span id="patient-count" class="blue center large">{{#if queryRan}}{{totalPatients}}{{else}}-{{/if}}</span><br>
-		<span class="center medium">Total Patients Enrolled</span>
+		<span class="center medium">Patients</span>
 	</div>
 	<br><br>
-	<div class="container" id="pic-sure-instances" >		
-        <div class="row">
-            <span class="center">Institution Results:</span>
-        </div><br>
-        <div> class="institution-results">
-        <div class="row">
+	<div class="container institution-results" id="pic-sure-instances" >		
+        <div class="result-list">
 		{{#each resources}}
-				<div class="col-md-6 right"><span>{{name}} : </span></div>
-				<div class="col-md-3 right">	<span id="results-{{name}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
-					<span id="spinner-{{uuid}}">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
+				<div class="col-md-6 left"><span>{{name}}</span></div>
+				<div class="col-md-3 right"><span id="results-{{name}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
+					<span id="patient-spinner-{{uuid}}">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 				</div>
-				<div class="col-md-3"></div>
-				<div class="w-100"></div>
+				<div class="col-md-3"></div><br>
 		{{/each}}
-		</div>
 		</div><br>
 	</div>
 	
 	
 	<div id="biospecimen-div" title="Total number of biospecimens in GIC institutions matching your query.">
-		<span class="center large" id="spinner-total">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
+		<span class="center large" id="bio-spinner-total">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 		<span id="biospecimen-count" class="blue center large">{{#if queryRan}}{{totalBiospecimenss}}{{else}}-{{/if}}</span><br>
-		<span class="center medium">Total number of Biospecimens</span>
+		<span class="center medium">Biosampless</span>
 	</div>
 	<br><br>
-	<div class="container" id="biospecimen-instances" >		
-        <div class="row">
-            <span class="center">Institution Results:</span>
-        </div><br>
-	<div> class="biosample-results">
-        <div class="row">
+	<div class="container institution-results" id="biospecimen-instances" >		
+        <div class="">
 		{{#each resources}}
-				<div class="col-md-6 right"><span>{{name}} : </span></div>
+				<div class="col-md-6 right"><span>{{name}}</span></div>
 				<div class="col-md-3 right">	<span id="results-{{name}}-count">{{#if bioQueryRan}}{{biosampleCount}}{{else}}-{{/if}}</span>
-					<span id="spinner-{{uuid}}">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
+					<span id="bio-spinner-{{uuid}}">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 				</div>
 				<div class="col-md-3"></div>
-				<div class="w-100"></div>
 		{{/each}}
-		</div>
 		</div><br>
 	
 	<br/>

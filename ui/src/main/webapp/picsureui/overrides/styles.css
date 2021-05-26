@@ -7,3 +7,16 @@
 .a0-button-ldap-connector {
 	padding-left: 9px;
 }
+
+
+.institution-results {
+	width: 90%;
+	background: #fff;
+	border-radius: 5px;
+	
+}
+
+.result-list {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}

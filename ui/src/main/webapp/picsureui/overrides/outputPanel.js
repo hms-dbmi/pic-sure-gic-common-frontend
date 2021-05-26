@@ -88,13 +88,14 @@ function(BB, outputTemplate, transportErrors){
 			resources[resource.uuid].patientCount = count;
 			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
 			resources[resource.uuid].spinning = false;
-			$(".spinner-" + resource.uuid).hide();
+			$("#patient-spinner-" + resource.uuid).hide();
 			
 			$("#results-" + resource.name + "-count").html(count); 
 				
 			if(_.every(resources, (resource)=>{return resource.spinning==false})){
 				model.set("spinning", false);
 				model.set("queryRan", true);
+				$("#patient-spinner-total").hide();
 			}
 		},
 		
