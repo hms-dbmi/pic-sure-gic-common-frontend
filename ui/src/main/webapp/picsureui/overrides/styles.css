@@ -20,3 +20,15 @@
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
+
+#patient-count-box {
+	padding: 5px 0px;
+}
+
+.institution-arrow {
+	display: block;
+    margin-top: -60px;
+    margin-right: 20px;
+    text-align: right;
+    font-size: 2em;
+}
