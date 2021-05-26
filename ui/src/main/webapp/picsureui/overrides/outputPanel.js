@@ -81,12 +81,14 @@ function(BB, outputTemplate, transportErrors){
 			var count = parseInt(result);
 			var model = defaultOutput.model;
 			
-			model.set("totalPatients", model.set("totalPatients") + count);
+			model.set("totalPatients", model.get("totalPatients") + count);
 			$("#patient-count").html(model.get("totalPatients"));
 			
 			resources[resource.uuid].queryRan = true;
 			resources[resource.uuid].patientCount = count;
+			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
 			resources[resource.uuid].spinning = false;
+			$(".spinner-" + resource.uuid).hide();
 			
 			$("#results-" + resource.name + "-count").html(count); 
 				
@@ -101,7 +103,9 @@ function(BB, outputTemplate, transportErrors){
 			
 			resources[resource.uuid].queryRan = true;
 			resources[resource.uuid].patientCount = '-';
+			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
 			resources[resource.uuid].spinning = false;
+			$(".spinner-" + resource.uuid).hide();
 			
 			$("#results-" + resource.name + "-count").html('-'); 
 			
