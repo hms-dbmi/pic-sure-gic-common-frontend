@@ -53,8 +53,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			spinAll: function(){
 				this.set('spinning', true);
 				this.set('queryRan', false);
-				model.set("bioSpinning", true);
-				model.set("bioQueryRan", false);
+				this.set("bioSpinning", true);
+				this.set("bioQueryRan", false);
 				
 				_.each(resources, function(resource){
 	  				resource.spinning=true;
