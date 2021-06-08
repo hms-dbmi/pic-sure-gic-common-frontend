@@ -1,7 +1,9 @@
-define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors" ],
-function(BB, outputTemplate, transportErrors){
+define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings" ],
+function(BB, outputTemplate, transportErrors, picsureSettings){
 	
 	var resources = {};
+	
+	var biosampleFields = picsureSettings.biosampleFields;
 	
 	if(sessionStorage.getItem("session")){
 		$.ajax({
@@ -29,6 +31,8 @@ function(BB, outputTemplate, transportErrors){
     return {
     	
     	resources: resources,
+    	
+    	biosampleFields: biosampleFields,
 		/*
 		 * This should be a function that returns the name of a Handlebars
 		 * partial that will be used to render the count. The Handlebars partial
@@ -49,10 +53,14 @@ function(BB, outputTemplate, transportErrors){
 			spinAll: function(){
 				this.set('spinning', true);
 				this.set('queryRan', false);
-	  			
+				model.set("bioSpinning", true);
+				model.set("bioQueryRan", false);
+				
 				_.each(resources, function(resource){
 	  				resource.spinning=true;
 	  				resource.queryRan=false;
+	  				resource.bioQueryRan=false;
+	  				
 	  			});
 			}
 		}),
@@ -77,7 +85,7 @@ function(BB, outputTemplate, transportErrors){
 		
 		outputTemplate: outputTemplate,
 		
-		dataCallback: function(resource, result, resultId, model, defaultOutput){
+		patientDataCallback: function(resource, result, model, defaultOutput){
 			var count = parseInt(result);
 			var model = defaultOutput.model;
 			
@@ -89,8 +97,7 @@ function(BB, outputTemplate, transportErrors){
 			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
 			resources[resource.uuid].spinning = false;
 			$("#patient-spinner-" + resource.uuid).hide();
-			
-			$("#results-" + resource.name + "-count").html(count); 
+			$("#patient-results-" + resource.uuid + "-count").html(count); 
 				
 			if(_.every(resources, (resource)=>{return resource.spinning==false})){
 				model.set("spinning", false);
@@ -99,20 +106,56 @@ function(BB, outputTemplate, transportErrors){
 			}
 		},
 		
-		errorCallback: function(resource, message, defaultOutput){
+		biosampleDataCallback: function(resource, crossCounts, resultId, model, defaultOutput){
+			
+			var model = defaultOutput.model;
+			
+			_.each(biosampleFields, function(biosampleMetadata){
+				var count = parseInt(crossCounts[biosampleMetadata.conceptPath]);
+				model.set("totalBiosamples", model.get("totalBiosamples") + count);
+				
+				model.set("biosampleCount_" + biosampleMetadata.id, model.get("biosampleCount_" + biosampleMetadata.id) + count);
+				$("#biosamples-results-" + biosampleMetadata.id + "-count").html(model.get("biosampleCount_" + biosampleMetadata.id)); 
+			});
+			
+			$("#biosamples-count").html(model.get("totalBiosamples"));
+			resources[resource.uuid].bioQueryRan = true;
+				
+			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
+				model.set("bioSpinning", false);
+				model.set("bioQueryRan", true);
+				$("#biosamples-spinner-total").hide();
+			}
+		},
+		
+		patientErrorCallback: function(resource, message, defaultOutput){
+			console.log("error calling resource " + resource.uuid + ": " + message);
 			var model = defaultOutput.model;
 			
 			resources[resource.uuid].queryRan = true;
 			resources[resource.uuid].patientCount = '-';
 			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
 			resources[resource.uuid].spinning = false;
-			$(".spinner-" + resource.uuid).hide();
-			
-			$("#results-" + resource.name + "-count").html('-'); 
+			$("#patient-spinner-" + resource.uuid).hide();
+			$("#patient-results-" + resource.uuid + "-count").html('0'); 
 			
 			if(_.every(resources, (resource)=>{return resource.spinning==false})){
 				model.set("spinning", false);
 				model.set("queryRan", true);
+				$("#patient-spinner-total").hide();
+			}
+		},
+		
+		biosampleErrorCallback: function(resource, message, defaultOutput){
+			//errors from one resources shouldn't hide or change the results from other resources
+			console.log("error calling resource " + resource.uuid + " biosamples: " + message);
+			var model = defaultOutput.model;
+			resources[resource.uuid].bioQueryRan = true;
+			
+			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
+				model.set("bioSpinning", false);
+				model.set("bioQueryRan", true);
+				$("#biosamples-spinner-total").hide();
 			}
 		},
 		
@@ -143,14 +186,49 @@ function(BB, outputTemplate, transportErrors){
 				 	contentType: 'application/json',
 				 	data: JSON.stringify(query),
   				 	success: function(response, textStatus, request){
-  				 		this.dataCallback(resource, response, request.getResponseHeader("resultId"), model, defaultOutput);
+  				 		this.patientDataCallback(resource, response, model, defaultOutput);
   						}.bind(this),
 				 	error: function(response){
 						if (!transportErrors.handleAll(response, "Error while processing query")) {
 							response.responseText = "<h4>"
 								+ this.outputErrorMessage;
 								+ "</h4>";
-					 		this.errorCallback(resource, response.responseText, defaultOutput);
+					 		this.patientErrorCallback(resource, response.responseText, defaultOutput);
+						}
+					}.bind(this)
+				});
+			}.bind(this));
+			
+			
+			model.set("totalBiosamples",0);
+			_.each(biosampleFields, function(biosampleMetadata){
+				model.set("biosampleCount_" + biosampleMetadata.label, 0);
+			});
+			
+			//run the biosample queries for each resource
+			_.each(resources, function(resource){
+				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
+				var query = JSON.parse(JSON.stringify(incomingQuery));
+				query.resourceUUID = resource.uuid;
+				query.query.crossCountFields = _.pluck(biosampleFields, "conceptPath");
+				query.query.expectedResultType="OBSERVATION_CROSS_COUNT";
+				query.resourceCredentials = {};
+				
+				$.ajax({
+				 	url: window.location.origin + "/picsure/query/sync",
+				 	type: 'POST',
+				 	headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
+				 	contentType: 'application/json',
+				 	data: JSON.stringify(query),
+  				 	success: function(response, textStatus, request){
+  				 		this.biosampleDataCallback(resource, response, request.getResponseHeader("resultId"), model, defaultOutput, "biosamples");
+  						}.bind(this),
+				 	error: function(response){
+						if (!transportErrors.handleAll(response, "Error while processing query")) {
+							response.responseText = "<h4>"
+								+ this.outputErrorMessage;
+								+ "</h4>";
+					 		this.biosampleErrorCallback(resource, response.responseText, defaultOutput);
 						}
 					}.bind(this)
 				});

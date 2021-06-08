@@ -28,10 +28,9 @@
 	<br><br>
 	<div class="container institution-results" id="biosamples-instances" >		
         <div class="result-list">
-		{{#each resources}}
-				<div class="col-md-6 left"><span>{{name}}</span></div>
-				<div class="col-md-3 right">	<span id="biosamples-results-{{uuid}}-count">{{#if bioQueryRan}}{{biosampleCount}}{{else}}-{{/if}}</span>
-					<span id="bio-spinner-{{uuid}}">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
+		{{#each biosampleFields}}
+				<div class="col-md-6 left"><span>{{label}}</span></div>
+				<div class="col-md-3 right"><span id="biosamples-results-{{id}}-count">-</span>
 				</div>
 				<div class="col-md-3"></div><br>
 		{{/each}}
