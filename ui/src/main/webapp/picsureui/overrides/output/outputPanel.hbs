@@ -10,7 +10,7 @@
         <div class="result-list">
 		{{#each resources}}
 				<div class="col-md-6 left"><span>{{name}}</span></div>
-				<div class="col-md-3 right"><span id="results-{{name}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
+				<div class="col-md-3 right"><span id="patient-results-{{uuid}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
 					<span id="patient-spinner-{{uuid}}">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 				</div>
 				<div class="col-md-3"></div><br>
@@ -19,23 +19,21 @@
 	</div>
 	
 	
-	<div id="biospecimen-div" title="Total number of biosamples in GIC institutions matching your query.">
+	<div id="biosamples-div" title="Total number of biosamples in GIC institutions matching your query.">
 		<span class="center large" id="bio-spinner-total">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
-		<span id="biospecimen-count" class="blue center large">{{#if queryRan}}{{totalBiospecimenss}}{{else}}-{{/if}}</span>
+		<span id="biosamples-count" class="blue center large">{{#if queryRan}}{{totalBiospecimenss}}{{else}}-{{/if}}</span>
 		<span class="center medium">Biosamples</span>
 		<span class="icon expand-icon glyphicon glyphicon-chevron-right institution-arrow" id="institution-biosamples-arrow"></span>
 	</div>
 	<br><br>
 	<div class="container institution-results" id="biosamples-instances" >		
-        <div class="">
+        <div class="result-list">
 		{{#each resources}}
 				<div class="col-md-6 left"><span>{{name}}</span></div>
-				<div class="col-md-3 right">	<span id="results-{{name}}-count">{{#if bioQueryRan}}{{biosampleCount}}{{else}}-{{/if}}</span>
+				<div class="col-md-3 right">	<span id="biosamples-results-{{uuid}}-count">{{#if bioQueryRan}}{{biosampleCount}}{{else}}-{{/if}}</span>
 					<span id="bio-spinner-{{uuid}}">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 				</div>
 				<div class="col-md-3"></div><br>
 		{{/each}}
 		</div>
-	
-	<br/>
 </div>
