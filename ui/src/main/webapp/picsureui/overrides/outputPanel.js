@@ -203,7 +203,7 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			
 			model.set("totalBiosamples",0);
 			_.each(biosampleFields, function(biosampleMetadata){
-				model.set("biosampleCount_" + biosampleMetadata.label, 0);
+				model.set("biosampleCount_" + biosampleMetadata.id, 0);
 			});
 			
 			//run the biosample queries for each resource
