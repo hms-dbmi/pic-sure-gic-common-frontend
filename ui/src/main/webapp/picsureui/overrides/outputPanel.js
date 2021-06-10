@@ -32,7 +32,6 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
     	
     	resources: resources,
     	
-    	//we may be able to use the model.biosamplefields instead of this extra field.
     	biosampleFields: biosampleFields,
 		/*
 		 * This should be a function that returns the name of a Handlebars
@@ -51,7 +50,6 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		 * the output panel, define it here.
 		 */
 		modelOverride :  BB.Model.extend({
-			biosampleFields: biosampleFields,
 			spinAll: function(){
 				this.set('spinning', true);
 				this.set('queryRan', false);
@@ -167,6 +165,7 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		runQuery: function(defaultOutput, incomingQuery, defaultDataCallback, defaultErrorCallback){
 			var model = defaultOutput.model;
 			model.set("resources", this.resources);
+			model.set("biosampleFields", this.biosampleFields);
 			model.set("totalPatients",0);
 			model.spinAll();
 			
