@@ -7,3 +7,28 @@
 .a0-button-ldap-connector {
 	padding-left: 9px;
 }
+
+
+.institution-results {
+	width: 90%;
+	background: #fff;
+	border-radius: 5px;
+	margin-top: 10px;
+}
+
+.result-list {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#patient-count-box {
+	padding: 5px 0px;
+}
+
+.institution-arrow {
+	display: block;
+    margin-top: -60px;
+    margin-right: 20px;
+    text-align: right;
+    font-size: 2em;
+}
