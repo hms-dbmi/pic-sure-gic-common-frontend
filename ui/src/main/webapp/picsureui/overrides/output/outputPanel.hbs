@@ -43,8 +43,8 @@
         <div class="result-list">
         {{#each resources}}
 				<div class="col-md-6 left"><span title="{{description}}">{{name}}</span></div>
-				<div class="col-md-3 right"><span id="biosamples-results-{{id}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
-					<span id="biosamples-spinner-{{id}}">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
+				<div class="col-md-3 right"><span id="biosamples-results-{{uuid}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
+					<span id="biosamples-spinner-{{uuid}}">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 				</div>
 				<div class="col-md-3"></div><br>
 		{{/each}}
