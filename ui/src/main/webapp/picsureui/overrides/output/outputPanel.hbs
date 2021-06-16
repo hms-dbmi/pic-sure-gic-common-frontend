@@ -9,11 +9,12 @@
 	<div class="container institution-results" id="pic-sure-instances" >		
         <div class="result-list">
 		{{#each resources}}
-				<div class="col-md-6 left"><span title="{{description}}">{{name}}</span></div>
+				<div class="col-md-2"></div>
+				<div class="col-md-5 left"><span title="{{description}}">{{name}}</span></div>
 				<div class="col-md-3 right"><span id="patient-results-{{uuid}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
 					<span id="patient-spinner-{{uuid}}">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 				</div>
-				<div class="col-md-3"></div><br>
+				<div class="col-md-2"></div><br>
 		{{/each}}
 		</div>
 	</div>
@@ -42,11 +43,12 @@
 	<div class="container institution-results" id="biosamples-instances" >		
         <div class="result-list">
         {{#each resources}}
-				<div class="col-md-6 left"><span title="{{description}}">{{name}}</span></div>
+        		<div class="col-md-2"></div>
+				<div class="col-md-5 left"><span title="{{description}}">{{name}}</span></div>
 				<div class="col-md-3 right"><span id="biosamples-results-{{uuid}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
 					<span id="biosamples-spinner-{{uuid}}">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 				</div>
-				<div class="col-md-3"></div><br>
+				<div class="col-md-2"></div><br>
 		{{/each}}
         
 		</div>

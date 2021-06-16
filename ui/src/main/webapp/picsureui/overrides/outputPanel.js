@@ -90,14 +90,14 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			var model = defaultOutput.model;
 			
 			model.set("totalPatients", model.get("totalPatients") + count);
-			$("#patient-count").html(model.get("totalPatients"));
+			$("#patient-count").html(model.get("totalPatients").toLocaleString());
 			
 			resources[resource.uuid].queryRan = true;
 			resources[resource.uuid].patientCount = count;
 			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
 			resources[resource.uuid].spinning = false;
 			$("#patient-spinner-" + resource.uuid).hide();
-			$("#patient-results-" + resource.uuid + "-count").html(count); 
+			$("#patient-results-" + resource.uuid + "-count").html(count.toLocaleString()); 
 				
 			if(_.every(resources, (resource)=>{return resource.spinning==false})){
 				model.set("spinning", false);
@@ -121,9 +121,9 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			});
 			
 			$("#biosamples-spinner-" + resource.uuid).hide();
-			$("#biosamples-results-" + resource.uuid + "-count").html(resources[resource.uuid].biosampleCount); 
+			$("#biosamples-results-" + resource.uuid + "-count").html(resources[resource.uuid].biosampleCount.toLocaleString()); 
 			model.set("totalBiosamples", model.get("totalBiosamples") + count);
-			$("#biosamples-count").html(model.get("totalBiosamples"));
+			$("#biosamples-count").html(model.get("totalBiosamples").toLocaleString());
 				
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
 				model.set("bioSpinning", false);
