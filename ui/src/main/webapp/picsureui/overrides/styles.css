@@ -8,12 +8,13 @@
 	padding-left: 9px;
 }
 
-
+/* result boxes are initially hidden */
 .institution-results {
 	width: 90%;
 	background: #fff;
 	border-radius: 5px;
 	margin-top: 10px;
+	display: none;
 }
 
 .result-list {
@@ -22,13 +23,17 @@
 }
 
 #patient-count-box {
-	padding: 5px 0px;
+	padding: 5px 0px 10px 0px;
 }
 
 .institution-arrow {
 	display: block;
-    margin-top: -60px;
+    margin-top: -55px;
     margin-right: 20px;
     text-align: right;
     font-size: 2em;
+}
+
+.glyphicon {
+	color: gray;
 }

@@ -1,12 +1,30 @@
 {
-  "resources":[
-		{
-			"id" : "HPDS",
-			"name" : "HPDS",
-			"basePath" : "/picsure",
-			"findPath" : "/PIC-SURE/search"
-		}
-		],
+  "biosampleFields": [
+    {
+        "label" : "Genomic Data",
+        "id": "genomicdata",
+        "conceptPath" : "\\Next Generation Sequencing\\Exomes\\"
+    },{
+        "label" : "Whole Blood",
+        "id": "Wholeblood",
+        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Blood (Whole)\\Blood (Whole)\\SPECIMENS:HF.BLD.000 Quantity\\"
+    },{
+        "label" : "Plasma",
+        "id": "Plasma",
+        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Plasma\\Plasma\\SPECIMENS:HF.PLS.000 Quantity\\"
+    },{
+        "label" : "Tissue",
+        "id": "Tissue",
+        "conceptPath" : "\\Bio Specimens\\HumanTissue\\"
+    },{
+        "label" : "CSF",
+        "id": "CSF",
+        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Brain\\Cerebro-Spinal Fluid (CSF)\\SPECIMENS:HF.BRN.004\\"
+    },{
+        "label" : "Extracted DNA",
+        "id": "extractedDna",
+        "conceptPath" : "\\Bio Specimens\\NucleicAcid\\"
+    }],
   "picSureResourceId":"",
   "applicationIdForBaseQuery":"",
   "helpLink": "about:blank",
