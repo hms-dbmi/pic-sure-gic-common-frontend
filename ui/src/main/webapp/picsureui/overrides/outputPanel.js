@@ -107,19 +107,23 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		},
 		
 		biosampleDataCallback: function(resource, crossCounts, resultId, model, defaultOutput){
-			
 			var model = defaultOutput.model;
+			
+			resources[resource.uuid].biosampleCount = 0;
+			
+			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
+			resources[resource.uuid].bioSpinning = false;
+			resources[resource.uuid].bioQueryRan = true;
 			
 			_.each(biosampleFields, function(biosampleMetadata){
 				var count = parseInt(crossCounts[biosampleMetadata.conceptPath]);
-				model.set("totalBiosamples", model.get("totalBiosamples") + count);
-				
-				model.set("biosampleCount_" + biosampleMetadata.id, model.get("biosampleCount_" + biosampleMetadata.id) + count);
-				$("#biosamples-results-" + biosampleMetadata.id + "-count").html(model.get("biosampleCount_" + biosampleMetadata.id)); 
+				resources[resource.uuid].biosampleCount += count;
 			});
 			
+			$("#biosamples-spinner-" + resource.uuid).hide();
+			$("#biosamples-results-" + resource.uuid + "-count").html(resources[resource.uuid].biosampleCount); 
+			model.set("totalBiosamples", model.get("totalBiosamples") + count);
 			$("#biosamples-count").html(model.get("totalBiosamples"));
-			resources[resource.uuid].bioQueryRan = true;
 				
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
 				model.set("bioSpinning", false);
@@ -150,7 +154,13 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			//errors from one resources shouldn't hide or change the results from other resources
 			console.log("error calling resource " + resource.uuid + " biosamples: " + message);
 			var model = defaultOutput.model;
+			resources[resource.uuid].biosampleCount = 0;
+			
+			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
+			resources[resource.uuid].bioSpinning = false;
 			resources[resource.uuid].bioQueryRan = true;
+			$("#biosamples-spinner-" + resource.uuid).hide();
+			$("#biosamples-results-" + resource.uuid + "-count").html("0");
 			
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
 				model.set("bioSpinning", false);
