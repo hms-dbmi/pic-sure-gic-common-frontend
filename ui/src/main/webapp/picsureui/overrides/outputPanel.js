@@ -185,6 +185,7 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		 * The new hook for overriding all custom query logic
 		 */
 		runQuery: function(defaultOutput, incomingQuery, defaultDataCallback, defaultErrorCallback){
+			console.log("running override query");
 			var model = defaultOutput.model;
 			model.set("resources", this.resources);
 			model.set("aggregated", false);
@@ -194,7 +195,7 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			
 			model.baseQuery = incomingQuery;   
   			defaultOutput.render();
-
+  			console.log("rendered");
 			//run a query for each resource 
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it

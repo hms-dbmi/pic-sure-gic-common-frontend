@@ -1,7 +1,7 @@
 <div id="patient-count-box">
 	<div id="enrolled-patients" title="Total number of patients in GIC institutions matching your query.">
 		<span class="center large" id="patient-spinner-total">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
-		<span id="patient-count" class="blue center large">{{#if queryRan}}{{totalPatients}}{{else}}-{{/if}}</span>
+		<span id="patient-count" class="blue center large">{{#if queryRan}}{{totalPatients}}{{else}}0{{/if}}</span>
 		<span class="center medium">Patients</span>
 		<span class="icon expand-icon glyphicon glyphicon-chevron-right institution-arrow" id="institution-patients-arrow"></span>
 	</div>
@@ -11,7 +11,7 @@
 		{{#each resources}}
 				<div class="col-md-2"></div>
 				<div class="col-md-5 left"><span title="{{description}}">{{name}}</span></div>
-				<div class="col-md-3 right"><span id="patient-results-{{uuid}}-count">{{#if queryRan}}{{patientCount}}{{else}}0{{/if}}</span>
+				<div class="col-md-3 right"><span id="patient-results-{{uuid}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
 					<span id="patient-spinner-{{uuid}}">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 				</div>
 				<div class="col-md-2"></div><br>
