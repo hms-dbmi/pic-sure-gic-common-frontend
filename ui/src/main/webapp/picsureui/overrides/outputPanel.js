@@ -116,13 +116,17 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			resources[resource.uuid].bioQueryRan = true;
 			
 			_.each(biosampleFields, function(biosampleMetadata){
-				var count = parseInt(crossCounts[biosampleMetadata.conceptPath]);
-				resources[resource.uuid].biosampleCount += count;
+				if( crossCounts[biosampleMetadata.conceptPath] ){
+					var count = parseInt(crossCounts[biosampleMetadata.conceptPath]);
+					if( count >= 0 ){
+						resources[resource.uuid].biosampleCount += count;
+						model.set("totalBiosamples", model.get("totalBiosamples") + count);
+					}
+				}
 			});
 			
 			$("#biosamples-spinner-" + resource.uuid).hide();
 			$("#biosamples-results-" + resource.uuid + "-count").html(resources[resource.uuid].biosampleCount.toLocaleString()); 
-			model.set("totalBiosamples", model.get("totalBiosamples") + count);
 			$("#biosamples-count").html(model.get("totalBiosamples").toLocaleString());
 				
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
