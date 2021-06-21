@@ -86,19 +86,27 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		outputTemplate: outputTemplate,
 		
 		patientDataCallback: function(resource, result, model, defaultOutput){
-			var count = parseInt(result);
-			var model = defaultOutput.model;
-			
-			model.set("totalPatients", model.get("totalPatients") + count);
-			$("#patient-count").html(model.get("totalPatients").toLocaleString());
-			
 			resources[resource.uuid].queryRan = true;
 			resources[resource.uuid].patientCount = count;
 			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
 			resources[resource.uuid].spinning = false;
 			$("#patient-spinner-" + resource.uuid).hide();
-			$("#patient-results-" + resource.uuid + "-count").html(count.toLocaleString()); 
-				
+			
+			var model = defaultOutput.model;
+			
+			var count = parseInt(result);
+			if( count ){
+				model.set("totalPatients", model.get("totalPatients") + count);
+				$("#patient-results-" + resource.uuid + "-count").html(count.toLocaleString()); 
+			} else if(result.includes("<")) {
+				$("#patient-results-" + resource.uuid + "-count").html(result);
+				model.set("aggregated", true);
+			} else {
+				$("#patient-results-" + resource.uuid + "-count").html("-");
+			}
+			
+			$("#patient-count").html(model.get("aggregatd") ? ">" : "" +  model.get("totalPatients").toLocaleString());
+			
 			if(_.every(resources, (resource)=>{return resource.spinning==false})){
 				model.set("spinning", false);
 				model.set("queryRan", true);
@@ -179,6 +187,7 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		runQuery: function(defaultOutput, incomingQuery, defaultDataCallback, defaultErrorCallback){
 			var model = defaultOutput.model;
 			model.set("resources", this.resources);
+			model.set("aggregated", false);
 			model.set("biosampleFields", this.biosampleFields);
 			model.set("totalPatients",0);
 			model.spinAll();
@@ -200,6 +209,7 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 				 	headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
 				 	contentType: 'application/json',
 				 	data: JSON.stringify(query),
+				 	dataType: 'text',
   				 	success: function(response, textStatus, request){
   				 		this.patientDataCallback(resource, response, model, defaultOutput);
   						}.bind(this),
