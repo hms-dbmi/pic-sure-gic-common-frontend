@@ -11,7 +11,7 @@
 		{{#each resources}}
 				<div class="col-md-2"></div>
 				<div class="col-md-5 left"><span title="{{description}}">{{name}}</span></div>
-				<div class="col-md-3 right"><span id="patient-results-{{uuid}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
+				<div class="col-md-3 right"><span id="patient-results-{{uuid}}-count">{{#if queryRan}}{{patientCount}}{{else}}0{{/if}}</span>
 					<span id="patient-spinner-{{uuid}}">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 				</div>
 				<div class="col-md-2"></div><br>
@@ -35,7 +35,7 @@
 	
 	<div id="biosamples-div" title="Total number of biosamples in GIC institutions matching your query.">
 		<span class="center large" id="biosamples-spinner-total">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
-		<span id="biosamples-count" class="blue center large">{{#if queryRan}}{{totalBiospecimenss}}{{else}}-{{/if}}</span>
+		<span id="biosamples-count" class="blue center large">{{#if queryRan}}{{totalBiospecimenss}}{{else}}0{{/if}}</span>
 		<span class="center medium">Biosamples</span>
 		<span class="icon expand-icon glyphicon glyphicon-chevron-right institution-arrow" id="institution-biosamples-arrow"></span>
 	</div>

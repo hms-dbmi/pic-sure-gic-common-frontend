@@ -105,7 +105,7 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 				$("#patient-results-" + resource.uuid + "-count").html("-");
 			}
 			
-			$("#patient-count").html(model.get("aggregatd") ? ">" : "" +  model.get("totalPatients").toLocaleString());
+			$("#patient-count").html((model.get("aggregated") ? ">" : "") +  model.get("totalPatients").toLocaleString());
 			
 			if(_.every(resources, (resource)=>{return resource.spinning==false})){
 				model.set("spinning", false);
