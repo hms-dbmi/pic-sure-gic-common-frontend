@@ -86,19 +86,27 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		outputTemplate: outputTemplate,
 		
 		patientDataCallback: function(resource, result, model, defaultOutput){
-			var count = parseInt(result);
-			var model = defaultOutput.model;
-			
-			model.set("totalPatients", model.get("totalPatients") + count);
-			$("#patient-count").html(model.get("totalPatients"));
-			
 			resources[resource.uuid].queryRan = true;
 			resources[resource.uuid].patientCount = count;
 			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
 			resources[resource.uuid].spinning = false;
 			$("#patient-spinner-" + resource.uuid).hide();
-			$("#patient-results-" + resource.uuid + "-count").html(count); 
-				
+			
+			var model = defaultOutput.model;
+			
+			var count = parseInt(result);
+			if( typeof count === "number" ){
+				model.set("totalPatients", model.get("totalPatients") + count);
+				$("#patient-results-" + resource.uuid + "-count").html(count.toLocaleString()); 
+			} else if(result.includes("<")) {
+				$("#patient-results-" + resource.uuid + "-count").html(result);
+				model.set("aggregated", true);
+			} else {
+				$("#patient-results-" + resource.uuid + "-count").html("-");
+			}
+			
+			$("#patient-count").html((model.get("aggregated") ? ">" : "") +  model.get("totalPatients").toLocaleString());
+			
 			if(_.every(resources, (resource)=>{return resource.spinning==false})){
 				model.set("spinning", false);
 				model.set("queryRan", true);
@@ -107,19 +115,27 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		},
 		
 		biosampleDataCallback: function(resource, crossCounts, resultId, model, defaultOutput){
-			
 			var model = defaultOutput.model;
 			
+			resources[resource.uuid].biosampleCount = 0;
+			
+			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
+			resources[resource.uuid].bioSpinning = false;
+			resources[resource.uuid].bioQueryRan = true;
+			
 			_.each(biosampleFields, function(biosampleMetadata){
-				var count = parseInt(crossCounts[biosampleMetadata.conceptPath]);
-				model.set("totalBiosamples", model.get("totalBiosamples") + count);
-				
-				model.set("biosampleCount_" + biosampleMetadata.id, model.get("biosampleCount_" + biosampleMetadata.id) + count);
-				$("#biosamples-results-" + biosampleMetadata.id + "-count").html(model.get("biosampleCount_" + biosampleMetadata.id)); 
+				if( crossCounts[biosampleMetadata.conceptPath] ){
+					var count = parseInt(crossCounts[biosampleMetadata.conceptPath]);
+					if( count >= 0 ){
+						resources[resource.uuid].biosampleCount += count;
+						model.set("totalBiosamples", model.get("totalBiosamples") + count);
+					}
+				}
 			});
 			
-			$("#biosamples-count").html(model.get("totalBiosamples"));
-			resources[resource.uuid].bioQueryRan = true;
+			$("#biosamples-spinner-" + resource.uuid).hide();
+			$("#biosamples-results-" + resource.uuid + "-count").html(resources[resource.uuid].biosampleCount.toLocaleString()); 
+			$("#biosamples-count").html(model.get("totalBiosamples").toLocaleString());
 				
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
 				model.set("bioSpinning", false);
@@ -150,7 +166,13 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			//errors from one resources shouldn't hide or change the results from other resources
 			console.log("error calling resource " + resource.uuid + " biosamples: " + message);
 			var model = defaultOutput.model;
+			resources[resource.uuid].biosampleCount = 0;
+			
+			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
+			resources[resource.uuid].bioSpinning = false;
 			resources[resource.uuid].bioQueryRan = true;
+			$("#biosamples-spinner-" + resource.uuid).hide();
+			$("#biosamples-results-" + resource.uuid + "-count").html("0");
 			
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
 				model.set("bioSpinning", false);
@@ -163,15 +185,18 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		 * The new hook for overriding all custom query logic
 		 */
 		runQuery: function(defaultOutput, incomingQuery, defaultDataCallback, defaultErrorCallback){
+			console.log("running override query");
 			var model = defaultOutput.model;
 			model.set("resources", this.resources);
+			model.set("aggregated", false);
 			model.set("biosampleFields", this.biosampleFields);
 			model.set("totalPatients",0);
 			model.spinAll();
 			
 			model.baseQuery = incomingQuery;   
   			defaultOutput.render();
-
+  			console.log("rendered " + resources);
+  			console.log("resources " + resources.length);
 			//run a query for each resource 
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
@@ -186,6 +211,7 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 				 	headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
 				 	contentType: 'application/json',
 				 	data: JSON.stringify(query),
+				 	dataType: 'text',
   				 	success: function(response, textStatus, request){
   				 		this.patientDataCallback(resource, response, model, defaultOutput);
   						}.bind(this),

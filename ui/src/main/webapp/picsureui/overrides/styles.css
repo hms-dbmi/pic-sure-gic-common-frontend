@@ -8,6 +8,10 @@
 	padding-left: 9px;
 }
 
+#main-content {
+	width: 90%;
+}
+
 /* result boxes are initially hidden */
 .institution-results {
 	width: 90%;
@@ -28,8 +32,8 @@
 
 .institution-arrow {
 	display: block;
-    margin-top: -55px;
-    margin-right: 20px;
+    margin-top: -60px;
+    margin-right: 5px;
     text-align: right;
     font-size: 2em;
 }
