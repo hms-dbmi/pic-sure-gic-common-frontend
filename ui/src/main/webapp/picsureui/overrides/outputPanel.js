@@ -95,7 +95,7 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			var model = defaultOutput.model;
 			
 			var count = parseInt(result);
-			if( count ){
+			if( typeof count === "number" ){
 				model.set("totalPatients", model.get("totalPatients") + count);
 				$("#patient-results-" + resource.uuid + "-count").html(count.toLocaleString()); 
 			} else if(result.includes("<")) {
@@ -195,7 +195,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			
 			model.baseQuery = incomingQuery;   
   			defaultOutput.render();
-  			console.log("rendered");
+  			console.log("rendered " + resources);
+  			console.log("resources " + resources.length);
 			//run a query for each resource 
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
