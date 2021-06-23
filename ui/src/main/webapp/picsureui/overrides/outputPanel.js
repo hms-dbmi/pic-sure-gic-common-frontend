@@ -5,6 +5,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 	
 	var biosampleFields = picsureSettings.biosampleFields;
 	
+	var resourceQueryDeferred = $.Deferred();
+	
 	if(sessionStorage.getItem("session")){
 		$.ajax({
 			url: window.location.origin + '/picsure/resource',
@@ -23,6 +25,11 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 							spinning: false
 					};
 				});
+				resourceQueryDeferred.resolve();
+			},
+			error: function(response){
+				console.log("unable to get resources: " + response.responseText);
+				resourceQueryDeferred.fail();
 			}
 		});
 	}
@@ -31,6 +38,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
     return {
     	
     	resources: resources,
+    	
+    	resourceQueryDeferred: resourceQueryDeferred,
     	
     	biosampleFields: biosampleFields,
 		/*
@@ -95,12 +104,12 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			var model = defaultOutput.model;
 			
 			var count = parseInt(result);
-			if( typeof count === "number" ){
-				model.set("totalPatients", model.get("totalPatients") + count);
-				$("#patient-results-" + resource.uuid + "-count").html(count.toLocaleString()); 
-			} else if(result.includes("<")) {
+			if(result.includes("<")) {
 				$("#patient-results-" + resource.uuid + "-count").html(result);
 				model.set("aggregated", true);
+			} else if( typeof count === "number" ){
+				$("#patient-results-" + resource.uuid + "-count").html(count.toLocaleString()); 
+				model.set("totalPatients", model.get("totalPatients") + count);
 			} else {
 				$("#patient-results-" + resource.uuid + "-count").html("-");
 			}
@@ -185,7 +194,18 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		 * The new hook for overriding all custom query logic
 		 */
 		runQuery: function(defaultOutput, incomingQuery, defaultDataCallback, defaultErrorCallback){
-			console.log("running override query");
+			
+			//sometimes the resources do not load quickly enough.  let's check and see if we are still waiting.
+			if(this.resourceQueryDeferred.state() == "pending"){
+				this.resourceQueryDeferred.done(function() {
+					console.log("finished wiating for resources query");
+					this.runQuery(defaultOutput, incomingQuery, defaultDataCallback, defaultErrorCallback);
+				}.bind(this));
+				return;
+			} else {
+				console.log("running override query");
+			}
+			
 			var model = defaultOutput.model;
 			model.set("resources", this.resources);
 			model.set("aggregated", false);
@@ -195,8 +215,6 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			
 			model.baseQuery = incomingQuery;   
   			defaultOutput.render();
-  			console.log("rendered " + resources);
-  			console.log("resources " + resources.length);
 			//run a query for each resource 
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
