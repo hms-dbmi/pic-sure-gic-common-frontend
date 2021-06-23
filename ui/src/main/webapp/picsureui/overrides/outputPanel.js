@@ -5,6 +5,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 	
 	var biosampleFields = picsureSettings.biosampleFields;
 	
+	var resourceQueryDeferred = $.Deferred();
+	
 	if(sessionStorage.getItem("session")){
 		$.ajax({
 			url: window.location.origin + '/picsure/resource',
@@ -23,6 +25,11 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 							spinning: false
 					};
 				});
+				resourceQueryDeferred.resolve();
+			},
+			error: function(response){
+				console.log("unable to get resources: " + response.responseText);
+				resourceQueryDeferred.fail();
 			}
 		});
 	}
@@ -31,6 +38,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
     return {
     	
     	resources: resources,
+    	
+    	resourceQueryDeferred: resourceQueryDeferred,
     	
     	biosampleFields: biosampleFields,
 		/*
@@ -185,7 +194,18 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		 * The new hook for overriding all custom query logic
 		 */
 		runQuery: function(defaultOutput, incomingQuery, defaultDataCallback, defaultErrorCallback){
-			console.log("running override query");
+			
+			//sometimes the resources do not load quickly enough.  let's check and see if we are still waiting.
+			if(this.resourceQueryDeferred.state() == "pending"){
+				this.resourceQueryDeferred.done(function() {
+					console.log("finished wiating for resources query");
+					runQuery(defaultOutput, incomingQuery, defaultDataCallback, defaultErrorCallback);
+				});
+				return;
+			} else {
+				console.log("running override query");
+			}
+			
 			var model = defaultOutput.model;
 			model.set("resources", this.resources);
 			model.set("aggregated", false);
