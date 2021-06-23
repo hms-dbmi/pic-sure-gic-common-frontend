@@ -199,8 +199,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			if(this.resourceQueryDeferred.state() == "pending"){
 				this.resourceQueryDeferred.done(function() {
 					console.log("finished wiating for resources query");
-					runQuery(defaultOutput, incomingQuery, defaultDataCallback, defaultErrorCallback);
-				});
+					this.runQuery(defaultOutput, incomingQuery, defaultDataCallback, defaultErrorCallback);
+				}.bind(this));
 				return;
 			} else {
 				console.log("running override query");
@@ -216,7 +216,7 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			model.baseQuery = incomingQuery;   
   			defaultOutput.render();
   			console.log("rendered " + resources);
-  			console.log("resources " + resources.length);
+  			console.log("resources " + Object.keys(resources).length);
 			//run a query for each resource 
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
