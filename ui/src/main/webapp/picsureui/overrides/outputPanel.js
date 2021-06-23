@@ -215,8 +215,6 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			
 			model.baseQuery = incomingQuery;   
   			defaultOutput.render();
-  			console.log("rendered " + resources);
-  			console.log("resources " + Object.keys(resources).length);
 			//run a query for each resource 
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
