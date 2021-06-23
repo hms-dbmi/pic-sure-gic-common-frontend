@@ -104,12 +104,12 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			var model = defaultOutput.model;
 			
 			var count = parseInt(result);
-			if( typeof count === "number" ){
-				model.set("totalPatients", model.get("totalPatients") + count);
-				$("#patient-results-" + resource.uuid + "-count").html(count.toLocaleString()); 
-			} else if(result.includes("<")) {
+			if(result.includes("<")) {
 				$("#patient-results-" + resource.uuid + "-count").html(result);
 				model.set("aggregated", true);
+			} else if( typeof count === "number" ){
+				$("#patient-results-" + resource.uuid + "-count").html(count.toLocaleString()); 
+				model.set("totalPatients", model.get("totalPatients") + count);
 			} else {
 				$("#patient-results-" + resource.uuid + "-count").html("-");
 			}
