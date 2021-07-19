@@ -230,16 +230,12 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 				 	contentType: 'application/json',
 				 	data: JSON.stringify(query),
 				 	dataType: 'text',
+				 	statusCode: { 401:function() { } },   //NOOP - don't fail on not authorized queries
   				 	success: function(response, textStatus, request){
   				 		this.patientDataCallback(resource, response, model, defaultOutput);
   						}.bind(this),
 				 	error: function(response){
-						if (!transportErrors.handleAll(response, "Error while processing query")) {
-							response.responseText = "<h4>"
-								+ this.outputErrorMessage;
-								+ "</h4>";
-					 		this.patientErrorCallback(resource, response.responseText, defaultOutput);
-						}
+				 		this.patientErrorCallback(resource, this.outputErrorMessage, defaultOutput);
 					}.bind(this)
 				});
 			}.bind(this));
@@ -265,16 +261,12 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 				 	headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
 				 	contentType: 'application/json',
 				 	data: JSON.stringify(query),
+				 	statusCode: { 401:function() { } },   //NOOP - don't fail on not authorized queries
   				 	success: function(response, textStatus, request){
   				 		this.biosampleDataCallback(resource, response, request.getResponseHeader("resultId"), model, defaultOutput, "biosamples");
   						}.bind(this),
 				 	error: function(response){
-						if (!transportErrors.handleAll(response, "Error while processing query")) {
-							response.responseText = "<h4>"
-								+ this.outputErrorMessage;
-								+ "</h4>";
-					 		this.biosampleErrorCallback(resource, response.responseText, defaultOutput);
-						}
+				 		this.biosampleErrorCallback(resource, this.outputErrorMessage, defaultOutput);
 					}.bind(this)
 				});
 			}.bind(this));
