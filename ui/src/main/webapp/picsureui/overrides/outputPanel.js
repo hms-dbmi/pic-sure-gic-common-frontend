@@ -234,12 +234,10 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
   				 		this.patientDataCallback(resource, response, model, defaultOutput);
   						}.bind(this),
 				 	error: function(response){
-						if (!transportErrors.handleAll(response, "Error while processing query")) {
-							response.responseText = "<h4>"
-								+ this.outputErrorMessage;
-								+ "</h4>";
-					 		this.patientErrorCallback(resource, response.responseText, defaultOutput);
-						}
+						response.responseText = "<h4>"
+							+ this.outputErrorMessage;
+							+ "</h4>";
+				 		this.patientErrorCallback(resource, response.responseText, defaultOutput);
 					}.bind(this)
 				});
 			}.bind(this));
@@ -269,12 +267,10 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
   				 		this.biosampleDataCallback(resource, response, request.getResponseHeader("resultId"), model, defaultOutput, "biosamples");
   						}.bind(this),
 				 	error: function(response){
-						if (!transportErrors.handleAll(response, "Error while processing query")) {
-							response.responseText = "<h4>"
-								+ this.outputErrorMessage;
-								+ "</h4>";
-					 		this.biosampleErrorCallback(resource, response.responseText, defaultOutput);
-						}
+						response.responseText = "<h4>"
+							+ this.outputErrorMessage;
+							+ "</h4>";
+				 		this.biosampleErrorCallback(resource, response.responseText, defaultOutput);
 					}.bind(this)
 				});
 			}.bind(this));
