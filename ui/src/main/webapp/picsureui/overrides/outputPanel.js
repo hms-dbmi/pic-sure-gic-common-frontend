@@ -22,8 +22,11 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 							description: resource.description,
 							patientCount: 0,
 							spinnerClasses: "spinner-center ",
-							spinning: false
+							spinning: false,
+							bioSampleCounts: {}
 					};
+					
+					
 				});
 				resourceQueryDeferred.resolve();
 			},
@@ -136,8 +139,11 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 				if( crossCounts[biosampleMetadata.conceptPath] ){
 					var count = parseInt(crossCounts[biosampleMetadata.conceptPath]);
 					if( count >= 0 ){
+						resources[resource.uuid].bioSampleCounts[biosampleMetadata.id] = count;
 						resources[resource.uuid].biosampleCount += count;
 						model.set("totalBiosamples", model.get("totalBiosamples") + count);
+					} else {
+						resources[resource.uuid].bioSampleCounts[biosampleMetadata.id] = undefined;
 					}
 				}
 			});
@@ -145,7 +151,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			$("#biosamples-spinner-" + resource.uuid).hide();
 			$("#biosamples-results-" + resource.uuid + "-count").html(resources[resource.uuid].biosampleCount.toLocaleString()); 
 			$("#biosamples-count").html(model.get("totalBiosamples").toLocaleString());
-				
+			$("#more-info-btn").show();
+			
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
 				model.set("bioSpinning", false);
 				model.set("bioQueryRan", true);
