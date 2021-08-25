@@ -228,6 +228,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings, moreInformation){
             	biosampleFields: biosampleFields,
             	resources: resources
             }));
+  			this.variantExplorerView.setElement($("#moreInformation",this.$el));
+//  			this.variantExplorerView.render();
   			
 			//run a query for each resource 
 			_.each(resources, function(resource){
