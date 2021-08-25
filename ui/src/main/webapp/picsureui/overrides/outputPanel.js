@@ -213,13 +213,6 @@ function(BB, outputTemplate, transportErrors, picsureSettings, moreInformation){
 				console.log("running override query");
 			}
 			
-			if(this.moreInformationModel == undefined){
-				this.moreInformationModel = new moreInformation.View(BB.Model.extend({
-	            	biosampleFields: biosampleFields,
-	            	resources: resources
-	            }));
-			}
-			
 			var model = defaultOutput.model;
 			model.set("resources", this.resources);
 			model.set("aggregated", false);
@@ -229,6 +222,13 @@ function(BB, outputTemplate, transportErrors, picsureSettings, moreInformation){
 			
 			model.baseQuery = incomingQuery;   
   			defaultOutput.render();
+  			
+  			//attach the information modal
+  			this.moreInformationModal = new moreInformation.View(BB.Model.extend({
+            	biosampleFields: biosampleFields,
+            	resources: resources
+            }));
+  			
 			//run a query for each resource 
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
