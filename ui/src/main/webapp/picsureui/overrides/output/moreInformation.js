@@ -9,28 +9,35 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
                 this.modalTemplate = HBS.compile(modalTemplate);
             },
             events: {
-                "click #more-info-btn" : "moreInformation"
+                "click #more-info-btn" : "showMoreInformation"
             },
-            updateQuery: function(query) {
-                this.baseQuery = query;
-                this.displayVariantButton();
-            },
-            moreInformation: function(event){
+            updateResource: function(resource) {
             	
-            	  //lines ends up with a trailing empty object; strip that and the header row for the count
+            	_.each(model.biosampleFields, function(bioField){
+					if( resource.bioSampleCounts[bioField.id] ){
+						$("#" + resource.uuid + "-" + bioField.label).html( resource.bioSampleCounts[bioField.id] )
+					} else {
+						$("#" + resource.uuid + "-" + bioField.label).html("-");
+					}
+    			});
+            },
+            updateAll: function(){
+            	_.each(model.resources, function(resource){
+            		updateResource(resource);
+            	});
+            },
+            showMoreInformation: function(event){
+            	
                 $("#modal-window").html(this.modalTemplate({title: "More Information"}));
                 $(".modal-body").html(this.moreInfoTemplate(this.model));
-                
                 
                 $(".close").click(function(){
                     $("#modalDialog").hide();
                 });
 
-                $("#modalDialog").show();
-                $(".modal-body").html();
+                updateAll();
 
-            	
-            	
+                $("#modalDialog").show();
             }
             
         });

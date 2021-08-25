@@ -1,5 +1,5 @@
-define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings" ],
-function(BB, outputTemplate, transportErrors, picsureSettings){
+define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings", "output/moreInformation" ],
+function(BB, outputTemplate, transportErrors, picsureSettings, moreInformation){
 	
 	var resources = {};
 	
@@ -211,6 +211,13 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 				return;
 			} else {
 				console.log("running override query");
+			}
+			
+			if(this.moreInformationModel == undefined){
+				this.moreInformationModel = new moreInformation.View(BB.Model.extend({
+	            	biosampleFields: biosampleFields,
+	            	resources: resources
+	            }));
 			}
 			
 			var model = defaultOutput.model;
