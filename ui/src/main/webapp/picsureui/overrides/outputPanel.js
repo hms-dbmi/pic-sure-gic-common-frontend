@@ -224,11 +224,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings, moreInformation){
   			defaultOutput.render();
   			
   			//attach the information modal
-  			this.moreInformationModal = new moreInformation.View(BB.Model.extend({
-            	biosampleFields: biosampleFields,
-            	resources: resources
-            }));
-  			this.variantExplorerView.setElement($("#moreInformation",this.$el));
+  			this.moreInformationModal = new moreInformation.View({biosampleFields: biosampleFields,	resources: resources});
+  			this.moreInformationModal.setElement($("#moreInformation",this.$el));
 //  			this.variantExplorerView.render();
   			
 			//run a query for each resource 

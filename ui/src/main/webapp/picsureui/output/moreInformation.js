@@ -4,9 +4,11 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
 
 
         let moreInfoView = BB.View.extend({
-            initialize: function() {
+            initialize: function(biosampleFields, resources) {
                 this.moreInfoTemplate = HBS.compile(moreInfoTemplate);
                 this.modalTemplate = HBS.compile(modalTemplate);
+                this.biosampleFields = biosampleFields;
+            	this.resources = resources;
             },
             events: {
                 "click #more-info-btn" : "showMoreInformation"
@@ -44,10 +46,7 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
         
         return {
             View: moreInfoView,
-            Model: BB.Model.extend({
-            	biosampleFields: undefined,
-            	resources: undefined
-            })
+            Model: BB.Model.extend({  })
         }
     }
 );
