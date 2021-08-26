@@ -98,6 +98,9 @@ function(BB, outputTemplate, transportErrors, picsureSettings, moreInformation){
 		outputTemplate: outputTemplate,
 		
 		patientDataCallback: function(resource, result, model, defaultOutput){
+			
+			var count = parseInt(result);
+			
 			resources[resource.uuid].queryRan = true;
 			resources[resource.uuid].patientCount = count;
 			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
@@ -105,8 +108,6 @@ function(BB, outputTemplate, transportErrors, picsureSettings, moreInformation){
 			$("#patient-spinner-" + resource.uuid).hide();
 			
 			var model = defaultOutput.model;
-			
-			var count = parseInt(result);
 			if(result.includes("<")) {
 				$("#patient-results-" + resource.uuid + "-count").html(result);
 				model.set("aggregated", true);

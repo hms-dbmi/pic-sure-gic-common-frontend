@@ -29,9 +29,9 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
             	
             	_.each(this.biosampleFields, function(bioField){
 					if( resource.bioSampleCounts[bioField.id] ){
-						$("#" + resource.uuid + "-" + bioField.label).html( resource.bioSampleCounts[bioField.id] )
+						$("#" + resource.uuid + "-" + bioField.id).html( resource.bioSampleCounts[bioField.id] )
 					} else {
-						$("#" + resource.uuid + "-" + bioField.label).html("-");
+						$("#" + resource.uuid + "-" + bioField.id).html("-");
 					}
     			});
             },
