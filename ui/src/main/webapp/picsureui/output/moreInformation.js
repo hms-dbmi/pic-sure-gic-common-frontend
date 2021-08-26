@@ -15,7 +15,7 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
             },
             updateResource: function(resource) {
             	
-            	_.each(model.biosampleFields, function(bioField){
+            	_.each(this.biosampleFields, function(bioField){
 					if( resource.bioSampleCounts[bioField.id] ){
 						$("#" + resource.uuid + "-" + bioField.label).html( resource.bioSampleCounts[bioField.id] )
 					} else {
@@ -24,20 +24,20 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
     			});
             },
             updateAll: function(){
-            	_.each(model.resources, function(resource){
+            	_.each(this.resources, function(resource){
             		updateResource(resource);
             	});
             },
             showMoreInformation: function(event){
             	
                 $("#modal-window").html(this.modalTemplate({title: "More Information"}));
-                $(".modal-body").html(this.moreInfoTemplate(this.model));
+                $(".modal-body").html(this.moreInfoTemplate(this));
                 
                 $(".close").click(function(){
                     $("#modalDialog").hide();
                 });
 
-                updateAll();
+                this.updateAll();
 
                 $("#modalDialog").show();
             }

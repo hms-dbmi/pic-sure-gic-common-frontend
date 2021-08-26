@@ -1,19 +1,21 @@
-
 <table id='moreInfoTable'>
-
-<tr><th>Site</th>
-{{#each biosampleFields}}
-	<th><span>{{label}}</span></th>
-{{/each}}
-</tr>
-
-{{#each resources}}
-<tr><td><span title="{{description}}">{{name}}</span></td>
-
+	<thead>
+	<tr><th>Site</th>
 	{{#each biosampleFields}}
-		<td id="{{.. uuid}}-{{label}}"><div>  </div></td>
+		<th><span>{{label}}</span></th>
 	{{/each}}
-</tr>
-{{/each}}
-
+	</tr>
+	</thead>
+	
+	<tbody>
+	{{#each resources}}
+	<tr><td><span title="{{description}}">{{name}}</span></td>
+	
+		{{#each biosampleFields}}
+			<td id="{{.. uuid}}-{{label}}"><div>  </div></td>
+		{{/each}}
+	</tr>
+	{{/each}}
+	
+	</tbody>
 </table>
