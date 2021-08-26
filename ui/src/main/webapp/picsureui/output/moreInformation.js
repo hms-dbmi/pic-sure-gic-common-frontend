@@ -15,6 +15,18 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
             },
             updateResource: function(resource) {
             	
+            	if( resource.patientCount ){
+					$("#" + resource.uuid + "-patients").html( resource.patientCount )
+				} else {
+					$("#" + resource.uuid + "-patients").html("-");
+				}
+            	
+            	if( resource.biosampleCount ){
+					$("#" + resource.uuid + "-biosamples").html( resource.biosampleCount )
+				} else {
+					$("#" + resource.uuid + "-biosamples").html("-");
+				}
+            	
             	_.each(this.biosampleFields, function(bioField){
 					if( resource.bioSampleCounts[bioField.id] ){
 						$("#" + resource.uuid + "-" + bioField.label).html( resource.bioSampleCounts[bioField.id] )
