@@ -45,3 +45,7 @@
 .output-button-container {
 	margin-top: 10px;
 }
+
+.infotable-head {
+	background: light-gray;
+}
