@@ -1,4 +1,4 @@
-<table id='moreInfoTable'>
+<table id='moreInfoTable' class="table">
 	<thead>
 	<tr><th>Site</th>
 	{{#each biosampleFields}}
@@ -11,8 +11,8 @@
 	{{#each resources}}
 	<tr><td><span title="{{description}}">{{name}}</span></td>
 	
-		{{#each biosampleFields}}
-			<td id="{{.. uuid}}-{{label}}"><div>  </div></td>
+		{{#each ../biosampleFields}}
+			<td id="{{../uuid}}-{{label}}"><div>  </div></td>
 		{{/each}}
 	</tr>
 	{{/each}}

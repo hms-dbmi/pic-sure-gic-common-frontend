@@ -25,8 +25,8 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
             },
             updateAll: function(){
             	_.each(this.resources, function(resource){
-            		updateResource(resource);
-            	});
+            		this.updateResource(resource);
+            	}.bind(this));
             },
             showMoreInformation: function(event){
             	
