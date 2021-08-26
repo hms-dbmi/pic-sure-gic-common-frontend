@@ -16,20 +16,20 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
             updateResource: function(resource) {
             	
             	if( resource.patientCount ){
-					$("#" + resource.uuid + "-patients").html( resource.patientCount )
+					$("#" + resource.uuid + "-patients").html( resource.patientCount.toLocaleString() )
 				} else {
 					$("#" + resource.uuid + "-patients").html("-");
 				}
             	
             	if( resource.biosampleCount ){
-					$("#" + resource.uuid + "-biosamples").html( resource.biosampleCount )
+					$("#" + resource.uuid + "-biosamples").html( resource.biosampleCount.toLocaleString() )
 				} else {
 					$("#" + resource.uuid + "-biosamples").html("-");
 				}
             	
             	_.each(this.biosampleFields, function(bioField){
 					if( resource.bioSampleCounts[bioField.id] ){
-						$("#" + resource.uuid + "-" + bioField.id).html( resource.bioSampleCounts[bioField.id] )
+						$("#" + resource.uuid + "-" + bioField.id).html( resource.bioSampleCounts[bioField.id].toLocaleString() )
 					} else {
 						$("#" + resource.uuid + "-" + bioField.id).html("-");
 					}
