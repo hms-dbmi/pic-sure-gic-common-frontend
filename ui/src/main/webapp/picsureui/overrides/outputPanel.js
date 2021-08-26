@@ -1,5 +1,5 @@
-define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings" ],
-function(BB, outputTemplate, transportErrors, picsureSettings){
+define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings", "output/moreInformation" ],
+function(BB, outputTemplate, transportErrors, picsureSettings, moreInformation){
 	
 	var resources = {};
 	
@@ -22,8 +22,11 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 							description: resource.description,
 							patientCount: 0,
 							spinnerClasses: "spinner-center ",
-							spinning: false
+							spinning: false,
+							bioSampleCounts: {}
 					};
+					
+					
 				});
 				resourceQueryDeferred.resolve();
 			},
@@ -95,6 +98,9 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 		outputTemplate: outputTemplate,
 		
 		patientDataCallback: function(resource, result, model, defaultOutput){
+			
+			var count = parseInt(result);
+			
 			resources[resource.uuid].queryRan = true;
 			resources[resource.uuid].patientCount = count;
 			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
@@ -102,8 +108,6 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			$("#patient-spinner-" + resource.uuid).hide();
 			
 			var model = defaultOutput.model;
-			
-			var count = parseInt(result);
 			if(result.includes("<")) {
 				$("#patient-results-" + resource.uuid + "-count").html(result);
 				model.set("aggregated", true);
@@ -136,8 +140,11 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 				if( crossCounts[biosampleMetadata.conceptPath] ){
 					var count = parseInt(crossCounts[biosampleMetadata.conceptPath]);
 					if( count >= 0 ){
+						resources[resource.uuid].bioSampleCounts[biosampleMetadata.id] = count;
 						resources[resource.uuid].biosampleCount += count;
 						model.set("totalBiosamples", model.get("totalBiosamples") + count);
+					} else {
+						resources[resource.uuid].bioSampleCounts[biosampleMetadata.id] = undefined;
 					}
 				}
 			});
@@ -145,7 +152,8 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			$("#biosamples-spinner-" + resource.uuid).hide();
 			$("#biosamples-results-" + resource.uuid + "-count").html(resources[resource.uuid].biosampleCount.toLocaleString()); 
 			$("#biosamples-count").html(model.get("totalBiosamples").toLocaleString());
-				
+			$("#more-info-btn").show();
+			
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
 				model.set("bioSpinning", false);
 				model.set("bioQueryRan", true);
@@ -215,6 +223,12 @@ function(BB, outputTemplate, transportErrors, picsureSettings){
 			
 			model.baseQuery = incomingQuery;   
   			defaultOutput.render();
+  			
+  			//attach the information modal
+  			this.moreInformationModal = new moreInformation.View(biosampleFields, resources);
+  			this.moreInformationModal.setElement($("#moreInformation",this.$el));
+//  			this.variantExplorerView.render();
+  			
 			//run a query for each resource 
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it

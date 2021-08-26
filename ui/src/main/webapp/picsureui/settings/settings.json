@@ -3,15 +3,15 @@
     {
         "label" : "Genomic Data",
         "id": "genomicdata",
-        "conceptPath" : "\\Next Generation Sequencing\\Exomes\\"
+        "conceptPath" : "\\Genomic Data\\"
     },{
         "label" : "Whole blood",
         "id": "Wholeblood",
-        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Blood (Whole)\\Blood (Whole)\\SPECIMENS:HF.BLD.000 Quantity\\"
+        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Blood (Whole)\\SPECIMENS:HF.BLD.000 Quantity\\"
     },{
         "label" : "Plasma",
         "id": "Plasma",
-        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Plasma\\Plasma\\SPECIMENS:HF.PLS.000 Quantity\\"
+        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Plasma\\SPECIMENS:HF.PLS.000 Quantity\\"
     },{
         "label" : "Tissue",
         "id": "Tissue",
@@ -29,7 +29,7 @@
   
   "picSureResourceId":"02e23f52-f354-4e8b-992c-d37c8b9ba140",
   "applicationIdForBaseQuery":"8b5722c9-62fd-48d6-b0bf-4f67e53efb2b",
-  "helpLink": "mailto:sample@email.com",
+  "helpLink": "GIC-TechSupport@chip.org",
   "logoPath": "/logo.png",
   "categoryAliases": {
 			"ACT" : "ACT"
