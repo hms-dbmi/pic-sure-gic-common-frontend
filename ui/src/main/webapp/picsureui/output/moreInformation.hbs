@@ -1,8 +1,8 @@
 <table id='moreInfoTable' class="table striped-table">
 	<thead class="infotable-head">
-	<tr><th>Site</th><th class="center">Patient</th><th class="center">Biosamples</th>
+	<tr><th>Site</th><th class="center-cell">Patient</th><th class="center-cell">Biosamples</th>
 	{{#each biosampleFields}}
-		<th class="center"><span>{{label}}</span></th>
+		<th class="center-cell"><span>{{label}}</span></th>
 	{{/each}}
 	</tr>
 	</thead>
@@ -10,10 +10,10 @@
 	<tbody>
 	{{#each resources}}
 	<tr><td><span title="{{description}}">{{name}}</span></td>
-		<td class="center"><span id="{{uuid}}-patients"> </span></td>
-		<td class="center"><span id="{{uuid}}-biosamples"> </span></td>
+		<td class="center-cell"><span id="{{uuid}}-patients"> </span></td>
+		<td class="center-cell"><span id="{{uuid}}-biosamples"> </span></td>
 		{{#each ../biosampleFields}}
-			<td class="center" id="{{../uuid}}-{{id}}"><div>  </div></td>
+			<td class="center-cell" id="{{../uuid}}-{{id}}"><div>  </div></td>
 		{{/each}}
 	</tr>
 	{{/each}}

@@ -49,3 +49,9 @@
 .infotable-head {
 	background: light-gray;
 }
+
+.center-cell {
+	text-align: center;
+}
+
+}
