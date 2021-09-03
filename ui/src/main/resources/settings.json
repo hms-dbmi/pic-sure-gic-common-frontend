@@ -1,17 +1,17 @@
 {
-  "biosampleFields": [
+   "biosampleFields": [
     {
         "label" : "Genomic Data",
         "id": "genomicdata",
-        "conceptPath" : "\\Next Generation Sequencing\\Exomes\\"
+        "conceptPath" : "\\Genomic Data\\"
     },{
         "label" : "Whole Blood",
         "id": "Wholeblood",
-        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Blood (Whole)\\Blood (Whole)\\SPECIMENS:HF.BLD.000 Quantity\\"
+        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Blood (Whole)\\SPECIMENS:HF.BLD.000 Quantity\\"
     },{
         "label" : "Plasma",
         "id": "Plasma",
-        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Plasma\\Plasma\\SPECIMENS:HF.PLS.000 Quantity\\"
+        "conceptPath" : "\\Bio Specimens\\HumanFluid\\Plasma\\SPECIMENS:HF.PLS.000 Quantity\\"
     },{
         "label" : "Tissue",
         "id": "Tissue",
