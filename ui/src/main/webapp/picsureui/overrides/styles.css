@@ -30,6 +30,13 @@
 	padding: 5px 0px 10px 0px;
 }
 
+.container {
+    padding-right: 0;
+    padding-left: 0;
+    width: 90%;
+    padding-top: 10;
+}
+
 .institution-arrow {
 	display: block;
     margin-top: -60px;
