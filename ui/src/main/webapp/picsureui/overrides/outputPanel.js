@@ -1,9 +1,9 @@
 define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings", "output/moreInformation" ],
-function(BB, outputTemplate, transportErrors, picsureSettings, moreInformation){
+function(BB, outputTemplate, transportErrors, settings, moreInformation){
 	
 	var resources = {};
 	
-	var biosampleFields = picsureSettings.biosampleFields;
+	var biosampleFields = settings.biosampleFields;
 	
 	var resourceQueryDeferred = $.Deferred();
 	

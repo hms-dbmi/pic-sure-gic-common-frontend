@@ -1,7 +1,0 @@
-{
-  "servicesPath" : "/psama",
-  "basePath" : "/psama",
-  "uiPath": "",
-  "customizeAuth0Login": true,
-  "client_id": "ThisIsDefinedAheadOfTimeBySomeoneElse"
-}
