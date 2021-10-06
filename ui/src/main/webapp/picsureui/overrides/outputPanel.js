@@ -137,7 +137,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			resources[resource.uuid].bioQueryRan = true;
 			
 			_.each(biosampleFields, function(biosampleMetadata){
-				if( crossCounts[biosampleMetadata.conceptPath] ){
+				if( crossCounts[biosampleMetadata.conceptPath] != undefined ){
 					var count = parseInt(crossCounts[biosampleMetadata.conceptPath]);
 					if( count >= 0 ){
 						resources[resource.uuid].bioSampleCounts[biosampleMetadata.id] = count;
@@ -190,6 +190,10 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			resources[resource.uuid].bioQueryRan = true;
 			$("#biosamples-spinner-" + resource.uuid).hide();
 			$("#biosamples-results-" + resource.uuid + "-count").html("0");
+			
+			_.each(biosampleFields, function(biosampleMetadata){
+				resources[resource.uuid].bioSampleCounts[biosampleMetadata.id] = undefined;
+			});
 			
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
 				model.set("bioSpinning", false);
