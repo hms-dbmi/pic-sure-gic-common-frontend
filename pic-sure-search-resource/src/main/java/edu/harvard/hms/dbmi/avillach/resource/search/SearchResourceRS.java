@@ -46,8 +46,10 @@ public class SearchResourceRS implements IResourceRS {
 //	@Inject
 //	private HttpClient httpClient;
 	
+	@Inject
 	ResourceRepository resourceRepo;
 
+	@Inject
 	ResourceWebClient resourceWebClient;
 	
 	/**
@@ -57,10 +59,29 @@ public class SearchResourceRS implements IResourceRS {
 	
 	private static Map<String, SearchColumnMeta> mergedInfoStoreColumns;
 
-//	public SearchResourceRS() {
-//		logger.debug("default constructor called");
-//		updateOntologies();
-//	}
+	public SearchResourceRS() {
+		logger.debug("default constructor called");
+		startUpdateThread();
+	}
+
+	private void startUpdateThread() {
+		//we need to let the object finish construction before referenceing auto-injected fields
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+		} 
+		
+		while(true) {
+			updateOntologies();
+			
+			//sleep for 1 hour by default.  TODO: set this in standalone.xml
+			try {
+				Thread.sleep(60 * 60 * 1000);
+			} catch (InterruptedException e) {
+			}
+			
+		}
+	}
 
 	@Inject
 	public SearchResourceRS(ResourceRepository resourceRepo, ResourceWebClient resourceWebClient) {
@@ -69,7 +90,7 @@ public class SearchResourceRS implements IResourceRS {
 		this.resourceWebClient = resourceWebClient;
 		
 		logger.debug("Two param constructor called");
-		updateOntologies();
+		startUpdateThread();
 	}
 
 	@POST
