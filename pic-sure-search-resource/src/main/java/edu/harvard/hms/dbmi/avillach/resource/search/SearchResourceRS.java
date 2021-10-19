@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -34,6 +35,7 @@ import edu.harvard.dbmi.avillach.service.ResourceWebClient;
 @Path("/")
 @Produces("application/json")
 @Consumes("application/json")
+@Singleton
 public class SearchResourceRS implements IResourceRS {
 
 //	private static final String BEARER_STRING = "Bearer ";
@@ -58,6 +60,8 @@ public class SearchResourceRS implements IResourceRS {
 	private static Map<String, SearchColumnMeta> mergedPhenotypeOntologies;
 	
 	private static Map<String, SearchColumnMeta> mergedInfoStoreColumns;
+	
+	private static Thread updateThread = null;
 
 	public SearchResourceRS() {
 		logger.debug("default constructor called");
@@ -66,29 +70,31 @@ public class SearchResourceRS implements IResourceRS {
 
 	private void startUpdateThread() {
 		
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				//we need to let the object finish construction before referenceing auto-injected fields
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-				} 
-				
-				while(true) {
-					updateOntologies();
-					
-					//sleep for 1 hour by default.  TODO: set this in standalone.xml
+		if(updateThread == null) {
+			updateThread = new Thread(new Runnable() {
+	
+				@Override
+				public void run() {
+					//we need to let the object finish construction before referenceing auto-injected fields
 					try {
-						Thread.sleep(60 * 60 * 1000);
+						Thread.sleep(5000);
 					} catch (InterruptedException e) {
+					} 
+					
+					while(true) {
+						updateOntologies();
+						
+						//sleep for 1 hour by default.  TODO: set this in standalone.xml
+						try {
+							Thread.sleep(60 * 60 * 1000);
+						} catch (InterruptedException e) {
+						}
 					}
 				}
-			}
-			
-		}).start();
-		
+				
+			});
+			updateThread.start();
+		}
 	}
 
 	@Inject
