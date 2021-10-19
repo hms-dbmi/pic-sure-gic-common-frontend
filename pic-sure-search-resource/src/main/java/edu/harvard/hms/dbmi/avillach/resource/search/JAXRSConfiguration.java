@@ -12,7 +12,7 @@ import javax.ws.rs.core.Application;
 @WebListener
 public class JAXRSConfiguration extends Application implements ServletContextListener {
 
-	@Inject
+//	@Inject
 //	private ApplicationProperties appProperties;
 
 	@Override
