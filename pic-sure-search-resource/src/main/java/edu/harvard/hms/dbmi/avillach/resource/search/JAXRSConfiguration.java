@@ -1,6 +1,5 @@
 package edu.harvard.hms.dbmi.avillach.resource.search;
 
-import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -8,7 +7,7 @@ import javax.servlet.annotation.WebListener;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-@ApplicationPath("pic-sure")
+@ApplicationPath("")
 @WebListener
 public class JAXRSConfiguration extends Application implements ServletContextListener {
 

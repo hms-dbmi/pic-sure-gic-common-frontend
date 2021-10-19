@@ -1,45 +1,50 @@
 package edu.harvard.hms.dbmi.avillach.resource.search;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.message.BasicHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 
 import edu.harvard.dbmi.avillach.data.repository.ResourceRepository;
-import edu.harvard.dbmi.avillach.domain.*;
+import edu.harvard.dbmi.avillach.domain.QueryRequest;
+import edu.harvard.dbmi.avillach.domain.QueryStatus;
+import edu.harvard.dbmi.avillach.domain.ResourceInfo;
+import edu.harvard.dbmi.avillach.domain.SearchResults;
 import edu.harvard.dbmi.avillach.service.IResourceRS;
 import edu.harvard.dbmi.avillach.service.ResourceWebClient;
-import edu.harvard.dbmi.avillach.util.exception.ApplicationException;
 
-@Path("/passthru")
+@Path("/")
 @Produces("application/json")
 @Consumes("application/json")
 public class SearchResourceRS implements IResourceRS {
 
-	private static final String BEARER_STRING = "Bearer ";
-
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+//	private static final String BEARER_STRING = "Bearer ";
+//
+//	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private static final Logger logger = LoggerFactory.getLogger(SearchResourceRS.class);
 
 //	@Inject
 //	private ApplicationProperties properties;
-	@Inject
-	private HttpClient httpClient;
+//	@Inject
+//	private HttpClient httpClient;
 	
 	@Inject
 	ResourceRepository resourceRepo;
@@ -62,7 +67,7 @@ public class SearchResourceRS implements IResourceRS {
 	@Inject
 	public SearchResourceRS(HttpClient httpClient) {
 //		this.properties = applicationProperties;
-		this.httpClient = httpClient;
+//		this.httpClient = httpClient;
 		
 		logger.debug("Two param constructor called");
 		updateOntologies();
