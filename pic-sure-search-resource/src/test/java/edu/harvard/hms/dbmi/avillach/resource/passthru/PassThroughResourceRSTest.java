@@ -39,6 +39,8 @@ import edu.harvard.dbmi.avillach.domain.SearchResults;
 import edu.harvard.dbmi.avillach.util.PicSureStatus;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import edu.harvard.dbmi.avillach.util.exception.ResourceInterfaceException;
+import edu.harvard.hms.dbmi.avillach.resource.search.HttpClient;
+import edu.harvard.hms.dbmi.avillach.resource.search.SearchResourceRS;
 
 @ExtendWith(MockitoExtension.class)
 class PassThroughResourceRSTest {
@@ -49,10 +51,10 @@ class PassThroughResourceRSTest {
 
 	@BeforeEach
 	void init() {
-		ApplicationProperties appProperties = mock(ApplicationProperties.class);
-		lenient().when(appProperties.getTargetPicsureToken()).thenReturn("/tmp/unit_test");
-		lenient().when(appProperties.getTargetPicsureUrl()).thenReturn("http://test");
-		lenient().when(appProperties.getTargetResourceId()).thenReturn(UUID.randomUUID().toString());
+//		ApplicationProperties appProperties = mock(ApplicationProperties.class);
+//		lenient().when(appProperties.getTargetPicsureToken()).thenReturn("/tmp/unit_test");
+//		lenient().when(appProperties.getTargetPicsureUrl()).thenReturn("http://test");
+//		lenient().when(appProperties.getTargetResourceId()).thenReturn(UUID.randomUUID().toString());
 
 		httpClient = mock(HttpClient.class);
 		// not mocking these methods...
@@ -60,7 +62,7 @@ class PassThroughResourceRSTest {
 		lenient().doCallRealMethod().when(httpClient).readObjectFromResponse(any(HttpResponse.class), any());
 		lenient().doCallRealMethod().when(httpClient).throwResponseError(any(HttpResponse.class), anyString());
 
-		resource = new SearchResourceRS(appProperties, httpClient);
+//		resource = new SearchResourceRS(appProperties, httpClient);
 	}
 
 	@Test

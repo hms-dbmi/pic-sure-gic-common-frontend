@@ -1,4 +1,4 @@
-package edu.harvard.hms.dbmi.avillach.resource.passthru;
+package edu.harvard.hms.dbmi.avillach.resource.search;
 
 import java.io.IOException;
 import java.util.*;
@@ -36,8 +36,8 @@ public class SearchResourceRS implements IResourceRS {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private static final Logger logger = LoggerFactory.getLogger(SearchResourceRS.class);
 
-	@Inject
-	private ApplicationProperties properties;
+//	@Inject
+//	private ApplicationProperties properties;
 	@Inject
 	private HttpClient httpClient;
 	
@@ -60,8 +60,8 @@ public class SearchResourceRS implements IResourceRS {
 	}
 
 	@Inject
-	public SearchResourceRS(ApplicationProperties applicationProperties, HttpClient httpClient) {
-		this.properties = applicationProperties;
+	public SearchResourceRS(HttpClient httpClient) {
+//		this.properties = applicationProperties;
 		this.httpClient = httpClient;
 		
 		logger.debug("Two param constructor called");
@@ -300,35 +300,35 @@ public class SearchResourceRS implements IResourceRS {
 
 	
 	//I think we can do this through the DB using wildfly's connection
-	private SearchResults pullRemoteOntology(String url, String resourceId) {
-		
-		QueryRequest searchRequest = new QueryRequest();
-		searchRequest.setQuery("");  //empty search string should return all results
-		searchRequest.setResourceUUID(UUID.fromString(resourceId));
-		// I don't think we need resource credentials - nc
-		//	searchRequest.setResourceCredentials(searchRequest.getResourceCredentials());
-		
-		String pathName = "/search/" + resourceId;
-		try {
-			String payload = objectMapper.writeValueAsString(searchRequest);
-			HttpResponse response = httpClient.retrievePostResponse(
-					httpClient.composeURL(url, pathName), createAuthHeader(), payload);
-			if (response.getStatusLine().getStatusCode() != 200) {
-				logger.error("{}{} did not return a 200: {} {} ", url, pathName,
-						response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
-				httpClient.throwResponseError(response, url);
-			}
-			return httpClient.readObjectFromResponse(response, SearchResults.class);
-		} catch (IOException e) {
-			// Note: this shouldn't ever happen
-			logger.error("Error encoding search payload", e);
-			throw new ApplicationException(
-					"Error encoding search for resource with id " + searchRequest.getResourceUUID());
-		}	
-	}
+//	private SearchResults pullRemoteOntology(String url, String resourceId) {
+//		
+//		QueryRequest searchRequest = new QueryRequest();
+//		searchRequest.setQuery("");  //empty search string should return all results
+//		searchRequest.setResourceUUID(UUID.fromString(resourceId));
+//		// I don't think we need resource credentials - nc
+//		//	searchRequest.setResourceCredentials(searchRequest.getResourceCredentials());
+//		
+//		String pathName = "/search/" + resourceId;
+//		try {
+//			String payload = objectMapper.writeValueAsString(searchRequest);
+//			HttpResponse response = httpClient.retrievePostResponse(
+//					httpClient.composeURL(url, pathName), createAuthHeader(), payload);
+//			if (response.getStatusLine().getStatusCode() != 200) {
+//				logger.error("{}{} did not return a 200: {} {} ", url, pathName,
+//						response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+//				httpClient.throwResponseError(response, url);
+//			}
+//			return httpClient.readObjectFromResponse(response, SearchResults.class);
+//		} catch (IOException e) {
+//			// Note: this shouldn't ever happen
+//			logger.error("Error encoding search payload", e);
+//			throw new ApplicationException(
+//					"Error encoding search for resource with id " + searchRequest.getResourceUUID());
+//		}	
+//	}
 	
-	private Header[] createAuthHeader() {
-		return new Header[] {
-				new BasicHeader(HttpHeaders.AUTHORIZATION, BEARER_STRING + properties.getTargetPicsureToken()) };
-	}
+//	private Header[] createAuthHeader() {
+//		return new Header[] {
+//				new BasicHeader(HttpHeaders.AUTHORIZATION, BEARER_STRING + properties.getTargetPicsureToken()) };
+//	}
 }

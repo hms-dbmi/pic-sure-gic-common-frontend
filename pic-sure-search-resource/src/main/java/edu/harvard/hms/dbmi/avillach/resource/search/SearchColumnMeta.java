@@ -1,4 +1,4 @@
-package edu.harvard.hms.dbmi.avillach.resource.passthru;
+package edu.harvard.hms.dbmi.avillach.resource.search;
 
 import java.io.Serializable;
 import java.util.HashSet;

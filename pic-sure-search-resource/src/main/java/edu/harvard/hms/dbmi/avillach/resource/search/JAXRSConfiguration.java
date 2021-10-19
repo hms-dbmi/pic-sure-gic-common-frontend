@@ -1,4 +1,4 @@
-package edu.harvard.hms.dbmi.avillach.resource.passthru;
+package edu.harvard.hms.dbmi.avillach.resource.search;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
@@ -13,12 +13,12 @@ import javax.ws.rs.core.Application;
 public class JAXRSConfiguration extends Application implements ServletContextListener {
 
 	@Inject
-	private ApplicationProperties appProperties;
+//	private ApplicationProperties appProperties;
 
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		ServletContext servletContext = event.getServletContext();
-		appProperties.init(servletContext.getContextPath());
+//		appProperties.init(servletContext.getContextPath());
 		servletContext.setInitParameter("resteasy.resources", "org.jboss.resteasy.plugins.stats.RegistryStatsResource");
 	}
 
