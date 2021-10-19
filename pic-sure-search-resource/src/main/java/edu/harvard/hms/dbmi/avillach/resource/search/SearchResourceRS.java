@@ -46,10 +46,8 @@ public class SearchResourceRS implements IResourceRS {
 //	@Inject
 //	private HttpClient httpClient;
 	
-	@Inject
 	ResourceRepository resourceRepo;
 
-	@Inject
 	ResourceWebClient resourceWebClient;
 	
 	/**
@@ -59,15 +57,16 @@ public class SearchResourceRS implements IResourceRS {
 	
 	private static Map<String, SearchColumnMeta> mergedInfoStoreColumns;
 
-	public SearchResourceRS() {
-		logger.debug("default constructor called");
-		updateOntologies();
-	}
+//	public SearchResourceRS() {
+//		logger.debug("default constructor called");
+//		updateOntologies();
+//	}
 
 	@Inject
-	public SearchResourceRS(HttpClient httpClient) {
-//		this.properties = applicationProperties;
-//		this.httpClient = httpClient;
+	public SearchResourceRS(ResourceRepository resourceRepo, ResourceWebClient resourceWebClient) {
+
+		this.resourceRepo = resourceRepo;
+		this.resourceWebClient = resourceWebClient;
 		
 		logger.debug("Two param constructor called");
 		updateOntologies();
