@@ -194,7 +194,7 @@ public class SearchResourceRS implements IResourceRS {
 					
 				//Pheno results
 				//this may also return a map?
-				Set<Entry<String, SearchColumnMeta>> phenoResults = (Set<Entry<String, SearchColumnMeta>>) resourceResults.get("phenotype");
+				Set<Entry<String, SearchColumnMeta>> phenoResults = (Set<Entry<String, SearchColumnMeta>>) resourceResults.get("phenotypes");
 				logger.debug("found " + phenoResults.size() + " pheno results for " + resource.getName());
 				phenoResults.stream().forEach(entry -> {
 					//merge the metadata fields (max/min, concept values, etc.)
