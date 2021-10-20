@@ -317,6 +317,7 @@ public class SearchResourceRS implements IResourceRS {
 		
 		if(searchColumnMeta == null) {
 			searchColumnMeta = new SearchColumnMeta();
+			searchColumnMeta.setName((String)conceptMeta.get("name"));
 		}
 		
 		if(searchColumnMeta.isCategorical() == null) {
