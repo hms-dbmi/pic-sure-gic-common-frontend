@@ -138,6 +138,7 @@ public class SearchResourceRS implements IResourceRS {
 	@POST
 	@Path("/search")
 	public SearchResults search(QueryRequest searchRequest) {
+		logger.debug("common search resoruce called " + searchRequest.getQuery() );
 		
 		//pheno values
 		Map<String, SearchColumnMeta> phenotypeResults = searchRequest.getQuery()!=null ? 
@@ -256,6 +257,7 @@ public class SearchResourceRS implements IResourceRS {
 		
 		if(searchColumnMeta == null) {
 			searchColumnMeta = new SearchColumnMeta();
+			searchColumnMeta.setName((String)mapEntry.getKey());
 		}
 		
 		//"description", "values", "continuous"
