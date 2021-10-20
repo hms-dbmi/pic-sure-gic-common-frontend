@@ -303,7 +303,7 @@ public class SearchResourceRS implements IResourceRS {
 	
 		
 		if(searchColumnMeta.isCategorical() == null) {
-			searchColumnMeta.setCategorical(Boolean.parseBoolean((String)conceptMeta.get("categorical")));
+			searchColumnMeta.setCategorical((Boolean)conceptMeta.get("categorical"));
 		}	else {
 			//for this boolean, don't update, just log a warning
 			logger.warn("Conflicting 'categorical' flags in phenotype concept " + conceptMeta.get("name")+ " from resource " + resourceName
