@@ -2,6 +2,7 @@ package edu.harvard.hms.dbmi.avillach.resource.search;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -12,7 +13,7 @@ public class SearchColumnMeta implements Serializable{
 	private static final long serialVersionUID = -1426704684157517837L;
 	private String name;
 	private Boolean categorical;
-	private Set<String> categoryValues;
+	private List<String> categoryValues;
 	private Double min, max;
 //	private int observationCount;
 //	private int patientCount;
@@ -56,10 +57,10 @@ public class SearchColumnMeta implements Serializable{
 //		return this;
 //	}
 
-	public Set<String> getCategoryValues() {
+	public List<String> getCategoryValues() {
 		return categoryValues;
 	}
-	public SearchColumnMeta setCategoryValues(Set<String> categoryValues) {
+	public SearchColumnMeta setCategoryValues(List<String> categoryValues) {
 		this.categoryValues = categoryValues;
 		return this;
 	}
