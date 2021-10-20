@@ -194,7 +194,7 @@ public class SearchResourceRS implements IResourceRS {
 					
 				//Pheno results
 				//this may also return a map?
-				Map<String, SearchColumnMeta> phenoResults = (Map<String, SearchColumnMeta>) resourceResults.get("phenotypes");
+				Map<String, Map<String, Object>> phenoResults = (Map<String, Map<String, Object>>) resourceResults.get("phenotypes");
 				logger.debug("found " + phenoResults.size() + " pheno results for " + resource.getName());
 				phenoResults.entrySet().stream().forEach(entry -> {
 					//merge the metadata fields (max/min, concept values, etc.)
@@ -291,7 +291,7 @@ public class SearchResourceRS implements IResourceRS {
 	 * @param value
 	 * @return
 	 */
-	private SearchColumnMeta updatePhenoMetaData(SearchColumnMeta conceptMeta, SearchColumnMeta searchColumnMeta, String resourceName) {
+	private SearchColumnMeta updatePhenoMetaData(Map<String, Object> conceptMeta, SearchColumnMeta searchColumnMeta, String resourceName) {
 
 		if(conceptMeta == null) {
 			return searchColumnMeta;
@@ -303,10 +303,10 @@ public class SearchResourceRS implements IResourceRS {
 	
 		
 		if(searchColumnMeta.isCategorical() == null) {
-			searchColumnMeta.setCategorical(conceptMeta.isCategorical());
+			searchColumnMeta.setCategorical(Boolean.parseBoolean((String)conceptMeta.get("categorical")));
 		}	else {
 			//for this boolean, don't update, just log a warning
-			logger.warn("Conflicting 'categorical' flags in phenotype concept " + conceptMeta.getName() + " from resource " + resourceName
+			logger.warn("Conflicting 'categorical' flags in phenotype concept " + conceptMeta.get("name")+ " from resource " + resourceName
 			+ " already have flag from " + Arrays.deepToString(searchColumnMeta.getResourceAvailability().toArray()));
 			//if we are confused about the categorical/numeric nature of this column, don't go farther
 			return searchColumnMeta;
@@ -315,18 +315,18 @@ public class SearchResourceRS implements IResourceRS {
 		if(searchColumnMeta.isCategorical()) {
 			if ( searchColumnMeta.getCategoryValues() == null) {
 				//hashset enforces uniqueness, so we don't need to worry about comparison
-				searchColumnMeta.setCategoryValues( conceptMeta.getCategoryValues());
+				searchColumnMeta.setCategoryValues( (Set)conceptMeta.get("categoryValues"));
 			} else {
-				searchColumnMeta.getCategoryValues().addAll(conceptMeta.getCategoryValues());
+				searchColumnMeta.getCategoryValues().addAll((Set)conceptMeta.get("categoryValues"));
 			}
 		} else {
 		
-			if ( searchColumnMeta.getMin() == null || searchColumnMeta.getMin() > conceptMeta.getMin()) {
-				searchColumnMeta.setMin( conceptMeta.getMin());
+			if ( searchColumnMeta.getMin() == null || searchColumnMeta.getMin() > (int)conceptMeta.get("min")) {
+				searchColumnMeta.setMin( (int)conceptMeta.get("min"));
 			}
 			
-			if ( searchColumnMeta.getMax() == null || searchColumnMeta.getMax() < conceptMeta.getMax()) {
-				searchColumnMeta.setMax( conceptMeta.getMax());
+			if ( searchColumnMeta.getMax() == null || searchColumnMeta.getMax() < (int)conceptMeta.get("max")) {
+				searchColumnMeta.setMax( (int)conceptMeta.get("max"));
 			}
 		}
 		
