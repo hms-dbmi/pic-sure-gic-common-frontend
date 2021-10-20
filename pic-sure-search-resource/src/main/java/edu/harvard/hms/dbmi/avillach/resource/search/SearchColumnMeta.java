@@ -13,7 +13,7 @@ public class SearchColumnMeta implements Serializable{
 	private static final long serialVersionUID = -1426704684157517837L;
 	private String name;
 	private Boolean categorical;
-	private List<String> categoryValues;
+	private Set<String> categoryValues;
 	private Double min, max;
 //	private int observationCount;
 //	private int patientCount;
@@ -57,10 +57,10 @@ public class SearchColumnMeta implements Serializable{
 //		return this;
 //	}
 
-	public List<String> getCategoryValues() {
+	public Set<String> getCategoryValues() {
 		return categoryValues;
 	}
-	public SearchColumnMeta setCategoryValues(List<String> categoryValues) {
+	public SearchColumnMeta setCategoryValues(Set<String> categoryValues) {
 		this.categoryValues = categoryValues;
 		return this;
 	}

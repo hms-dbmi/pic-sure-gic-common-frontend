@@ -292,11 +292,9 @@ public class SearchResourceRS implements IResourceRS {
 			
 		if(value.containsKey("values")) {
 			if ( searchColumnMeta.getCategoryValues() == null) {
-				//hashset enforces uniqueness, so we don't need to worry about comparison
-				searchColumnMeta.setCategoryValues( (List<String>)value.get("values"));
-			} else {
-				searchColumnMeta.getCategoryValues().addAll((List<String>)value.get("values"));
+				searchColumnMeta.setCategoryValues( new HashSet<String>()); //hashset enforces uniqueness
 			}
+			searchColumnMeta.getCategoryValues().addAll((List<String>)value.get("values"));
 		}
 		
 		searchColumnMeta.getResourceAvailability().add(resourceName);
@@ -333,10 +331,9 @@ public class SearchResourceRS implements IResourceRS {
 		if(searchColumnMeta.isCategorical()) {
 			if ( searchColumnMeta.getCategoryValues() == null) {
 				//hashset enforces uniqueness, so we don't need to worry about comparison
-				searchColumnMeta.setCategoryValues( (List)conceptMeta.get("categoryValues"));
-			} else {
-				searchColumnMeta.getCategoryValues().addAll((List)conceptMeta.get("categoryValues"));
+				searchColumnMeta.setCategoryValues( new HashSet<String>());
 			}
+			searchColumnMeta.getCategoryValues().addAll((List)conceptMeta.get("categoryValues"));
 		} else {
 		
 			if ( searchColumnMeta.getMin() == null || searchColumnMeta.getMin() > (double)conceptMeta.get("min")) {
