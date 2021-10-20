@@ -306,8 +306,8 @@ public class SearchResourceRS implements IResourceRS {
 			searchColumnMeta.setCategorical((Boolean)conceptMeta.get("categorical"));
 		}	else {
 			//for this boolean, don't update, just log a warning
-			logger.warn("Conflicting 'categorical' flags in phenotype concept " + conceptMeta.get("name")+ " from resource " + resourceName
-			+ " already have flag from " + Arrays.deepToString(searchColumnMeta.getResourceAvailability().toArray()));
+			logger.warn("Conflicting 'categorical' flags in phenotype concept " + conceptMeta.get("name")+ " -- " + resourceName
+			+ ": " + (Boolean)conceptMeta.get("categorical") + " " + Arrays.deepToString(searchColumnMeta.getResourceAvailability().toArray()) + ": " + searchColumnMeta.isCategorical());
 			//if we are confused about the categorical/numeric nature of this column, don't go farther
 			return searchColumnMeta;
 		}
@@ -321,12 +321,12 @@ public class SearchResourceRS implements IResourceRS {
 			}
 		} else {
 		
-			if ( searchColumnMeta.getMin() == null || searchColumnMeta.getMin() > (int)conceptMeta.get("min")) {
-				searchColumnMeta.setMin( (int)conceptMeta.get("min"));
+			if ( searchColumnMeta.getMin() == null || searchColumnMeta.getMin() > (double)conceptMeta.get("min")) {
+				searchColumnMeta.setMin( (double)conceptMeta.get("min"));
 			}
 			
-			if ( searchColumnMeta.getMax() == null || searchColumnMeta.getMax() < (int)conceptMeta.get("max")) {
-				searchColumnMeta.setMax( (int)conceptMeta.get("max"));
+			if ( searchColumnMeta.getMax() == null || searchColumnMeta.getMax() < (double)conceptMeta.get("max")) {
+				searchColumnMeta.setMax( (double)conceptMeta.get("max"));
 			}
 		}
 		
