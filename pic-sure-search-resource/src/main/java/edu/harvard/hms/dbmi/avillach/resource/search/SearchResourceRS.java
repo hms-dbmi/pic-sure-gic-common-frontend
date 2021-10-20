@@ -1,22 +1,13 @@
 package edu.harvard.hms.dbmi.avillach.resource.search;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.ejb.Singleton;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -25,12 +16,10 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableMap;
 
 import edu.harvard.dbmi.avillach.data.repository.ResourceRepository;
-import edu.harvard.dbmi.avillach.domain.QueryRequest;
-import edu.harvard.dbmi.avillach.domain.QueryStatus;
-import edu.harvard.dbmi.avillach.domain.ResourceInfo;
-import edu.harvard.dbmi.avillach.domain.SearchResults;
+import edu.harvard.dbmi.avillach.domain.*;
 import edu.harvard.dbmi.avillach.service.IResourceRS;
 import edu.harvard.dbmi.avillach.service.ResourceWebClient;
+import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 
 @Path("/")
 @Produces("application/json")
@@ -197,35 +186,43 @@ public class SearchResourceRS implements IResourceRS {
 			}
 			logger.debug("Updating ontology for resource " + resource.getName());
 			
-			//empty search should return all results
-			SearchResults search = resourceWebClient.search(resource.getResourceRSPath(), new QueryRequest());
-			Map<String, Object> resourceResults = (Map<String, Object>)search.getResults();
+			try {
+				QueryRequest queryReq = new QueryRequest();
+				queryReq.setQuery(""); //empty search should return all results
+				SearchResults search = resourceWebClient.search(resource.getResourceRSPath(), queryReq);
+				Map<String, Object> resourceResults = (Map<String, Object>)search.getResults();
+					
+				//Pheno results
+				//this may also return a map?
+				Set<Entry<String, SearchColumnMeta>> phenoResults = (Set<Entry<String, SearchColumnMeta>>) resourceResults.get("phenotype");
+				logger.debug("found " + phenoResults.size() + " pheno results for " + resource.getName());
+				phenoResults.stream().forEach(entry -> {
+					//merge the metadata fields (max/min, concept values, etc.)
+					SearchColumnMeta conceptMeta = updatePhenoMetaData(entry.getValue(), newPhenotypes.get(entry.getKey()), resource.getName());
+					
+					if(conceptMeta != null) {
+						conceptMeta.getResourceAvailability().add(resource.getName());
+					}
+					newPhenotypes.put(entry.getKey(), conceptMeta);
+				});
 				
-			//Pheno results
-			//this may also return a map?
-			Set<Entry<String, SearchColumnMeta>> phenoResults = (Set<Entry<String, SearchColumnMeta>>) resourceResults.get("phenotype");
-			phenoResults.stream().forEach(entry -> {
-				//merge the metadata fields (max/min, concept values, etc.)
-				SearchColumnMeta conceptMeta = updatePhenoMetaData(entry.getValue(), newPhenotypes.get(entry.getKey()), resource.getName());
 				
-				if(conceptMeta != null) {
-					conceptMeta.getResourceAvailability().add(resource.getName());
-				}
-				newPhenotypes.put(entry.getKey(), conceptMeta);
-			});
-			
-			
-			//InfoColumns
-			Map<String, Map> infoResults = (Map<String, Map>) resourceResults.get("info");
-			infoResults.entrySet().stream().forEach(entry -> {
-				//merge the metadata fields (max/min, concept values, etc.)
-				SearchColumnMeta conceptMeta = updateInfoMetaData(entry, newInfoColumns.get(entry.getKey()), resource.getName());
-				
-				if(conceptMeta != null) {
-					conceptMeta.getResourceAvailability().add(resource.getName());
-				}
-				newInfoColumns.put(entry.getKey(), conceptMeta);
-			});
+				//InfoColumns
+				Map<String, Map> infoResults = (Map<String, Map>) resourceResults.get("info");
+				logger.debug("found " + infoResults.size() + " infoResults for " + resource.getName());
+				infoResults.entrySet().stream().forEach(entry -> {
+					//merge the metadata fields (max/min, concept values, etc.)
+					SearchColumnMeta conceptMeta = updateInfoMetaData(entry, newInfoColumns.get(entry.getKey()), resource.getName());
+					
+					if(conceptMeta != null) {
+						conceptMeta.getResourceAvailability().add(resource.getName());
+					}
+					newInfoColumns.put(entry.getKey(), conceptMeta);
+				});
+			} catch (ProtocolException | NullPointerException e) {
+				logger.warn("Could not update resource : " + resource.getName(), e);
+				return;
+			}
 			
 			logger.debug("finished updating ontology for resource " + resource.getName());
 		});
@@ -247,7 +244,7 @@ public class SearchResourceRS implements IResourceRS {
 		
 		//"description", "values", "continuous"
 		if(value.containsKey("description")) {
-			if ( searchColumnMeta.getDescription() == null || searchColumnMeta.getDescription().isBlank()) {
+			if ( searchColumnMeta.getDescription() == null || searchColumnMeta.getDescription().isEmpty()) {
 				searchColumnMeta.setDescription((String) value.get("description"));
 			} else {
 				if( !value.get("description").equals(searchColumnMeta.getDescription()) ) {
