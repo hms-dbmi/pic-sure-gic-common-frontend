@@ -193,7 +193,6 @@ public class SearchResourceRS implements IResourceRS {
 				Map<String, Object> resourceResults = (Map<String, Object>)search.getResults();
 					
 				//Pheno results
-				//this may also return a map?
 				Map<String, Map<String, Object>> phenoResults = (Map<String, Map<String, Object>>) resourceResults.get("phenotypes");
 				logger.debug("found " + phenoResults.size() + " pheno results for " + resource.getName());
 				phenoResults.entrySet().stream().forEach(entry -> {
@@ -229,6 +228,23 @@ public class SearchResourceRS implements IResourceRS {
 		
 		mergedPhenotypeOntologies = newPhenotypes;
 		mergedInfoStoreColumns = newInfoColumns;
+		
+		//if we are debugging, lets print a list of concepts unique to each institution
+		if(logger.isDebugEnabled()) {
+			logger.info("Listing Singleton phenotype concepts");
+			mergedPhenotypeOntologies.entrySet().stream().forEach(entry -> {
+				if(entry.getValue().getResourceAvailability().size() == 1) {
+					logger.debug( Arrays.deepToString(entry.getValue().getResourceAvailability().toArray()) + "  " + entry.getKey());
+				}
+			});
+			
+			logger.info("Listing Singleton info columns");
+			mergedInfoStoreColumns.entrySet().stream().forEach(entry -> {
+				if(entry.getValue().getResourceAvailability().size() == 1) {
+					logger.debug( Arrays.deepToString(entry.getValue().getResourceAvailability().toArray()) + "  " + entry.getKey());
+				}
+			});
+		}
 	}
 	
 	private SearchColumnMeta updateInfoMetaData(Entry mapEntry, SearchColumnMeta searchColumnMeta, String resourceName) {
@@ -300,7 +316,6 @@ public class SearchResourceRS implements IResourceRS {
 		if(searchColumnMeta == null) {
 			searchColumnMeta = new SearchColumnMeta();
 		}
-	
 		
 		if(searchColumnMeta.isCategorical() == null) {
 			searchColumnMeta.setCategorical((Boolean)conceptMeta.get("categorical"));
@@ -333,38 +348,4 @@ public class SearchResourceRS implements IResourceRS {
 		searchColumnMeta.getResourceAvailability().add(resourceName);
 		return searchColumnMeta;
 	}
-
-	
-	//I think we can do this through the DB using wildfly's connection
-//	private SearchResults pullRemoteOntology(String url, String resourceId) {
-//		
-//		QueryRequest searchRequest = new QueryRequest();
-//		searchRequest.setQuery("");  //empty search string should return all results
-//		searchRequest.setResourceUUID(UUID.fromString(resourceId));
-//		// I don't think we need resource credentials - nc
-//		//	searchRequest.setResourceCredentials(searchRequest.getResourceCredentials());
-//		
-//		String pathName = "/search/" + resourceId;
-//		try {
-//			String payload = objectMapper.writeValueAsString(searchRequest);
-//			HttpResponse response = httpClient.retrievePostResponse(
-//					httpClient.composeURL(url, pathName), createAuthHeader(), payload);
-//			if (response.getStatusLine().getStatusCode() != 200) {
-//				logger.error("{}{} did not return a 200: {} {} ", url, pathName,
-//						response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
-//				httpClient.throwResponseError(response, url);
-//			}
-//			return httpClient.readObjectFromResponse(response, SearchResults.class);
-//		} catch (IOException e) {
-//			// Note: this shouldn't ever happen
-//			logger.error("Error encoding search payload", e);
-//			throw new ApplicationException(
-//					"Error encoding search for resource with id " + searchRequest.getResourceUUID());
-//		}	
-//	}
-	
-//	private Header[] createAuthHeader() {
-//		return new Header[] {
-//				new BasicHeader(HttpHeaders.AUTHORIZATION, BEARER_STRING + properties.getTargetPicsureToken()) };
-//	}
 }
