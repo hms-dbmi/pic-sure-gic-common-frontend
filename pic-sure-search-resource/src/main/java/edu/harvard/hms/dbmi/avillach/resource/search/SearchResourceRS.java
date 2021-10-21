@@ -213,14 +213,14 @@ public class SearchResourceRS implements IResourceRS {
 			logger.info("Listing Singleton phenotype concepts");
 			mergedPhenotypeOntologies.entrySet().stream().forEach(entry -> {
 				if(entry.getValue().getResourceAvailability().size() == 1) {
-					logger.debug( Arrays.deepToString(entry.getValue().getResourceAvailability().toArray()) + "  " + entry.getKey());
+					logger.debug( "Singleton: " + Arrays.deepToString(entry.getValue().getResourceAvailability().toArray()) + "  " + entry.getKey());
 				}
 			});
 			
 			logger.info("Listing Singleton info columns");
 			mergedInfoStoreColumns.entrySet().stream().forEach(entry -> {
 				if(entry.getValue().getResourceAvailability().size() == 1) {
-					logger.debug( Arrays.deepToString(entry.getValue().getResourceAvailability().toArray()) + "  " + entry.getKey());
+					logger.debug( "Singleton: " + Arrays.deepToString(entry.getValue().getResourceAvailability().toArray()) + "  " + entry.getKey());
 				}
 			});
 		}
