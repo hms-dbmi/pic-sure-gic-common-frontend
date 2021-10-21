@@ -15,17 +15,17 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			type:'GET',
 			success: function(resourceData){
 				_.each(resourceData, (resource) => {
-					
-					resources[resource.uuid] = {
-							uuid: resource.uuid,
-							name: resource.name,
-							description: resource.description,
-							patientCount: 0,
-							spinnerClasses: "spinner-center ",
-							spinning: false,
-							bioSampleCounts: {}
-					};
-					
+					if(!resource.hidden){
+						resources[resource.uuid] = {
+								uuid: resource.uuid,
+								name: resource.name,
+								description: resource.description,
+								patientCount: 0,
+								spinnerClasses: "spinner-center ",
+								spinning: false,
+								bioSampleCounts: {}
+						};
+					}
 					
 				});
 				resourceQueryDeferred.resolve();
