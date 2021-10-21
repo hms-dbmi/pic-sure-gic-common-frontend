@@ -105,11 +105,11 @@ public class SearchResourceRS implements IResourceRS {
 	@Path("/search")
 	public SearchResults search(QueryRequest searchRequest) {
 		logger.debug("common search resoruce called " + searchRequest.getQuery() );
+		final String lowerCaseSearchTerm = searchRequest.getQuery().toString().toLowerCase();
 		
 		//pheno values
 		Map<String, SearchColumnMeta> phenotypeResults = searchRequest.getQuery()!=null ? 
 			mergedPhenotypeOntologies.entrySet().stream().filter((entry)->{
-				String lowerCaseSearchTerm = searchRequest.getQuery().toString().toLowerCase();
 				return entry.getKey().toLowerCase().contains(lowerCaseSearchTerm) 
 					||(
 					entry.getValue().isCategorical() 
@@ -120,17 +120,29 @@ public class SearchResourceRS implements IResourceRS {
 		: mergedPhenotypeOntologies;
 
 		// Info Values
-		Map<String, SearchColumnMeta> infoResults = searchRequest.getQuery()!=null ? 
-			mergedInfoStoreColumns.entrySet().stream().filter((entry)->{
-				String lowerCaseSearchTerm = searchRequest.getQuery().toString().toLowerCase();
-				return entry.getKey().toLowerCase().contains(lowerCaseSearchTerm) 
-					||(
-					entry.getValue().isCategorical() 
-					&& 
-					entry.getValue().getCategoryValues().stream().map(String::toLowerCase).collect(Collectors.toList())
-					.contains(lowerCaseSearchTerm));
-		}).collect(Collectors.toMap(Entry::getKey, Entry::getValue))
-		: mergedInfoStoreColumns;
+		final Map<String, SearchColumnMeta> infoResults = searchRequest.getQuery()==null ? mergedInfoStoreColumns : new HashMap<String, SearchColumnMeta>();
+		
+		if ( searchRequest.getQuery()!=null ) {
+			mergedInfoStoreColumns.entrySet().stream().forEach((entry)->{
+				if(entry.getKey().contains(lowerCaseSearchTerm)){
+					infoResults.put(entry.getKey(), entry.getValue());
+				} else if(entry.getValue().isCategorical()){
+					//we have to filter the values that match (INFO only - the UI does this for phenotype concepts)
+					// this is info-only logic because there are some info columns with way to many value for the UI to handle
+					List<String> matchingTerms = entry.getValue().getCategoryValues().stream().filter((value)->{
+						return value.toLowerCase().contains(lowerCaseSearchTerm);
+					}).collect(Collectors.toList());
+					if(matchingTerms.size() > 0) {
+						SearchColumnMeta filteredResultsMeta = new SearchColumnMeta();
+						filteredResultsMeta.setName(entry.getKey());
+						filteredResultsMeta.setDescription(entry.getValue().getDescription());
+						filteredResultsMeta.setCategorical(true);
+						filteredResultsMeta.setCategoryValues(new HashSet<String>(matchingTerms));
+						infoResults.put(entry.getKey(), filteredResultsMeta);
+					}
+				}
+			});
+		}
 					
 		
 		return new SearchResults().setResults(
