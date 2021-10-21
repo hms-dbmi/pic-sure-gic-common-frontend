@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.ejb.Singleton;
-import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
@@ -37,11 +36,11 @@ public class SearchResourceRS implements IResourceRS {
 //	@Inject
 //	private HttpClient httpClient;
 	
-	@Inject
-	ResourceRepository resourceRepo;
-
-	@Inject
-	ResourceWebClient resourceWebClient;
+//	@Inject
+//	ResourceRepository resourceRepo;
+//
+//	@Inject
+//	ResourceWebClient resourceWebClient;
 	
 	/**
 	 * this store the merged ontologies from the backing resources 
@@ -50,51 +49,18 @@ public class SearchResourceRS implements IResourceRS {
 	
 	private static Map<String, SearchColumnMeta> mergedInfoStoreColumns;
 	
-	private static Thread updateThread = null;
 
 	public SearchResourceRS() {
 		logger.debug("default constructor called");
-		startUpdateThread();
 	}
 
-	private void startUpdateThread() {
-		
-		if(updateThread == null) {
-			updateThread = new Thread(new Runnable() {
-	
-				@Override
-				public void run() {
-					//we need to let the object finish construction before referenceing auto-injected fields
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-					} 
-					
-					while(true) {
-						updateOntologies();
-						
-						//sleep for 1 hour by default.  TODO: set this in standalone.xml
-						try {
-							Thread.sleep(60 * 60 * 1000);
-						} catch (InterruptedException e) {
-						}
-					}
-				}
-				
-			});
-			updateThread.start();
-		}
-	}
-
-	@Inject
-	public SearchResourceRS(ResourceRepository resourceRepo, ResourceWebClient resourceWebClient) {
-
-		this.resourceRepo = resourceRepo;
-		this.resourceWebClient = resourceWebClient;
-		
-		logger.debug("Two param constructor called");
-		startUpdateThread();
-	}
+//	@Inject
+//	public SearchResourceRS(ResourceRepository resourceRepo, ResourceWebClient resourceWebClient) {
+//		this.resourceRepo = resourceRepo;
+//		this.resourceWebClient = resourceWebClient;
+//		
+//		logger.debug("Two param constructor called");
+//	}
 
 	@POST
 	@Path("/info")
@@ -174,7 +140,7 @@ public class SearchResourceRS implements IResourceRS {
 	}
 
 	
-	private void updateOntologies() {
+	public static void updateOntologies(ResourceRepository resourceRepo, ResourceWebClient resourceWebClient) {
 	
 		ConcurrentHashMap<String, SearchColumnMeta> newPhenotypes = new ConcurrentHashMap<String, SearchColumnMeta>();
 		ConcurrentHashMap<String, SearchColumnMeta> newInfoColumns = new ConcurrentHashMap<String, SearchColumnMeta>();
@@ -248,7 +214,7 @@ public class SearchResourceRS implements IResourceRS {
 		}
 	}
 	
-	private SearchColumnMeta updateInfoMetaData(Entry mapEntry, SearchColumnMeta searchColumnMeta, String resourceName) {
+	private static SearchColumnMeta updateInfoMetaData(Entry mapEntry, SearchColumnMeta searchColumnMeta, String resourceName) {
 		//String - > Object
 		Map value = (Map) mapEntry.getValue();
 		if(value == null) {
@@ -307,7 +273,7 @@ public class SearchResourceRS implements IResourceRS {
 	 * @param value
 	 * @return
 	 */
-	private SearchColumnMeta updatePhenoMetaData(Map<String, Object> conceptMeta, SearchColumnMeta searchColumnMeta, String resourceName) {
+	private static SearchColumnMeta updatePhenoMetaData(Map<String, Object> conceptMeta, SearchColumnMeta searchColumnMeta, String resourceName) {
 
 		if(conceptMeta == null) {
 			return searchColumnMeta;
