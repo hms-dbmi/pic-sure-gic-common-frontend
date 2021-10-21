@@ -43,11 +43,50 @@ import edu.harvard.hms.dbmi.avillach.resource.search.HttpClient;
 import edu.harvard.hms.dbmi.avillach.resource.search.SearchResourceRS;
 
 @ExtendWith(MockitoExtension.class)
-class PassThroughResourceRSTest {
+class SearchResourceRSTest {
 
 	HttpClient httpClient;
 	SearchResourceRS resource;
 	ObjectMapper objectMapper = new ObjectMapper();
+	
+	/*
+	 * {
+   "results":{
+      "phenotypes":{
+         "\\Notes\\ALL DOCUMENT SECTIONS\\Clinical Documents\\Clinics\\Gender Management\\Gender Management Communications\\NOTE:125942805\\":{
+            "patientCount":90,
+            "categorical":true,
+            "categoryValues":[
+               "Gender Management Communication"
+            ],
+            "observationCount":92,
+            "name":"\\Notes\\ALL DOCUMENT SECTIONS\\Clinical Documents\\Clinics\\Gender Management\\Gender Management Communications\\NOTE:125942805\\"
+         },
+
+      },
+      "info":{
+          "Variant_frequency_as_text":{
+            "description":"Description=\"The variant allele frequency in gnomAD combined population as discrete text categories. Possible values: Novel, Rare (variant frequency less than 1%), Common (variant frequency greater than or equal to 1%).\"",
+            "values":[
+               "Novel",
+               "Rare",
+               "Common"
+            ],
+            "continuous":false
+         },
+         "Variant_frequency_in_gnomAD":{
+            "description":"Description=\"The variant allele frequency in gnomAD combined population.\"",
+            "values":[
+               
+            ],
+            "continuous":true
+         }
+      }
+   },
+   "searchQuery":"gender"
+}
+	 */
+	
 
 	@BeforeEach
 	void init() {
@@ -67,33 +106,10 @@ class PassThroughResourceRSTest {
 
 	@Test
 	void testInfo() throws Exception {
-		// setup http response mocks
-		HttpResponse httpResponse = mock(HttpResponse.class);
-		StringEntity httpResponseEntity = new StringEntity("");
-		StatusLine statusLine = mock(StatusLine.class);
-		when(httpResponse.getStatusLine()).thenReturn(statusLine);
-		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
-
-		when(statusLine.getStatusCode()).thenReturn(500);
-		assertThrows(ResourceInterfaceException.class, () -> {
-			resource.info(new QueryRequest());
-		}, "Downstream Resource returned 500 and should cause 'ResourceInterfaceException'");
-
-		when(statusLine.getStatusCode()).thenReturn(401);
-		assertThrows(NotAuthorizedException.class, () -> {
-			resource.info(new QueryRequest());
-		}, "Downstream Resource returned 401 and should cause 'NotAuthorizedException'");
-
-		when(statusLine.getStatusCode()).thenReturn(200);
-		ResourceInfo resourceInfo = newResourceInfo();
-		httpResponseEntity = new StringEntity(new String(objectMapper.writeValueAsBytes(resourceInfo)));
-		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-		ResourceInfo returnVal = resource.info(new QueryRequest());
-		assertEquals(resourceInfo.getId(), returnVal.getId(), "Downstream ResourceInfo Id should match output");
-		assertEquals(resourceInfo.getName(), returnVal.getName(), "Downstream ResourceInfo Name should match output");
-		assertEquals(resourceInfo.getQueryFormats().size(), returnVal.getQueryFormats().size(),
-				"Downstream ResourceInfo QueryFormats should match output");
+		
+//		assertThrows(ResourceInterfaceException.class, () -> {
+//			resource.info(new QueryRequest());
+//		}, "Downstream Resource returned 500 and should cause 'ResourceInterfaceException'");
 	}
 
 	@Test

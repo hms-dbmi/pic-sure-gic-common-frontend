@@ -11,7 +11,9 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 
 import edu.harvard.dbmi.avillach.data.repository.ResourceRepository;
@@ -19,6 +21,9 @@ import edu.harvard.dbmi.avillach.domain.*;
 import edu.harvard.dbmi.avillach.service.IResourceRS;
 import edu.harvard.dbmi.avillach.service.ResourceWebClient;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
+import edu.harvard.hms.dbmi.avillach.hpds.data.genotype.FileBackedByteIndexedInfoStore;
+import edu.harvard.hms.dbmi.avillach.hpds.data.query.Query;
+import edu.harvard.hms.dbmi.avillach.hpds.processing.AbstractProcessor;
 
 @Path("/")
 @Produces("application/json")
@@ -98,7 +103,22 @@ public class SearchResourceRS implements IResourceRS {
 	@Override
 	public Response querySync(QueryRequest queryRequest) {
 		logger.debug("Calling Search Resource querySync()");
-		throw new UnsupportedOperationException("Query sync is not implemented in this resource.");
+	
+		String expectedResultType = ((Map)queryRequest.getQuery()).get("expectedResultType").toString();
+		
+		if(expectedResultType.equals("INFO_COLUMN_LISTING")){
+			ArrayList<Map> infoStores = new ArrayList<>();
+			mergedInfoStoreColumns.entrySet().stream().forEach((entry)->{
+				infoStores.add(ImmutableMap.of(
+						"key", entry.getKey(), 
+						"description", entry.getValue().getDescription(), 
+						"isContinuous", !entry.getValue().isCategorical()));
+			});
+			return Response.ok(infoStores, "application/json").build();
+		}
+		
+		throw new UnsupportedOperationException("Only INFO_COLUMN_LISTING queries supported by this search resource");
+	
 	}
 
 	@POST
