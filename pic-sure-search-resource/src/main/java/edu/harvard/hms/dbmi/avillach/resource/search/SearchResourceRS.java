@@ -255,10 +255,16 @@ public class SearchResourceRS implements IResourceRS {
 		
 		//"description", "values", "continuous"
 		if(value.containsKey("description")) {
+			String descriptionStr = (String) value.get("description");
+			//just a little hack to clean up some data
+			if(descriptionStr.startsWith("Description=\"")){
+				descriptionStr = descriptionStr.substring(13, descriptionStr.length()-1);
+			}
+			
 			if ( searchColumnMeta.getDescription() == null || searchColumnMeta.getDescription().isEmpty()) {
-				searchColumnMeta.setDescription((String) value.get("description"));
+				searchColumnMeta.setDescription(descriptionStr);
 			} else {
-				if( !value.get("description").equals(searchColumnMeta.getDescription()) ) {
+				if( !descriptionStr.equals(searchColumnMeta.getDescription()) ) {
 					logger.warn("Conflicting descriptions in info column " + mapEntry.getKey() + " from resource " + resourceName
 					+ " already have description from " + Arrays.deepToString(searchColumnMeta.getResourceAvailability().toArray()));
 				}
