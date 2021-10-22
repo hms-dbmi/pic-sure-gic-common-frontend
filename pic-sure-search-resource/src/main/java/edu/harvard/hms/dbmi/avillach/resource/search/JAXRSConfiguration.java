@@ -1,5 +1,6 @@
 package edu.harvard.hms.dbmi.avillach.resource.search;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -24,7 +25,12 @@ public class JAXRSConfiguration extends Application implements ServletContextLis
 	@Inject
 	ResourceWebClient resourceWebClient;
 	
-	private Thread updateThread;
+    @Resource(mappedName = "java:global/ontology_update_interval_ms")
+    private String ontology_update_interval_str; 
+    //6 hour default
+  	private long updateIntervalLong = 6 * 60 * 60 * 1000;
+  		
+    Thread updateThread;
 	
 	private boolean running = true;
 	
@@ -35,15 +41,22 @@ public class JAXRSConfiguration extends Application implements ServletContextLis
 		ServletContext servletContext = event.getServletContext();
 		servletContext.setInitParameter("resteasy.resources", "org.jboss.resteasy.plugins.stats.RegistryStatsResource");
 		
+		//parse the config for the update interval
+		try {
+			updateIntervalLong = Long.parseLong(ontology_update_interval_str);
+		} catch (NumberFormatException e) {
+			logger.warn("Unable to parse ontology update interval from config; using defualt (6 hours): ", ontology_update_interval_str);
+		}
+		
 		updateThread = new Thread(new Runnable() {
 	
 				@Override
 				public void run() {
-					//we need to let the object finish construction before referenceing auto-injected fields
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-					} 
+//					//we need to let the object finish construction before referenceing auto-injected fields
+//					try {
+//						Thread.sleep(5000);
+//					} catch (InterruptedException e) {
+//					} 
 					
 					while(running) {
 						logger.debug("Updating search ontologies");
@@ -51,7 +64,7 @@ public class JAXRSConfiguration extends Application implements ServletContextLis
 						
 						//sleep for 1 hour by default.  TODO: set this in standalone.xml
 						try {
-							Thread.sleep(60 * 60 * 1000);
+							Thread.sleep(updateIntervalLong);
 						} catch (InterruptedException e) {
 						}
 					}

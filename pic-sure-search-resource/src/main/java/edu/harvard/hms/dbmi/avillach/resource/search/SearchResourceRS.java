@@ -26,24 +26,10 @@ import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 @Singleton
 public class SearchResourceRS implements IResourceRS {
 
-//	private static final String BEARER_STRING = "Bearer ";
-//
-//	private static final ObjectMapper objectMapper = new ObjectMapper();
 	private static final Logger logger = LoggerFactory.getLogger(SearchResourceRS.class);
-
-//	@Inject
-//	private ApplicationProperties properties;
-//	@Inject
-//	private HttpClient httpClient;
 	
-//	@Inject
-//	ResourceRepository resourceRepo;
-//
-//	@Inject
-//	ResourceWebClient resourceWebClient;
-	
-	/**
-	 * this store the merged ontologies from the backing resources 
+	/*
+	 * these store the merged ontologies from the backing resources 
 	 */
 	private static Map<String, SearchColumnMeta> mergedPhenotypeOntologies;
 	
@@ -54,22 +40,11 @@ public class SearchResourceRS implements IResourceRS {
 		logger.debug("default constructor called");
 	}
 
-//	@Inject
-//	public SearchResourceRS(ResourceRepository resourceRepo, ResourceWebClient resourceWebClient) {
-//		this.resourceRepo = resourceRepo;
-//		this.resourceWebClient = resourceWebClient;
-//		
-//		logger.debug("Two param constructor called");
-//	}
-
 	@POST
 	@Path("/info")
 	public ResourceInfo info(QueryRequest infoRequest) {
-		ResourceInfo info = new ResourceInfo();
-		info.setName("Search Resource - no queries accepted");
-		info.setId(UUID.randomUUID());
-		
-		return info;
+		logger.debug("Calling Search Resource info()");
+		throw new UnsupportedOperationException("Info is not implemented in this resource.");
 	}
 
 	@POST
@@ -93,6 +68,9 @@ public class SearchResourceRS implements IResourceRS {
 		throw new UnsupportedOperationException("Query status is not implemented in this resource.");
 	}
 
+	/**
+	 * Only support queries of type 'INFO_COLUMN_LISTING'
+	 */
 	@POST
 	@Path("/query/sync")
 	@Override
@@ -158,15 +136,18 @@ public class SearchResourceRS implements IResourceRS {
 				}
 			});
 		}
-					
 		
 		return new SearchResults().setResults(
 				ImmutableMap.of("phenotypes",phenotypeResults, /*"genes", resultMap,*/ "info", infoResults))
 				.setSearchQuery(searchRequest.getQuery().toString());
-		
 	}
 
-	
+	/**
+	 * This method queries the database for valid resources, and retrieves a complete listing of all phenotype and info columns.
+	 * These data responses are then combined into a single merged ontology that is used to search for concepts across all resources.
+	 * @param resourceRepo
+	 * @param resourceWebClient
+	 */
 	public static void updateOntologies(ResourceRepository resourceRepo, ResourceWebClient resourceWebClient) {
 	
 		ConcurrentHashMap<String, SearchColumnMeta> newPhenotypes = new ConcurrentHashMap<String, SearchColumnMeta>();
@@ -198,7 +179,6 @@ public class SearchResourceRS implements IResourceRS {
 					}
 					newPhenotypes.put(entry.getKey(), conceptMeta);
 				});
-				
 				
 				//InfoColumns
 				Map<String, Map> infoResults = (Map<String, Map>) resourceResults.get("info");
