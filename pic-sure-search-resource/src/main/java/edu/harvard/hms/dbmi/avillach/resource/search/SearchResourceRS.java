@@ -173,10 +173,6 @@ public class SearchResourceRS implements IResourceRS {
 				phenoResults.entrySet().stream().forEach(entry -> {
 					//merge the metadata fields (max/min, concept values, etc.)
 					SearchColumnMeta conceptMeta = updatePhenoMetaData(entry.getValue(), newPhenotypes.get(entry.getKey()), resource.getName());
-					
-					if(conceptMeta != null) {
-						conceptMeta.getResourceAvailability().add(resource.getName());
-					}
 					newPhenotypes.put(entry.getKey(), conceptMeta);
 				});
 				
@@ -186,10 +182,6 @@ public class SearchResourceRS implements IResourceRS {
 				infoResults.entrySet().stream().forEach(entry -> {
 					//merge the metadata fields (max/min, concept values, etc.)
 					SearchColumnMeta conceptMeta = updateInfoMetaData(entry, newInfoColumns.get(entry.getKey()), resource.getName());
-					
-					if(conceptMeta != null) {
-						conceptMeta.getResourceAvailability().add(resource.getName());
-					}
 					newInfoColumns.put(entry.getKey(), conceptMeta);
 				});
 			} catch (ProtocolException | NullPointerException e) {
@@ -203,8 +195,8 @@ public class SearchResourceRS implements IResourceRS {
 		mergedPhenotypeOntologies = newPhenotypes;
 		mergedInfoStoreColumns = newInfoColumns;
 		
-		//if we are debugging, lets print a list of concepts unique to each institution
-		if(logger.isDebugEnabled()) {
+		//if we are debugging(TRACE level), lets print a list of concepts unique to each institution.  this is a lot of output
+		if(logger.isTraceEnabled()) {
 			logger.info("Listing Singleton phenotype concepts");
 			mergedPhenotypeOntologies.entrySet().stream().forEach(entry -> {
 				if(entry.getValue().getResourceAvailability().size() == 1) {
@@ -271,7 +263,7 @@ public class SearchResourceRS implements IResourceRS {
 			
 		if(value.containsKey("values")) {
 			if ( searchColumnMeta.getCategoryValues() == null) {
-				searchColumnMeta.setCategoryValues( new HashSet<String>()); //hashset enforces uniqueness
+				searchColumnMeta.setCategoryValues(ConcurrentHashMap.newKeySet());
 			}
 			searchColumnMeta.getCategoryValues().addAll((List<String>)value.get("values"));
 		}
@@ -310,7 +302,7 @@ public class SearchResourceRS implements IResourceRS {
 		if(searchColumnMeta.isCategorical()) {
 			if ( searchColumnMeta.getCategoryValues() == null) {
 				//hashset enforces uniqueness, so we don't need to worry about comparison
-				searchColumnMeta.setCategoryValues( new HashSet<String>());
+				searchColumnMeta.setCategoryValues(ConcurrentHashMap.newKeySet() );
 			}
 			searchColumnMeta.getCategoryValues().addAll((List)conceptMeta.get("categoryValues"));
 		} else {

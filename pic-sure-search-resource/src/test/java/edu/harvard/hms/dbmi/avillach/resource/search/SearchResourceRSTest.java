@@ -1,4 +1,4 @@
-package edu.harvard.hms.dbmi.avillach.resource.passthru;
+package edu.harvard.hms.dbmi.avillach.resource.search;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
