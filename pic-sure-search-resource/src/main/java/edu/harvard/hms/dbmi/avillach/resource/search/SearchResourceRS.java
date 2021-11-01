@@ -19,6 +19,7 @@ import edu.harvard.dbmi.avillach.domain.*;
 import edu.harvard.dbmi.avillach.service.IResourceRS;
 import edu.harvard.dbmi.avillach.service.ResourceWebClient;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
+import edu.harvard.dbmi.avillach.util.exception.ResourceInterfaceException;
 
 @Path("/")
 @Produces("application/json")
@@ -98,6 +99,13 @@ public class SearchResourceRS implements IResourceRS {
 	@Path("/search")
 	public SearchResults search(QueryRequest searchRequest) {
 		logger.debug("common search resoruce called " + searchRequest.getQuery() );
+		
+		if(mergedPhenotypeOntologies == null || mergedInfoStoreColumns == null) {
+			logger.warn("Search attempted, but we have no ontology!  Pheno: " + mergedPhenotypeOntologies + "  Info: " + mergedInfoStoreColumns);
+			throw new ServiceUnavailableException("No Ontology data available");
+		}
+		
+		
 		final String lowerCaseSearchTerm = searchRequest.getQuery().toString().toLowerCase();
 		
 		//pheno values
@@ -184,7 +192,7 @@ public class SearchResourceRS implements IResourceRS {
 					SearchColumnMeta conceptMeta = updateInfoMetaData(entry, newInfoColumns.get(entry.getKey()), resource.getName());
 					newInfoColumns.put(entry.getKey(), conceptMeta);
 				});
-			} catch (ProtocolException | NullPointerException e) {
+			} catch (ProtocolException | NullPointerException | ResourceInterfaceException e) {
 				logger.warn("Could not update resource : " + resource.getName(), e);
 				return;
 			}

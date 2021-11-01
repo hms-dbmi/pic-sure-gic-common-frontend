@@ -1,7 +1,11 @@
 define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings", "output/moreInformation" ],
 function(BB, outputTemplate, transportErrors, settings, moreInformation){
 	
+	//track the resources using a map to look up by UUID
 	var resources = {};
+	
+	//separate object to maintain sort order
+	var resourcesSorted = [];
 	
 	var biosampleFields = settings.biosampleFields;
 	
@@ -28,7 +32,14 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 					}
 					
 				});
+				
+				resourcesSorted.push(...Object.values(resources).sort(function compareFn(a, b) {
+											return a.name.localeCompare(b.name);
+										}));
+				
 				resourceQueryDeferred.resolve();
+				
+				
 			},
 			error: function(response){
 				console.log("unable to get resources: " + response.responseText);
@@ -40,7 +51,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
     
     return {
     	
-    	resources: resources,
+    	resources: resourcesSorted,
     	
     	resourceQueryDeferred: resourceQueryDeferred,
     	
