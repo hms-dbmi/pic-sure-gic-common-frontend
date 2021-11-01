@@ -39,13 +39,11 @@ import edu.harvard.dbmi.avillach.domain.SearchResults;
 import edu.harvard.dbmi.avillach.util.PicSureStatus;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import edu.harvard.dbmi.avillach.util.exception.ResourceInterfaceException;
-import edu.harvard.hms.dbmi.avillach.resource.search.HttpClient;
 import edu.harvard.hms.dbmi.avillach.resource.search.SearchResourceRS;
 
 @ExtendWith(MockitoExtension.class)
 class SearchResourceRSTest {
 
-	HttpClient httpClient;
 	SearchResourceRS resource;
 	ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -95,11 +93,11 @@ class SearchResourceRSTest {
 //		lenient().when(appProperties.getTargetPicsureUrl()).thenReturn("http://test");
 //		lenient().when(appProperties.getTargetResourceId()).thenReturn(UUID.randomUUID().toString());
 
-		httpClient = mock(HttpClient.class);
-		// not mocking these methods...
-		lenient().doCallRealMethod().when(httpClient).composeURL(anyString(), anyString());
-		lenient().doCallRealMethod().when(httpClient).readObjectFromResponse(any(HttpResponse.class), any());
-		lenient().doCallRealMethod().when(httpClient).throwResponseError(any(HttpResponse.class), anyString());
+//		httpClient = mock(HttpClient.class);
+//		// not mocking these methods...
+//		lenient().doCallRealMethod().when(httpClient).composeURL(anyString(), anyString());
+//		lenient().doCallRealMethod().when(httpClient).readObjectFromResponse(any(HttpResponse.class), any());
+//		lenient().doCallRealMethod().when(httpClient).throwResponseError(any(HttpResponse.class), anyString());
 
 //		resource = new SearchResourceRS(appProperties, httpClient);
 	}
@@ -121,7 +119,7 @@ class SearchResourceRSTest {
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(httpResponse.getStatusLine()).thenReturn(statusLine);
 		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
+//		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
 
 		assertThrows(ProtocolException.class, () -> {
 			resource.query(null);
@@ -159,7 +157,7 @@ class SearchResourceRSTest {
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(httpResponse.getStatusLine()).thenReturn(statusLine);
 		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
+//		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
 
 		assertThrows(ProtocolException.class, () -> {
 			resource.queryResult(null, null);
@@ -200,7 +198,7 @@ class SearchResourceRSTest {
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(httpResponse.getStatusLine()).thenReturn(statusLine);
 		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
+//		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
 
 		assertThrows(ProtocolException.class, () -> {
 			resource.queryStatus(null, null);
@@ -241,7 +239,7 @@ class SearchResourceRSTest {
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(httpResponse.getStatusLine()).thenReturn(statusLine);
 		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
+//		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
 
 		assertThrows(ProtocolException.class, () -> {
 			resource.querySync(null);
@@ -281,7 +279,7 @@ class SearchResourceRSTest {
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(httpResponse.getStatusLine()).thenReturn(statusLine);
 		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
+//		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
 
 		assertThrows(ProtocolException.class, () -> {
 			resource.search(null);
