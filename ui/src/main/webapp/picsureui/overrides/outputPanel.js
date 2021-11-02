@@ -277,7 +277,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
   			defaultOutput.render();
   			
   			//attach the information modal
-  			this.moreInformationModal = new moreInformation.View(biosampleFields, resources);
+  			this.moreInformationModal = new moreInformation.View(biosampleFields, this.resources);
   			this.moreInformationModal.setElement($("#moreInformation",this.$el));
 //  			this.variantExplorerView.render();
   			
