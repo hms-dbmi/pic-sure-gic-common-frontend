@@ -21,6 +21,12 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
 					$("#" + resource.uuid + "-patients").html("-");
 				}
             	
+            	if( resource.genomicdataCount ){
+					$("#" + resource.uuid + "-genomicdata").html( resource.genomicdataCount.toLocaleString() )
+				} else {
+					$("#" + resource.uuid + "-genomicdata").html("-");
+				}
+            	
             	if( resource.biosampleCount ){
 					$("#" + resource.uuid + "-biosamples").html( resource.biosampleCount.toLocaleString() )
 				} else {
