@@ -253,6 +253,31 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			}
 		},
 		
+		genomicErrorCallback: function(resource, message, defaultOutput){
+			//errors from one resources shouldn't hide or change the results from other resources
+			console.log("error calling resource " + resource.uuid + " genomic data: " + message);
+			var model = defaultOutput.model;
+			resources[resource.uuid].genomicdataCount = 0;
+			
+			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
+			resources[resource.uuid].genomicSpinning = false;
+			resources[resource.uuid].genomicQueryRan = true;
+			
+			$("#genomicdata-spinner-" + resource.uuid).hide();
+			$("#genomicdata-results-" + resource.uuid + "-count").html("0"); 
+			
+			
+			_.each(genomicFields, function(genomicMetadata){
+				resources[resource.uuid].genomicdataCounts[genomicMetadata.id] = undefined;
+			});
+			
+			if(_.every(resources, (resource)=>{return resource.genomicQueryRan==true})){
+				model.set("genomicSpinning", false);
+				model.set("genomicQueryRan", true);
+				$("#genomicdata-spinner-total").hide();
+			}
+		},
+		
 		/*
 		 * The new hook for overriding all custom query logic
 		 */
