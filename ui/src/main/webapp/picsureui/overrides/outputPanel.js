@@ -29,7 +29,8 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 								patientCount: 0,
 								spinnerClasses: "spinner-center ",
 								spinning: false,
-								bioSampleCounts: {}
+								bioSampleCounts: {},
+								genomicdataCounts: {}
 						};
 					}
 					
@@ -121,7 +122,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			$("#patient-spinner-" + resource.uuid).hide();
 			
 			var model = defaultOutput.model;
-			if(result.includes("<")) {
+			if(("" + result).includes("<")) {
 				$("#patient-results-" + resource.uuid + "-count").html(result);
 				model.set("aggregated", true);
 			} else if( typeof count === "number" ){
@@ -292,9 +293,6 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			
 			
 			model.set("totalBiosamples",0);
-			_.each(biosampleFields, function(biosampleMetadata){
-				model.set("biosampleCount_" + biosampleMetadata.id, 0);
-			});
 			
 			//run the biosample queries for each resource (sample/observation count)
 			_.each(resources, function(resource){
@@ -305,6 +303,8 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				this._runAjaxQuery(query, resource, this.biosampleDataCallback, this.biosampleErrorCallback, model, defaultOutput);
 				
 			}.bind(this));
+			
+			model.set("totalGenomicdata",0);
 			
 			//run the genomic data queries for each resource (CROSS COUNT, not observation count)
 			_.each(resources, function(resource){
