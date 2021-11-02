@@ -1,10 +1,12 @@
 {
-  "biosampleFields": [
-    {
+  "genomicFields":[
+  {
         "label" : "Genomic Data",
         "id": "genomicdata",
         "conceptPath" : "\\Genomic Data\\"
-    },{
+   }],
+  "biosampleFields": [
+    {
         "label" : "Whole blood",
         "id": "Wholeblood",
         "conceptPath" : "\\Bio Specimens\\HumanFluid\\Blood (Whole)\\SPECIMENS:HF.BLD.000 Quantity\\"
@@ -30,6 +32,7 @@
   "picSureResourceId":"02e23f52-f354-4e8b-992c-d37c8b9ba140",
   "applicationIdForBaseQuery":"8b5722c9-62fd-48d6-b0bf-4f67e53efb2b",
   "helpLink": "GIC-TechSupport@chip.org",
+  "videoLink":"tinyurl.com/gictrainingvideos",
   "logoPath": "/logo.png",
   "categoryAliases": {
 			"ACT" : "ACT"
