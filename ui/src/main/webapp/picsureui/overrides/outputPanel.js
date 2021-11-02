@@ -81,12 +81,15 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				this.set('queryRan', false);
 				this.set("bioSpinning", true);
 				this.set("bioQueryRan", false);
+				this.set("genomicSpinning", true);
+				this.set("genomicQueryRan", false);
 				
 				_.each(resources, function(resource){
 	  				resource.spinning=true;
 	  				resource.queryRan=false;
 	  				resource.bioQueryRan=false;
-	  				
+	  				resource.genomicSpinning = true;
+	  				resource.genomicQueryRan = false;
 	  			});
 			}
 		}),
