@@ -9,6 +9,8 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 	
 	var biosampleFields = settings.biosampleFields;
 	
+	var genomicFields = settings.genomicFields,
+	
 	var resourceQueryDeferred = $.Deferred();
 	
 	if(sessionStorage.getItem("session")){
@@ -138,7 +140,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			}
 		},
 		
-		biosampleDataCallback: function(resource, crossCounts, resultId, model, defaultOutput){
+		biosampleDataCallback: function(resource, crossCounts, model, defaultOutput){
 			var model = defaultOutput.model;
 			
 			resources[resource.uuid].biosampleCount = 0;
@@ -171,6 +173,40 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				$("#biosamples-spinner-total").hide();
 			}
 		},
+		
+		
+		genomicDataCallback: function(resource, crossCounts, model, defaultOutput){
+			var model = defaultOutput.model;
+			resources[resource.uuid].genomicdataCount = 0;
+			
+			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
+			resources[resource.uuid].genomicSpinning = false;
+			resources[resource.uuid].genomicQueryRan = true;
+			
+			_.each(genomicFields, function(genomicMetadata){
+				if( crossCounts[genomicMetadata.conceptPath] != undefined ){
+					var count = parseInt(crossCounts[genomicMetadata.conceptPath]);
+					if( count >= 0 ){
+						resources[resource.uuid].genomicdataCounts[genomicMetadata.id] = count;
+						resources[resource.uuid].genomicdataCount += count;
+						model.set("totalgenomicdata", model.get("totalgenomicdata") + count);
+					} else {
+						resources[resource.uuid].genomicdataCounts[genomicMetadata.id] = undefined;
+					}
+				}
+			});
+			
+			$("#genomicdata-spinner-" + resource.uuid).hide();
+			$("#genomicdata-results-" + resource.uuid + "-count").html(resources[resource.uuid].genomicdataCount.toLocaleString()); 
+			$("#genomicdata-count").html(model.get("totalgenomicdata").toLocaleString());
+			
+			if(_.every(resources, (resource)=>{return resource.genomicQueryRan==true})){
+				model.set("genomicSpinning", false);
+				model.set("genomicQueryRan", true);
+				$("#genomicdata-spinner-total").hide();
+			}
+		},
+		
 		
 		patientErrorCallback: function(resource, message, defaultOutput){
 			console.log("error calling resource " + resource.uuid + ": " + message);
@@ -248,25 +284,10 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
 				var query = JSON.parse(JSON.stringify(incomingQuery));
-				query.resourceUUID = resource.uuid;
-				query.resourceCredentials = {};
 				query.query.expectedResultType="COUNT";
 			
-				$.ajax({
-				 	url: window.location.origin + "/picsure/query/sync",
-				 	type: 'POST',
-				 	headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
-				 	contentType: 'application/json',
-				 	data: JSON.stringify(query),
-				 	dataType: 'text',
-				 	statusCode: { 401:function() { } },   //NOOP - don't fail on not authorized queries
-  				 	success: function(response, textStatus, request){
-  				 		this.patientDataCallback(resource, response, model, defaultOutput);
-  						}.bind(this),
-				 	error: function(response){
-				 		this.patientErrorCallback(resource, this.outputErrorMessage, defaultOutput);
-					}.bind(this)
-				});
+				this._runAjaxQuery(query, resource, this.patientDataCallback, this.patientErrorCallback);
+				
 			}.bind(this));
 			
 			
@@ -275,16 +296,32 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				model.set("biosampleCount_" + biosampleMetadata.id, 0);
 			});
 			
-			//run the biosample queries for each resource
+			//run the biosample queries for each resource (sample/observation count)
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
 				var query = JSON.parse(JSON.stringify(incomingQuery));
-				query.resourceUUID = resource.uuid;
 				query.query.crossCountFields = _.pluck(biosampleFields, "conceptPath");
 				query.query.expectedResultType="OBSERVATION_CROSS_COUNT";
-				query.resourceCredentials = {};
+				this._runAjaxQuery(query, resource, this.biosampleDataCallback, this.biosampleErrorCallback);
 				
-				$.ajax({
+			}.bind(this));
+			
+			//run the genomic data queries for each resource (CROSS COUNT, not observation count)
+			_.each(resources, function(resource){
+				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
+				var query = JSON.parse(JSON.stringify(incomingQuery));
+				query.query.crossCountFields = _.pluck(genomicFields, "conceptPath");
+				query.query.expectedResultType="CROSS_COUNT";
+				this._runAjaxQuery(query, resource, this.genomicDataCallback, this.genomicErrorCallback);
+				
+			}.bind(this));
+		},
+		
+		//extract this boilerplate ajax method
+		_runAjaxQuery: function(query, resource, dataCallBack, errorCallback){
+			query.resourceCredentials = {};
+			query.resourceUUID = resource.uuid;
+			$.ajax({
 				 	url: window.location.origin + "/picsure/query/sync",
 				 	type: 'POST',
 				 	headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
@@ -292,13 +329,12 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				 	data: JSON.stringify(query),
 				 	statusCode: { 401:function() { } },   //NOOP - don't fail on not authorized queries
   				 	success: function(response, textStatus, request){
-  				 		this.biosampleDataCallback(resource, response, request.getResponseHeader("resultId"), model, defaultOutput, "biosamples");
+  				 		dataCallBack(resource, response, model, defaultOutput);
   						}.bind(this),
 				 	error: function(response){
-				 		this.biosampleErrorCallback(resource, this.outputErrorMessage, defaultOutput);
+				 		errorCallback(resource, this.outputErrorMessage, defaultOutput);
 					}.bind(this)
 				});
-			}.bind(this));
 		}
 	};
 });

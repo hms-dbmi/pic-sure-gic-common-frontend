@@ -32,6 +32,39 @@
 	});
 	</script>
 	
+	<div id="genomicdata-div" title="Total number of genomicdata in GIC institutions matching your query.">
+		<span class="center large" id="genomicdata-spinner-total">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
+		<span id="genomicdata-count" class="blue center large">{{#if queryRan}}{{totalBiospecimenss}}{{else}}0{{/if}}</span>
+		<span class="center medium">genomicdata</span>
+		<span class="icon expand-icon glyphicon glyphicon-chevron-right institution-arrow" id="institution-genomicdata-arrow"></span>
+	</div>
+	<br><br>
+	<div class="container institution-results" id="genomicdata-instances" >		
+        <div class="result-list">
+        {{#each resources}}
+        		<div class="col-md-2"></div>
+				<div class="col-md-5 left"><span title="{{description}}">{{name}}</span></div>
+				<div class="col-md-3 right"><span id="genomicdata-results-{{uuid}}-count">{{#if queryRan}}{{patientCount}}{{else}}-{{/if}}</span>
+					<span id="genomicdata-spinner-{{uuid}}">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
+				</div>
+				<div class="col-md-2"></div><br>
+		{{/each}}
+        
+		</div>
+	</div>
+	<script>
+	$("#institution-genomicdata-arrow").click(function(){
+		if($("#institution-genomicdata-arrow").hasClass("glyphicon-chevron-right")){
+			$("#institution-genomicdata-arrow").removeClass("glyphicon-chevron-right");
+			$("#institution-genomicdata-arrow").addClass("glyphicon-chevron-down");
+			$("#genomicdata-instances").show("150");
+		} else {
+			$("#institution-genomicdata-arrow").addClass("glyphicon-chevron-right");
+			$("#institution-genomicdata-arrow").removeClass("glyphicon-chevron-down");
+			$("#genomicdata-instances").hide("150");
+		}
+	});
+	</script>
 	
 	<div id="biosamples-div" title="Total number of biosamples in GIC institutions matching your query.">
 		<span class="center large" id="biosamples-spinner-total">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
