@@ -9,7 +9,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 	
 	var biosampleFields = settings.biosampleFields;
 	
-	var genomicFields = settings.genomicFields,
+	var genomicFields = settings.genomicFields;
 	
 	var resourceQueryDeferred = $.Deferred();
 	
@@ -207,7 +207,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			}
 		},
 		
-		
+		//TODO remove all these defaultOutput params
 		patientErrorCallback: function(resource, message, defaultOutput){
 			console.log("error calling resource " + resource.uuid + ": " + message);
 			var model = defaultOutput.model;
@@ -286,7 +286,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				var query = JSON.parse(JSON.stringify(incomingQuery));
 				query.query.expectedResultType="COUNT";
 			
-				this._runAjaxQuery(query, resource, this.patientDataCallback, this.patientErrorCallback);
+				this._runAjaxQuery(query, resource, this.patientDataCallback, this.patientErrorCallback, model, defaultOutput);
 				
 			}.bind(this));
 			
@@ -302,7 +302,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				var query = JSON.parse(JSON.stringify(incomingQuery));
 				query.query.crossCountFields = _.pluck(biosampleFields, "conceptPath");
 				query.query.expectedResultType="OBSERVATION_CROSS_COUNT";
-				this._runAjaxQuery(query, resource, this.biosampleDataCallback, this.biosampleErrorCallback);
+				this._runAjaxQuery(query, resource, this.biosampleDataCallback, this.biosampleErrorCallback, model, defaultOutput);
 				
 			}.bind(this));
 			
@@ -312,13 +312,13 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				var query = JSON.parse(JSON.stringify(incomingQuery));
 				query.query.crossCountFields = _.pluck(genomicFields, "conceptPath");
 				query.query.expectedResultType="CROSS_COUNT";
-				this._runAjaxQuery(query, resource, this.genomicDataCallback, this.genomicErrorCallback);
+				this._runAjaxQuery(query, resource, this.genomicDataCallback, this.genomicErrorCallback, model, defaultOutput);
 				
 			}.bind(this));
 		},
 		
 		//extract this boilerplate ajax method
-		_runAjaxQuery: function(query, resource, dataCallBack, errorCallback){
+		_runAjaxQuery: function(query, resource, dataCallBack, errorCallback, model, defaultOutput){
 			query.resourceCredentials = {};
 			query.resourceUUID = resource.uuid;
 			$.ajax({
