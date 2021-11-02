@@ -192,7 +192,7 @@ public class SearchResourceRS implements IResourceRS {
 					SearchColumnMeta conceptMeta = updateInfoMetaData(entry, newInfoColumns.get(entry.getKey()), resource.getName());
 					newInfoColumns.put(entry.getKey(), conceptMeta);
 				});
-			} catch (ProtocolException | NullPointerException | ResourceInterfaceException e) {
+			} catch (Exception e) {
 				logger.warn("Could not update resource : " + resource.getName(), e);
 				return;
 			}
