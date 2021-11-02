@@ -189,7 +189,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 					if( count >= 0 ){
 						resources[resource.uuid].genomicdataCounts[genomicMetadata.id] = count;
 						resources[resource.uuid].genomicdataCount += count;
-						model.set("totalgenomicdata", model.get("totalgenomicdata") + count);
+						model.set("totalGenomicdata", model.get("totalGenomicdata") + count);
 					} else {
 						resources[resource.uuid].genomicdataCounts[genomicMetadata.id] = undefined;
 					}
@@ -198,7 +198,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			
 			$("#genomicdata-spinner-" + resource.uuid).hide();
 			$("#genomicdata-results-" + resource.uuid + "-count").html(resources[resource.uuid].genomicdataCount.toLocaleString()); 
-			$("#genomicdata-count").html(model.get("totalgenomicdata").toLocaleString());
+			$("#genomicdata-count").html(model.get("totalGenomicdata").toLocaleString());
 			
 			if(_.every(resources, (resource)=>{return resource.genomicQueryRan==true})){
 				model.set("genomicSpinning", false);
