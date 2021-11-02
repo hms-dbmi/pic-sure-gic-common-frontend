@@ -1,9 +1,15 @@
 define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings", "output/moreInformation" ],
 function(BB, outputTemplate, transportErrors, settings, moreInformation){
 	
+	//track the resources using a map to look up by UUID
 	var resources = {};
 	
+	//separate object to maintain sort order
+	var resourcesSorted = [];
+	
 	var biosampleFields = settings.biosampleFields;
+	
+	var genomicFields = settings.genomicFields;
 	
 	var resourceQueryDeferred = $.Deferred();
 	
@@ -15,20 +21,28 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			type:'GET',
 			success: function(resourceData){
 				_.each(resourceData, (resource) => {
-					
-					resources[resource.uuid] = {
-							uuid: resource.uuid,
-							name: resource.name,
-							description: resource.description,
-							patientCount: 0,
-							spinnerClasses: "spinner-center ",
-							spinning: false,
-							bioSampleCounts: {}
-					};
-					
+					if(!resource.hidden){
+						resources[resource.uuid] = {
+								uuid: resource.uuid,
+								name: resource.name,
+								description: resource.description,
+								patientCount: 0,
+								spinnerClasses: "spinner-center ",
+								spinning: false,
+								bioSampleCounts: {},
+								genomicdataCounts: {}
+						};
+					}
 					
 				});
+				
+				resourcesSorted.push(...Object.values(resources).sort(function compareFn(a, b) {
+											return a.name.localeCompare(b.name);
+										}));
+				
 				resourceQueryDeferred.resolve();
+				
+				
 			},
 			error: function(response){
 				console.log("unable to get resources: " + response.responseText);
@@ -40,7 +54,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
     
     return {
     	
-    	resources: resources,
+    	resources: resourcesSorted,
     	
     	resourceQueryDeferred: resourceQueryDeferred,
     	
@@ -67,12 +81,15 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				this.set('queryRan', false);
 				this.set("bioSpinning", true);
 				this.set("bioQueryRan", false);
+				this.set("genomicSpinning", true);
+				this.set("genomicQueryRan", false);
 				
 				_.each(resources, function(resource){
 	  				resource.spinning=true;
 	  				resource.queryRan=false;
 	  				resource.bioQueryRan=false;
-	  				
+	  				resource.genomicSpinning = true;
+	  				resource.genomicQueryRan = false;
 	  			});
 			}
 		}),
@@ -108,7 +125,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			$("#patient-spinner-" + resource.uuid).hide();
 			
 			var model = defaultOutput.model;
-			if(result.includes("<")) {
+			if(("" + result).includes("<")) {
 				$("#patient-results-" + resource.uuid + "-count").html(result);
 				model.set("aggregated", true);
 			} else if( typeof count === "number" ){
@@ -127,7 +144,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			}
 		},
 		
-		biosampleDataCallback: function(resource, crossCounts, resultId, model, defaultOutput){
+		biosampleDataCallback: function(resource, crossCounts, model, defaultOutput){
 			var model = defaultOutput.model;
 			
 			resources[resource.uuid].biosampleCount = 0;
@@ -161,6 +178,40 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			}
 		},
 		
+		
+		genomicDataCallback: function(resource, crossCounts, model, defaultOutput){
+			var model = defaultOutput.model;
+			resources[resource.uuid].genomicdataCount = 0;
+			
+			//the spinning attribute maintains the spinner state when we render, but doesn't immediately update
+			resources[resource.uuid].genomicSpinning = false;
+			resources[resource.uuid].genomicQueryRan = true;
+			
+			_.each(genomicFields, function(genomicMetadata){
+				if( crossCounts[genomicMetadata.conceptPath] != undefined ){
+					var count = parseInt(crossCounts[genomicMetadata.conceptPath]);
+					if( count >= 0 ){
+						resources[resource.uuid].genomicdataCounts[genomicMetadata.id] = count;
+						resources[resource.uuid].genomicdataCount += count;
+						model.set("totalGenomicdata", model.get("totalGenomicdata") + count);
+					} else {
+						resources[resource.uuid].genomicdataCounts[genomicMetadata.id] = undefined;
+					}
+				}
+			});
+			
+			$("#genomicdata-spinner-" + resource.uuid).hide();
+			$("#genomicdata-results-" + resource.uuid + "-count").html(resources[resource.uuid].genomicdataCount.toLocaleString()); 
+			$("#genomicdata-count").html(model.get("totalGenomicdata").toLocaleString());
+			
+			if(_.every(resources, (resource)=>{return resource.genomicQueryRan==true})){
+				model.set("genomicSpinning", false);
+				model.set("genomicQueryRan", true);
+				$("#genomicdata-spinner-total").hide();
+			}
+		},
+		
+		//TODO remove all these defaultOutput params
 		patientErrorCallback: function(resource, message, defaultOutput){
 			console.log("error calling resource " + resource.uuid + ": " + message);
 			var model = defaultOutput.model;
@@ -229,7 +280,7 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
   			defaultOutput.render();
   			
   			//attach the information modal
-  			this.moreInformationModal = new moreInformation.View(biosampleFields, resources);
+  			this.moreInformationModal = new moreInformation.View(biosampleFields, this.resources);
   			this.moreInformationModal.setElement($("#moreInformation",this.$el));
 //  			this.variantExplorerView.render();
   			
@@ -237,43 +288,43 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
 				var query = JSON.parse(JSON.stringify(incomingQuery));
-				query.resourceUUID = resource.uuid;
-				query.resourceCredentials = {};
 				query.query.expectedResultType="COUNT";
 			
-				$.ajax({
-				 	url: window.location.origin + "/picsure/query/sync",
-				 	type: 'POST',
-				 	headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
-				 	contentType: 'application/json',
-				 	data: JSON.stringify(query),
-				 	dataType: 'text',
-				 	statusCode: { 401:function() { } },   //NOOP - don't fail on not authorized queries
-  				 	success: function(response, textStatus, request){
-  				 		this.patientDataCallback(resource, response, model, defaultOutput);
-  						}.bind(this),
-				 	error: function(response){
-				 		this.patientErrorCallback(resource, this.outputErrorMessage, defaultOutput);
-					}.bind(this)
-				});
+				this._runAjaxQuery(query, resource, this.patientDataCallback, this.patientErrorCallback, model, defaultOutput);
+				
 			}.bind(this));
 			
 			
 			model.set("totalBiosamples",0);
-			_.each(biosampleFields, function(biosampleMetadata){
-				model.set("biosampleCount_" + biosampleMetadata.id, 0);
-			});
 			
-			//run the biosample queries for each resource
+			//run the biosample queries for each resource (sample/observation count)
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
 				var query = JSON.parse(JSON.stringify(incomingQuery));
-				query.resourceUUID = resource.uuid;
 				query.query.crossCountFields = _.pluck(biosampleFields, "conceptPath");
 				query.query.expectedResultType="OBSERVATION_CROSS_COUNT";
-				query.resourceCredentials = {};
+				this._runAjaxQuery(query, resource, this.biosampleDataCallback, this.biosampleErrorCallback, model, defaultOutput);
 				
-				$.ajax({
+			}.bind(this));
+			
+			model.set("totalGenomicdata",0);
+			
+			//run the genomic data queries for each resource (CROSS COUNT, not observation count)
+			_.each(resources, function(resource){
+				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
+				var query = JSON.parse(JSON.stringify(incomingQuery));
+				query.query.crossCountFields = _.pluck(genomicFields, "conceptPath");
+				query.query.expectedResultType="CROSS_COUNT";
+				this._runAjaxQuery(query, resource, this.genomicDataCallback, this.genomicErrorCallback, model, defaultOutput);
+				
+			}.bind(this));
+		},
+		
+		//extract this boilerplate ajax method
+		_runAjaxQuery: function(query, resource, dataCallBack, errorCallback, model, defaultOutput){
+			query.resourceCredentials = {};
+			query.resourceUUID = resource.uuid;
+			$.ajax({
 				 	url: window.location.origin + "/picsure/query/sync",
 				 	type: 'POST',
 				 	headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
@@ -281,13 +332,12 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				 	data: JSON.stringify(query),
 				 	statusCode: { 401:function() { } },   //NOOP - don't fail on not authorized queries
   				 	success: function(response, textStatus, request){
-  				 		this.biosampleDataCallback(resource, response, request.getResponseHeader("resultId"), model, defaultOutput, "biosamples");
+  				 		dataCallBack(resource, response, model, defaultOutput);
   						}.bind(this),
 				 	error: function(response){
-				 		this.biosampleErrorCallback(resource, this.outputErrorMessage, defaultOutput);
+				 		errorCallback(resource, this.outputErrorMessage, defaultOutput);
 					}.bind(this)
 				});
-			}.bind(this));
 		}
 	};
 });

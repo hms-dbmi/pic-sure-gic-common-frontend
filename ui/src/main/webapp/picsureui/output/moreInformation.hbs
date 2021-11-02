@@ -1,6 +1,6 @@
 <table id='moreInfoTable' class="table table-striped">
 	<thead class="infotable-head">
-	<tr><th>Site</th><th class="center-cell">Patients</th><th class="center-cell">Biosamples</th>
+	<tr><th>Site</th><th class="center-cell">Patients</th><th class="center-cell">Genomic Data</th><th class="center-cell">Biosamples</th>
 	{{#each biosampleFields}}
 		<th class="center-cell"><span>{{label}}</span></th>
 	{{/each}}
@@ -11,6 +11,7 @@
 	{{#each resources}}
 	<tr><td><span title="{{description}}">{{name}}</span></td>
 		<td class="center-cell"><span id="{{uuid}}-patients"> </span></td>
+		<td class="center-cell"><span id="{{uuid}}-genomicdata"> </span></td>
 		<td class="center-cell"><span id="{{uuid}}-biosamples"> </span></td>
 		{{#each ../biosampleFields}}
 			<td class="center-cell" id="{{../uuid}}-{{id}}"><div>  </div></td>
