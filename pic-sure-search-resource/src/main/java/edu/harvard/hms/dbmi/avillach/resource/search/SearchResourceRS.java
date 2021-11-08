@@ -94,6 +94,21 @@ public class SearchResourceRS implements IResourceRS {
 		throw new UnsupportedOperationException("Only INFO_COLUMN_LISTING queries supported by this search resource");
 	
 	}
+	
+	/**
+	 * Implement this formatting for INFO_COLUMN_LISTING queries (which we do support)
+	 */
+	@POST
+	@Path("/query/format")
+	public Response queryFormat(QueryRequest formatRequest) {
+		String expectedResultType = ((Map)formatRequest.getQuery()).get("expectedResultType").toString();
+		
+		if(expectedResultType.equals("INFO_COLUMN_LISTING")){
+			return Response.ok().entity("INFO_COLUMN_LISTING query").build();
+		} else {
+			throw new NotSupportedException("Query formatting is not implemented in this resource.");
+		}
+	}
 
 	@POST
 	@Path("/search")
