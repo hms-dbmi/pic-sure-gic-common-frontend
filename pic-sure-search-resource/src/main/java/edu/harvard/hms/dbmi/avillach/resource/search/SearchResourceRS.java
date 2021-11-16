@@ -140,7 +140,7 @@ public class SearchResourceRS implements IResourceRS {
 		
 		if ( searchRequest.getQuery()!=null ) {
 			mergedInfoStoreColumns.entrySet().stream().forEach((entry)->{
-				if(entry.getKey().contains(lowerCaseSearchTerm)){
+				if(entry.getKey().toLowerCase().contains(lowerCaseSearchTerm)){
 					infoResults.put(entry.getKey(), entry.getValue());
 				} else if(entry.getValue().isCategorical()){
 					//we have to filter the values that match (INFO only - the UI does this for phenotype concepts)
