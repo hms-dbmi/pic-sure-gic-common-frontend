@@ -12,7 +12,9 @@ public class SearchColumnMeta implements Serializable{
 	
 	private static final long serialVersionUID = -1426704684157517837L;
 	private String name;
+	//these two booleans are inverses; they are both present due to historical useage in info vs. pheno data.
 	private Boolean categorical;
+	private Boolean continuous;  
 	private Set<String> categoryValues;
 	private Double min, max;
 //	private int observationCount;
@@ -38,6 +40,16 @@ public class SearchColumnMeta implements Serializable{
 	}
 	public SearchColumnMeta setCategorical(boolean isString) {
 		this.categorical = isString;
+		this.continuous = !isString;
+		return this;
+	}
+	
+	public Boolean isContinuous() {
+		return continuous;
+	}
+	public SearchColumnMeta setContinuous(boolean isNumber) {
+		this.continuous = isNumber;
+		this.categorical = !isNumber;
 		return this;
 	}
 //	
