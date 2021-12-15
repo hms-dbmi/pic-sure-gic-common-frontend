@@ -1,0 +1,36 @@
+<div id="institution-data-info">
+    <div class="bordered-block">
+        <table id='data-info-table' class="table /*table-striped*/">
+			<thead class="infotable-head">
+			<tr>
+				<th>Site</th>
+				<th class="center-cell">Clinical Population</th>
+				<th class="center-cell">Genomic Population</th>
+				<th class="center-cell">Genomic Data Diagnosis</th>
+				<th class="center-cell">Genomic Data Types</th>
+				<th class="center-cell">Biobank Population</th>
+				<th class="center-cell">First Data Point</th>
+				<th class="center-cell">Clinical Data Extract Date</th>
+				<th class="center-cell">Genomic Data extract Date</th>
+				<th class="center-cell">Expected Availability</th>
+			</tr>
+			</thead>
+			
+			<tbody>
+			{{#each resources}}
+			<tr><td><span title="{{description}}">{{name}}</span></td>
+				<td class="center-cell">{{metadata.clinicalPopulation}}</td>
+				<td class="center-cell">{{metadata.genomicPopulation}}</td>
+				<td class="center-cell">{{metadata.DataDiagnosis}}</td>
+				<td class="center-cell">{{metadata.dataTypes}}</td>
+				<td class="center-cell">{{metadata.biosamplePopulation}}</td>
+				<td class="center-cell">{{metadata.firstDataPoint}}</td>
+				<td class="center-cell">{{metadata.clinicalDate}}</td>
+				<td class="center-cell">{{metadata.genomicDate}}</td>
+				<td class="center-cell">{{metadata.availability}}</td>
+			</tr>
+			{{/each}}
+			</tbody>
+		</table>
+    </div>
+</div>
