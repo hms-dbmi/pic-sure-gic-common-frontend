@@ -1,5 +1,6 @@
-define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings", "output/moreInformation" ],
-function(BB, outputTemplate, transportErrors, settings, moreInformation){
+define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings", 
+	"output/moreInformation", "data/dataInfo" ],
+function(BB, outputTemplate, transportErrors, settings, moreInformation, dataInfo){
 	
 	//track the resources using a map to look up by UUID
 	var resources = {};
@@ -303,6 +304,8 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 			
 			model.baseQuery = incomingQuery;   
   			defaultOutput.render();
+  			
+  			this.dataInfo = new dataInfo.View(this.resources);
   			
   			//attach the information modal
   			this.moreInformationModal = new moreInformation.View(biosampleFields, this.resources);

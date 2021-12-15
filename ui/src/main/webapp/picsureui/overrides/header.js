@@ -1,6 +1,4 @@
-define(["data/dataInfo"], function(dataInfo){
-	
-	// Don't need to do anything with data info, just load it.
+define([], function(){
 	
 	return {
 		/*
