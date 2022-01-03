@@ -31,7 +31,8 @@ function($, BB, outputTemplate, settings, moreInformation){
 								spinnerClasses: "spinner-center ",
 								spinning: false,
 								bioSampleCounts: {},
-								genomicdataCounts: {}
+								genomicdataCounts: {},
+								metadata: JSON.parse(resource.metadata)
 						};
 					}
 					
