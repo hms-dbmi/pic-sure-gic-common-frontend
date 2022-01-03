@@ -1,4 +1,8 @@
-define([], function(){
+define(["jquery", "backbone", "data/dataInfo"], function($, BB, dataInfo){
+	
+	dataInfo = new dataInfo.View(this.resources);
+	dataInfo.setElement($("#data-info-btn"));
+	dataInfo.render();
 	
 	return {
 		/*
