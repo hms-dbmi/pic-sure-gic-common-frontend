@@ -3,16 +3,21 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
     function($, BB, HBS, dataInfoTemplate, modalTemplate, dataInfoFormTemplate){
 
         let dataInfoView = BB.View.extend({
-            initialize: function(resources) {
+            initialize: function() {
                 this.dataInfoTemplate = HBS.compile(dataInfoTemplate);
                 this.dataInfoFormTemplate = HBS.compile(dataInfoFormTemplate);
                 this.modalTemplate = HBS.compile(modalTemplate);
-            	this.resources = resources;
             },
             events: {
                 "click #data-info-btn" : "showDataInfo"
             },
             showDataInfo: function(event){
+            	
+            	if(!this.resources){
+            		session = JSON.parse(sessionStorage.getItem("session"));
+            		this.resources = session.resources;
+            	}
+            	
                 $("#modal-window").html(this.modalTemplate({title: "Institution Data Information"}));
                 $(".modal-body").html(this.dataInfoTemplate(this));
                 
