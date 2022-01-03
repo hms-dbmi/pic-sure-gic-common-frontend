@@ -5,8 +5,8 @@ define(["jquery", "backbone", "data/dataInfo"], function($, BB, dataInfo){
 		
 		dataInfo:  new dataInfo.View(this.resources),
 		
-		render: function(){
-			this.dataInfo.setElement($("#data-info-btn"));
+		renderExt: function(element){
+			this.dataInfo.setElement(element);
 			this.dataInfo.render();
 		},
 		/*
