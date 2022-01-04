@@ -16,10 +16,15 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
             	$(".modal-body").html(this.dataInfoFormTemplate(resouce));
             	
             	//attaching these manually because BB events hash is locked to it's element (in this case, the header)
-            	$("#data-info-submit-btn").click(this.submitDataForm);
-            }.bind(this),
+            	$("#data-info-submit-btn").click(this.submitDataForm.bind(this));
+            },
             submitDataForm: function(){
-            	resouce =  this.resources.filter(x => x.name == this.managedSite)[0];
+            	
+            	//We need to build an object that only has the fields used in the back end; unrecognized data will cause an error.
+            	resource = {};
+            	ui_resource =  this.resources.filter(x => x.name == this.managedSite)[0];
+            	resource.uuid = ui_resource.uuid;
+				resource.name = ui_resource.name;
             	
             	metadata = {};
 				metadata.clinicalPopulation = $("#clinicalPopulation").val();
@@ -57,7 +62,7 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
 					}
 				});
 				
-            }.bind(this),
+            },
             showDataInfo: function(){
             	
         		session = JSON.parse(sessionStorage.getItem("session"));
@@ -78,10 +83,10 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
                 $(".close").click(function(){
                     $("#modalDialog").hide();
                 });
-                $("#data-info-form-btn").click(this.showDataForm);
+                $("#data-info-form-btn").click(this.showDataForm.bind(this));
 
                 $("#modalDialog").show();
-            }.bind(this)
+            }
         });
         
         return {
