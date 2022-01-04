@@ -32,7 +32,8 @@ function($, BB, outputTemplate, settings, moreInformation){
 								spinning: false,
 								bioSampleCounts: {},
 								genomicdataCounts: {},
-								metadata: JSON.parse(resource.metadata)
+								metadata: JSON.parse(resource.metadata),
+								resourceRSPath: resource.resourceRSPath
 						};
 					}
 					

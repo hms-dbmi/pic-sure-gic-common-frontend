@@ -20,11 +20,13 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
             },
             submitDataForm: function(){
             	
-            	//We need to build an object that only has the fields used in the back end; unrecognized data will cause an error.
+            	//We need to build an object that has exactly the fields used in the back end; unrecognized or missing data will cause an error.
             	resource = {};
             	ui_resource =  this.resources.filter(x => x.name == this.managedSite)[0];
             	resource.uuid = ui_resource.uuid;
 				resource.name = ui_resource.name;
+				resource.description = ui_resource.description;
+				resource.resourceRSPath = ui_resource.resourceRSPath;
             	
             	metadata = {};
 				metadata.clinicalPopulation = $("#clinicalPopulation").val();
