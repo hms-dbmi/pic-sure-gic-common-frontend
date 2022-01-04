@@ -18,11 +18,12 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
         		//attache resources to session object for use in template
         		this.resources = session.resources;
         		
-        		managerPrivs = sessionprivileges.filter(x => x.includes("DATA_MANAGER_"))
+        		
+        		managerPrivs = session.privileges.filter(x => x.includes("DATA_MANAGER_"));
         		if(managerPrivs){
-        			siteName = managerPrivs[0].substring("DATA_MANAGER_".length);
+        			this.managedSite = managerPrivs[0].substring("DATA_MANAGER_".length);
         		}
-            	
+        		
                 $("#modal-window").html(this.modalTemplate({title: "Institution Data Information"}));
                 $(".modal-body").html(this.dataInfoTemplate(this));
                 
@@ -31,9 +32,8 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
                 });
 
                 $("#data-info-form-btn").click(function(){
-                	JSON.parse(sessionStorage.getItem("session")).privileges;
-                	
-                	 $(".modal-body").html(this.dataInfoFormTemplate(this));
+                	resouce =  this.resources.filter(x => x.name == this.managedSite)[0];
+                	 $(".modal-body").html(this.dataInfoFormTemplate(resouce));
                 }.bind(this));
                 
                 $("#modalDialog").show();
