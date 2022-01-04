@@ -37,7 +37,44 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
                 }.bind(this));
                 
                 $("#data-info-submit-btn").click(function(){
+                	resouce =  this.resources.filter(x => x.name == this.managedSite)[0];
                 	
+                	metadata = {};
+    				metadata.clinicalPopulation = $("#clinicalPopulation").val();
+    				metadata.genomicPopulation = $("#genomicPopulation").val();
+    				metadata.genomicDataDiagnosis = $("#genomicDataDiagnosis").val();
+    				metadata.genomicDataTypes = $("#genomicDataTypes").val();
+    				metadata.biosamplePopulation = $("#biosamplePopulation").val();
+    				metadata.firstDataPoint = $("#firstDataPoint").val();
+    				metadata.clinicalDate = $("#clinicalDate").val();
+    				metadata.genomicDate = $("#genomicDate").val();
+    				metadata.availability = $("#availability").val();
+                	
+    				resource.metadata = JSON.stringify(metadata);
+    				
+    				resourceList = [resource];
+    				
+    				$.ajax({
+    					url: window.location.origin + '/picsure/resource',
+    					headers: {"Authorization": "Bearer " + session.token},
+    					contentType: 'application/json',
+    					type:'PUT',
+    					data: JSON.stringify(resourceList),
+    					success: function(){
+				    		
+    						//update stored resource
+    						session = JSON.parse(sessionStorage.getItem("session"));
+    						resouce =  session.resources.filter(x => x.name == this.managedSite)[0];
+    						resource.metadata = metadata;
+    						sessionStorage.setItem("session", JSON.stringify(session));
+    						
+    						alert("success");				
+    					},
+    					error: function(response){
+    						console.log("unable to update resource: " + response.responseText);
+    					}
+    				});
+    				
                 }.bind(this));
                 
                 
