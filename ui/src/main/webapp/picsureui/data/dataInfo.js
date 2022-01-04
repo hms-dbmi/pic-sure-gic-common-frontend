@@ -20,7 +20,7 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
         		
         		
         		managerPrivs = session.privileges.filter(x => x.includes("DATA_MANAGER_"));
-        		if(managerPrivs){
+        		if(managerPrivs.length > 0){
         			this.managedSite = managerPrivs[0].substring("DATA_MANAGER_".length);
         		}
         		
@@ -35,6 +35,11 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
                 	resouce =  this.resources.filter(x => x.name == this.managedSite)[0];
                 	 $(".modal-body").html(this.dataInfoFormTemplate(resouce));
                 }.bind(this));
+                
+                $("#data-info-submit-btn").click(function(){
+                	
+                }.bind(this));
+                
                 
                 $("#modalDialog").show();
             }
