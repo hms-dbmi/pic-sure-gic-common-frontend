@@ -10,14 +10,13 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
             },
             events: {
                 "click #data-info-btn" : "showDataInfo",
-                "click #data-info-form-btn" : "showDataForm",
-                "click #data-info-submit-btn" : "submitDataForm"
             },
-            
             showDataForm: function(){
             	resouce =  this.resources.filter(x => x.name == this.managedSite)[0];
             	$(".modal-body").html(this.dataInfoFormTemplate(resouce));
-            	delegateEvents();
+            	
+            	//attaching these manually because BB events hash is locked to it's element (in this case, the header)
+            	$("#data-info-submit-btn").click(submitDataForm);
             },
             submitDataForm: function(){
             	resouce =  this.resources.filter(x => x.name == this.managedSite)[0];
@@ -75,13 +74,13 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
                 $("#modal-window").html(this.modalTemplate({title: "Institution Data Information"}));
                 $(".modal-body").html(this.dataInfoTemplate(this));
                 
+            	//attaching these manually because BB events hash is locked to it's element (in this case, the header)
                 $(".close").click(function(){
                     $("#modalDialog").hide();
                 });
+                $("#data-info-form-btn").click(showDataForm);
 
                 $("#modalDialog").show();
-                
-                delegateEvents();
             }
         });
         
