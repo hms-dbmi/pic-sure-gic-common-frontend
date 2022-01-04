@@ -60,3 +60,7 @@
 .center-cell {
 	text-align: center;
 }
+
+.td {
+	white-space: pre-line;
+}

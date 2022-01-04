@@ -1,34 +1,40 @@
+
+<div > Update Data for {{description}} </div>
+
 <div id="institution-data-info">
+ 
     <div class="bordered-block">
-    
-				<div class="form-label">Clinical Population</div>
-				<div class="form-input"><input name="clinicalPop" type="text" /></div>
-				
-				<div class="form-label">Genomic Population</div>
-				<div class="form-input"><input name="genomicPop" type="text" /></div>
-					
-				<div class="form-label">Genomic Data Diagnosis</div>
-				<div class="form-input"><input name="genomicDiagnosis" type="text" /></div>
-				
-				<div class="form-label">Genomic Data Types</div>
-				<div class="form-input"><input name="genomicTypes" type="text" /></div>
-				
-				<div class="form-label">Biobank Population</div>
-				<div class="form-input"><input name="biobankPop" type="text" /></div>
-				
-				<div class="form-label">First Data Point</div>
-				<div class="form-input"><input name="firstDataDate" type="text" /></div>
-				
-				<div class="form-label">Clinical Data Extract Date</div>
-				<div class="form-input"><input name="clinicalDate" type="text" /></div>
-				
-				<div class="form-label">Genomic Data extract Date</div>
-				<div class="form-input"><input name="genomicDate" type="text" /></div>
-				
-				<div class="form-label">Expected Availability</div>
-				<div class="form-input"><input name="availability" type="text" /></div>
+        <table id='data-info-table' class="table /*table-striped*/">
+			<thead class="infotable-head">
+			<tr>
+				<th class="center-cell">Clinical Population</th>
+				<th class="center-cell">Genomic Population</th>
+				<th class="center-cell">Genomic Data Diagnosis</th>
+				<th class="center-cell">Genomic Data Types</th>
+				<th class="center-cell">Biobank Population</th>
+				<th class="center-cell">First Data Point</th>
+				<th class="center-cell">Clinical Data Extract Date</th>
+				<th class="center-cell">Genomic Data extract Date</th>
+				<th class="center-cell">Expected Availability</th>
+			</tr>
+			</thead>
 			
-        		<div class="submit-div"><button id="data-info-submit-btn" /></div>
+			<tbody>
+			<tr>
+				<td class="center-cell"><textarea  name="clinicalPop">{{metadata.clinicalPopulation}}</textarea></td>
+				<td class="center-cell"><textarea  name="genomicPop">{{metadata.genomicPopulation}}</textarea></td>
+				<td class="center-cell"><textarea  name="genomicDiagnosis">{{metadata.genomicDataDiagnosis}}</textarea></td>
+				<td class="center-cell"><textarea name="genomicTypes">{{metadata.genomicDataTypes}}</textarea></td>
+				<td class="center-cell"><textarea name="biobankPop">{{metadata.biosamplePopulation}}</textarea></td>
+				<td class="center-cell"><textarea name="firstDataDate">{{metadata.firstDataPoint}}</textarea></td>
+				<td class="center-cell"><textarea name="clinicalDate">{{metadata.clinicalDate}}</textarea></td>
+				<td class="center-cell"><textarea name="genomicDate">{{metadata.genomicDate}}</textarea></td>
+				<td class="center-cell"><textarea name="availability">{{metadata.availability}}</textarea></td>
+			</tr>
+			</tbody>
+		</table>
+		<br/>
+		<div class="submit-div"><button id="data-info-submit-btn" />Update Institution Data</div>
     </div>
 
 </div>
