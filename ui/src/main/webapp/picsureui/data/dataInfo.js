@@ -38,7 +38,7 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
 				metadata.clinicalDate = $("#clinicalDate").val();
 				metadata.genomicDate = $("#genomicDate").val();
 				metadata.availability = $("#availability").val();
-            	
+            	//metadata has to be a string so hibernate doesn't try to interpret it
 				resource.metadata = JSON.stringify(metadata);
 				
 				resourceList = [resource];
@@ -50,15 +50,14 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
 					type:'PUT',
 					data: JSON.stringify(resourceList),
 					success: function(){
-			    		
 						//update stored resource
 						session = JSON.parse(sessionStorage.getItem("session"));
-						resouce =  session.resources.filter(x => x.name == this.managedSite)[0];
-						resource.metadata = metadata;
+						session.resources.find(x => x.name == this.managedSite).metadata = metadata;
 						sessionStorage.setItem("session", JSON.stringify(session));
 						
-						alert("success");				
-					},
+						alert("successfully updated resource");	
+						$("#modalDialog").hide();
+					}.bind(this),
 					error: function(response){
 						console.log("unable to update resource: " + response.responseText);
 					}
@@ -72,10 +71,9 @@ define(["jquery", "backbone", "handlebars", "text!data/dataInfo.hbs", "text!data
         		//attache resources to session object for use in template
         		this.resources = session.resources;
         		
-        		
-        		managerPrivs = session.privileges.filter(x => x.includes("DATA_MANAGER_"));
+        		managerPrivs = session.privileges.filter(x => x.includes("PRIV_DATA_MANAGER_"));
         		if(managerPrivs.length > 0){
-        			this.managedSite = managerPrivs[0].substring("DATA_MANAGER_".length);
+        			this.managedSite = managerPrivs[0].substring("PRIV_DATA_MANAGER_".length);
         		}
         		
                 $("#modal-window").html(this.modalTemplate({title: "Institution Data Information"}));
