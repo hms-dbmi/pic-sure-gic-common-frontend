@@ -1,5 +1,5 @@
-define(["backbone", "text!overrides/output/outputPanel.hbs",  "common/transportErrors", "picSure/settings", "output/moreInformation" ],
-function(BB, outputTemplate, transportErrors, settings, moreInformation){
+define(["jquery", "backbone", "text!overrides/output/outputPanel.hbs", "picSure/settings", "output/moreInformation" ],
+function($, BB, outputTemplate, settings, moreInformation){
 	
 	//track the resources using a map to look up by UUID
 	var resources = {};
@@ -14,9 +14,10 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 	var resourceQueryDeferred = $.Deferred();
 	
 	if(sessionStorage.getItem("session")){
+		session = JSON.parse(sessionStorage.getItem("session"));
 		$.ajax({
 			url: window.location.origin + '/picsure/resource',
-			headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
+			headers: {"Authorization": "Bearer " + session.token},
 			contentType: 'application/json',
 			type:'GET',
 			success: function(resourceData){
@@ -30,7 +31,9 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 								spinnerClasses: "spinner-center ",
 								spinning: false,
 								bioSampleCounts: {},
-								genomicdataCounts: {}
+								genomicdataCounts: {},
+								metadata: JSON.parse(resource.metadata),
+								resourceRSPath: resource.resourceRSPath
 						};
 					}
 					
@@ -39,6 +42,10 @@ function(BB, outputTemplate, transportErrors, settings, moreInformation){
 				resourcesSorted.push(...Object.values(resources).sort(function compareFn(a, b) {
 											return a.name.localeCompare(b.name);
 										}));
+				
+				//push this back into the session so we don't have to look it up again
+				session.resources = resourcesSorted;
+				sessionStorage.setItem("session", JSON.stringify(session));
 				
 				resourceQueryDeferred.resolve();
 				
