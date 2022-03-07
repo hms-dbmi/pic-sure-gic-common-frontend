@@ -1,6 +1,6 @@
 /* GIC has some longer names, so we make the login box wider */
 #frmAuth0Login {
-	width: 400px;
+	width: 450px;
 }
 
 /* BCH logo is not square */
