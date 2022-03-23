@@ -29,8 +29,10 @@
         <a class="col btn btn-default header-btn authenticated-visible header-navigation" data-href="/picsureui/queryBuilder" href="#" id="query-builder-btn">Query Builder</a>
     {{/if}}
 
-	<a id="data-info-btn" class="col btn btn-default header-btn authenticated-visible" href="#">Data Info</a>
-
+	{{#if authenticated}}
+		<a id="data-info-btn" class="col btn btn-default header-btn authenticated-visible" style="display:none" href="#">Data Info</a>
+	{{/if}}
+	
     {{#contains privileges 'ADMIN'}}
         <a class="col btn btn-default header-btn header-navigation" id="admin-btn" data-href="/psamaui/userManagement" href="#">Users</a>
     {{/contains}}
