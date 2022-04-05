@@ -4,10 +4,11 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
 
 
         let moreInfoView = BB.View.extend({
-            initialize: function(biosampleFields, resources) {
+            initialize: function(biosampleFields, genomicFields, resources) {
                 this.moreInfoTemplate = HBS.compile(moreInfoTemplate);
                 this.modalTemplate = HBS.compile(modalTemplate);
                 this.biosampleFields = biosampleFields;
+                this.genomicFields = genomicFields;
             	this.resources = resources;
             },
             events: {
@@ -21,17 +22,25 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
 					$("#" + resource.uuid + "-patients").html("-");
 				}
             	
-            	if( resource.genomicdataCount ){
-					$("#" + resource.uuid + "-genomicdata").html( resource.genomicdataCount.toLocaleString() )
-				} else {
-					$("#" + resource.uuid + "-genomicdata").html("-");
-				}
+//            	if( resource.genomicdataCount ){
+//					$("#" + resource.uuid + "-genomicdata").html( resource.genomicdataCount.toLocaleString() )
+//				} else {
+//					$("#" + resource.uuid + "-genomicdata").html("-");
+//				}
+//            	
+//            	if( resource.biosampleCount ){
+//					$("#" + resource.uuid + "-biosamples").html( resource.biosampleCount.toLocaleString() )
+//				} else {
+//					$("#" + resource.uuid + "-biosamples").html("-");
+//				}
             	
-            	if( resource.biosampleCount ){
-					$("#" + resource.uuid + "-biosamples").html( resource.biosampleCount.toLocaleString() )
-				} else {
-					$("#" + resource.uuid + "-biosamples").html("-");
-				}
+            	_.each(this.genomicFields, function(genomicField){
+					if( resource.genomicdataCounts[genomicField.id] ){
+						$("#" + resource.uuid + "-" + genomicField.id).html( resource.bioSampleCounts[genomicField.id].toLocaleString() )
+					} else {
+						$("#" + resource.uuid + "-" + genomicField.id).html("-");
+					}
+    			});
             	
             	_.each(this.biosampleFields, function(bioField){
 					if( resource.bioSampleCounts[bioField.id] ){

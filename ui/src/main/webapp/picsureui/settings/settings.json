@@ -1,9 +1,17 @@
 {
   "genomicFields":[
   {
-        "label" : "Genomic Data",
-        "id": "genomicdata",
-        "conceptPath" : "\\Genomic Data\\"
+        "label" : "WGS",
+        "id": "wgs",
+        "conceptPath" : "\\Variant Data Type\\WGS\\"
+   },{
+        "label" : "WES",
+        "id": "wes",
+        "conceptPath" : "\\Variant Data Type\\WES\\"
+   }, {
+        "label" : "Genotype array",
+        "id": "genotypearray",
+        "conceptPath" : "\\Variant Data Type\\Genotype array\\"
    }],
   "biosampleFields": [
     {
@@ -25,7 +33,7 @@
     },{
         "label" : "Extracted DNA",
         "id": "DNA",
-        "conceptPath" : "\\Bio Specimens\\NucleicAcid\\"
+        "conceptPath" : "\\Bio Specimens\\NucleicAcid\\DNA\\"
     }
   ],
   
