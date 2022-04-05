@@ -3,6 +3,9 @@
 	<tr>
 		<th>Site</th>
 		<th class="center-cell">Patients</th>
+		{{#each ../genomicFields}}
+			<th class="center-cell"><span>{{label}}</span></th>
+		{{/each}}
 		{{#each biosampleFields}}
 			<th class="center-cell"><span>{{label}}</span></th>
 		{{/each}}
