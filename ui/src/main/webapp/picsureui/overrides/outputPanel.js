@@ -312,7 +312,7 @@ function($, BB, outputTemplate, settings, moreInformation){
   			defaultOutput.render();
   			
   			//attach the information modal
-  			this.moreInformationModal = new moreInformation.View(biosampleFields, this.resources);
+  			this.moreInformationModal = new moreInformation.View(biosampleFields, genomicFields, this.resources);
   			this.moreInformationModal.setElement($("#moreInformation",this.$el));
 //  			this.variantExplorerView.render();
   			
@@ -334,7 +334,7 @@ function($, BB, outputTemplate, settings, moreInformation){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
 				var query = JSON.parse(JSON.stringify(incomingQuery));
 				query.query.crossCountFields = _.pluck(biosampleFields, "conceptPath");
-				query.query.expectedResultType="OBSERVATION_CROSS_COUNT";
+				query.query.expectedResultType="CROSS_COUNT";
 				this._runAjaxQuery(query, resource, this.biosampleDataCallback, this.biosampleErrorCallback, model, defaultOutput);
 				
 			}.bind(this));
