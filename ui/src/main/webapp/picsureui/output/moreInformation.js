@@ -36,7 +36,7 @@ define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "
             	
             	_.each(this.genomicFields, function(genomicField){
 					if( resource.genomicdataCounts[genomicField.id] ){
-						$("#" + resource.uuid + "-" + genomicField.id).html( resource.bioSampleCounts[genomicField.id].toLocaleString() )
+						$("#" + resource.uuid + "-" + genomicField.id).html( resource.genomicdataCounts[genomicField.id].toLocaleString() )
 					} else {
 						$("#" + resource.uuid + "-" + genomicField.id).html("-");
 					}
