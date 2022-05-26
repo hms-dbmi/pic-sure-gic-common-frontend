@@ -18,7 +18,7 @@ INSERT INTO `userMetadataMapping` VALUES
 -- Assign the same roles to the ADFS users that are assigned to the LDAP users
 
 insert into user_role (select b.uuid new_uuid, role_id from 
-	(select * from user_role left join user on user_id=uuid where connectionId=@uuidLDAPConn  a
+	(select * from user_role left join user on user_id=uuid where connectionId=@uuidLDAPConn)  a
 	left join 
 	(select * from user where connectionId=@uuidADFSConn) b on a.email = b.email );
 
