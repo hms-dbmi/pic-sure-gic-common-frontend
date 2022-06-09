@@ -20,6 +20,7 @@ INSERT INTO termsOfService (uuid, dateUpdated, content)
             <div class="checkbox"><label><input type="checkbox" class="tosCheckbox" value="">ix. User understands that any violation of these Terms and Conditions of Use may result in a probationary or permanent ban of access to the GIC.</label></div>
             <div class="checkbox"><label><input type="checkbox" class="tosCheckbox" value="">x. User acknowledges and agrees that access to the GIC portal may be revoked at any time, for any reason, with or without prior notice.</label></div>
             <div class="checkbox"><label><input type="checkbox" class="tosCheckbox" value="">xi. The Terms and Conditions may be modified from time to time and continued use of the GIC is deemed acceptance by the User of such Terms and Conditions and modifications thereof.</label></div>
+			<div class="checkbox"><label><input type="checkbox" class="tosCheckbox" value="">xii. User understands that this portal enables feasibility studies in preparation for research. Research projects require active participation from local investigators and approval from a GIC Data and Sample Access Committee.</label></div>
             <button type="button" id="acceptBtn" class="btn btn-info accept-tos-button" disabled="">  <span>Accept</span> </button>
             <script>$(".tosCheckbox").on("change", function(){if ($(".tosCheckbox:checked").length == $(".tosCheckbox").length){$("#acceptBtn").prop("disabled",false);}else{$("#acceptBtn").prop("disabled", true);}});</script>
          </div>
