@@ -63,7 +63,7 @@ INSERT INTO role_privilege (role_id, privilege_id)
        (select uuid from privilege where name = 'PRIV_ONLY_SEARCH') );  
 
       
- --We need to fill out the aggregate rules to include cross count queries
+ -- We need to fill out the aggregate rules to include cross count queries
 INSERT INTO access_rule (uuid, name, description, rule, type, value, checkMapKeyOnly, checkMapNode, subAccessRuleParent_uuid, isGateAnyRelation, isEvaluateOnlyByGates)
      VALUES (unhex(REPLACE(uuid(),'-','')), 'HPDS Cross Counts', 'HPDS cross Counts', '$..expectedResultType', 4, 'CROSS_COUNT', 0x00, 0x00, NULL, 0x00, 0x00);
       
