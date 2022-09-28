@@ -130,8 +130,7 @@ public class SearchResourceRS implements IResourceRS {
 					||(
 					entry.getValue().isCategorical() 
 					&& 
-					entry.getValue().getCategoryValues().stream().map(String::toLowerCase).collect(Collectors.toList())
-					.contains(lowerCaseSearchTerm));
+					entry.getValue().getCategoryValues().stream().filter((value)->{ return value.toLowerCase().contains(lowerCaseSearchTerm);}).count() > 0);
 		}).collect(Collectors.toMap(Entry::getKey, Entry::getValue)) 
 		: mergedPhenotypeOntologies;
 
