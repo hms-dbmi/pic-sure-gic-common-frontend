@@ -349,47 +349,13 @@ function($, BB, outputTemplate, settings, queryBuilder, modal, outputInfoModal){
 			//attach the information modals
 			const genomicInfoButton = document.getElementById("detail-gen-data-btn");
 			genomicInfoButton.addEventListener("click", function(){
-				let genomicTableData = [];
-				_.each(resources, function(resource){
-					let row = {};
-					row.site = resource.name;
-					row.patientCount = resource.genomicdataCount;
-					 _.each(genomicFields, function(genomicField){
-						if( resource.genomicdataCounts[genomicField.id] ){
-							row[genomicField.id] = resource.genomicdataCounts[genomicField.id];
-						} else {
-							row[genomicField.id] = '-';
-						}
-					});
-					genomicTableData.push(row);
-				});
-				const datatableData = {
-					columns: [{title:'Site', data: 'site'}, {title:'Patients with Genomic Data', data: 'patientCount'}, {title:'Clinically Certified WGS', data: 'clinicallycertifiedwgs'}, {title:'WGS', data: 'wgs'}, {title:'WES', data: 'wes'}, {title:'Low Coverage WGS', data: 'lowcoveragewgs'}, {title:'Genotype Array', data: 'genotypearray'}],
-					data: genomicTableData
-				}
+				const datatableData = createDatatable(resources, genomicFields, true);
 				modal.displayModal(new outputInfoModal(datatableData), 'Detailed Genomic Data', ()=>{genomicInfoButton.focus();}, {isHandleTabs: true});
 			});
 			const bioInfoButton = document.getElementById("detail-bio-data-btn");
 			bioInfoButton.addEventListener("click", function(){
-				let biosampleTableData = [];
-				_.each(resources, function(resource){
-					let row = {};
-					row.site = resource.name;
-					row.patientCount = resource.biosampleCount;
-					 _.each(biosampleFields, function(biosampleField){
-						if( resource.bioSampleCounts[biosampleField.id] ){
-							row[biosampleField.id] = resource.bioSampleCounts[biosampleField.id];
-						} else {
-							row[biosampleField.id] = '-';
-						}
-					});
-					biosampleTableData.push(row);
-				});
-				const datatableData = {
-					columns: [{title:'Site', data: 'site'}, {title:'Number of Biosamples', data: 'patientCount'}, {title:'Whole blood', data: 'Wholeblood'}, {title:'Plasma'}, {title:'Tissue'}, {title:'CSF'}, {title:'Extracted DNA', data: 'DNA'}],
-					data: biosampleTableData
-				}
-				modal.displayModal(new outputInfoModal(datatableData), 'Detailed Biosample Data', ()=>{bioInfoButton.focus();}, {isHandleTabs: true});
+				const datatableData = createDatatable(resources, biosampleFields, false);
+				modal.displayModal(new outputInfoModal(datatableData), 'Detailed Biosample Data', () => { bioInfoButton.focus(); }, { isHandleTabs: true });
 			});
 		},
 		
@@ -414,3 +380,28 @@ function($, BB, outputTemplate, settings, queryBuilder, modal, outputInfoModal){
 		}
 	};
 });
+
+const genomicColumns = [{title:'Site', data: 'site'}, {title:'Patients with Genomic Data', data: 'patientCount'}, {title:'Clinically Certified WGS', data: 'clinicallycertifiedwgs'}, {title:'WGS', data: 'wgs'}, {title:'WES', data: 'wes'}, {title:'Low Coverage WGS', data: 'lowcoveragewgs'}, {title:'Genotype Array', data: 'genotypearray'}];
+const biosampleColumns = [{title:'Site', data: 'site'}, {title:'Number of Biosamples', data: 'patientCount'}, {title:'Whole blood', data: 'Wholeblood'}, {title:'Plasma'}, {title:'Tissue'}, {title:'CSF'}, {title:'Extracted DNA', data: 'DNA'}];
+
+function createDatatable(resources, sampleFields, isGenomic) {
+	let sampleTableData = [];
+	_.each(resources, function (resource) {
+		let row = {};
+		row.site = resource.name;
+		row.patientCount = isGenomic ?  resource.genomicdataCount : resource.biosampleCount;
+		_.each(sampleFields, function (sampleField) {
+			if (isGenomic) {
+				row[sampleField.id] = resource.genomicdataCounts[sampleField.id];
+			} else if (resource.genomicdataCounts[sampleField.id]) {
+				row[sampleField.id] = resource.bioSampleCounts[sampleField.id];
+			}
+		});
+		sampleTableData.push(row);
+	});
+	return {
+		columns: isGenomic ? genomicColumns : biosampleColumns,
+		data: sampleTableData
+	};
+}
+
