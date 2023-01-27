@@ -1,3 +1,24 @@
+:root {
+	--picsure-primary: #328FFF;
+    /* --picsure-secondary: #848484; */
+    --picsure-alt: #328FFF;
+    /* --picsure-other: #90a8a4;
+    --picsure-lite: #90a8a4;
+    --picsure-dark: #333333; */
+}
+
+body {
+	font-family: "Varela Round", "Nunito Sans", sans-serif;
+}
+
+#header-content {
+	padding: 0;
+}
+
+#top-header .logo-img {
+	max-width: fit-content;
+}
+
 /* GIC has some longer names, so we make the login box wider */
 #frmAuth0Login {
 	width: 450px;
@@ -10,6 +31,14 @@
 
 #main-content {
 	width: 90%;
+}
+
+#header-underline {
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	background-color: var(--picsure-dark);
+	border-top: 1px solid var(--picsure-dark);
 }
 
 /* result boxes are initially hidden */
