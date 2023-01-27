@@ -1,5 +1,5 @@
-define(["jquery", "backbone", "text!overrides/output/outputPanel.hbs", "picSure/settings", "output/moreInformation" ],
-function($, BB, outputTemplate, settings, moreInformation){
+define(["jquery", "backbone", "text!overrides/output/outputPanel.hbs", "picSure/settings", "picSure/queryBuilder", "common/modal", "overrides/output/outputInfoModal"],
+function($, BB, outputTemplate, settings, queryBuilder, modal, outputInfoModal){
 	
 	//track the resources using a map to look up by UUID
 	var resources = {};
@@ -176,7 +176,7 @@ function($, BB, outputTemplate, settings, moreInformation){
 			$("#biosamples-spinner-" + resource.uuid).hide();
 			$("#biosamples-results-" + resource.uuid + "-count").html(resources[resource.uuid].biosampleCount.toLocaleString()); 
 			$("#biosamples-count").html(model.get("totalBiosamples").toLocaleString());
-			$("#more-info-btn").show();
+			// $("#more-info-btn").show();
 			
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
 				model.set("bioSpinning", false);
@@ -311,11 +311,6 @@ function($, BB, outputTemplate, settings, moreInformation){
 			model.baseQuery = incomingQuery;   
   			defaultOutput.render();
   			
-  			//attach the information modal
-  			this.moreInformationModal = new moreInformation.View(biosampleFields, genomicFields, this.resources);
-  			this.moreInformationModal.setElement($("#moreInformation",this.$el));
-//  			this.variantExplorerView.render();
-  			
 			//run a query for each resource 
 			_.each(resources, function(resource){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
@@ -350,6 +345,52 @@ function($, BB, outputTemplate, settings, moreInformation){
 				this._runAjaxQuery(query, resource, this.genomicDataCallback, this.genomicErrorCallback, model, defaultOutput);
 				
 			}.bind(this));
+
+			//attach the information modals
+			const genomicInfoButton = document.getElementById("detail-gen-data-btn");
+			genomicInfoButton.addEventListener("click", function(){
+				let genomicTableData = [];
+				_.each(resources, function(resource){
+					let row = {};
+					row.site = resource.name;
+					row.patientCount = resource.genomicdataCount;
+					 _.each(genomicFields, function(genomicField){
+						if( resource.genomicdataCounts[genomicField.id] ){
+							row[genomicField.id] = resource.genomicdataCounts[genomicField.id];
+						} else {
+							row[genomicField.id] = '-';
+						}
+					});
+					genomicTableData.push(row);
+				});
+				const datatableData = {
+					columns: [{title:'Site', data: 'site'}, {title:'Patients with Genomic Data', data: 'patientCount'}, {title:'Clinically Certified WGS', data: 'clinicallycertifiedwgs'}, {title:'WGS', data: 'wgs'}, {title:'WES', data: 'wes'}, {title:'Low Coverage WGS', data: 'lowcoveragewgs'}, {title:'Genotype Array', data: 'genotypearray'}],
+					data: genomicTableData
+				}
+				modal.displayModal(new outputInfoModal(datatableData), 'Detailed Genomic Data', ()=>{genomicInfoButton.focus();}, {isHandleTabs: true});
+			});
+			const bioInfoButton = document.getElementById("detail-bio-data-btn");
+			bioInfoButton.addEventListener("click", function(){
+				let biosampleTableData = [];
+				_.each(resources, function(resource){
+					let row = {};
+					row.site = resource.name;
+					row.patientCount = resource.biosampleCount;
+					 _.each(biosampleFields, function(biosampleField){
+						if( resource.bioSampleCounts[biosampleField.id] ){
+							row[biosampleField.id] = resource.bioSampleCounts[biosampleField.id];
+						} else {
+							row[biosampleField.id] = '-';
+						}
+					});
+					biosampleTableData.push(row);
+				});
+				const datatableData = {
+					columns: [{title:'Site', data: 'site'}, {title:'Number of Biosamples', data: 'patientCount'}, {title:'Whole blood', data: 'Wholeblood'}, {title:'Plasma'}, {title:'Tissue'}, {title:'CSF'}, {title:'Extracted DNA', data: 'DNA'}],
+					data: biosampleTableData
+				}
+				modal.displayModal(new outputInfoModal(datatableData), 'Detailed Biosample Data', ()=>{bioInfoButton.focus();}, {isHandleTabs: true});
+			});
 		},
 		
 		//extract this boilerplate ajax method
