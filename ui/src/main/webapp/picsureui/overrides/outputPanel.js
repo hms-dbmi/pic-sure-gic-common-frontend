@@ -329,7 +329,7 @@ function($, BB, outputTemplate, settings, queryBuilder, modal, outputInfoModal){
 				// make a safe deep copy (scoped per resource) of the incoming query so we don't modify it
 				var query = JSON.parse(JSON.stringify(incomingQuery));
 				query.query.crossCountFields = _.pluck(biosampleFields, "conceptPath");
-				query.query.expectedResultType="CROSS_COUNT";
+				query.query.expectedResultType="OBSERVATION_CROSS_COUNT";
 				this._runAjaxQuery(query, resource, this.biosampleDataCallback, this.biosampleErrorCallback, model, defaultOutput);
 				
 			}.bind(this));
