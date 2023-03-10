@@ -31,5 +31,6 @@ COPY src/main/resources/favicon.ico /usr/local/apache2/htdocs/
 #COPY stacked-logo.png ${HTTPD_PREFIX}/htdocs/images/logo.png
 
 #currently only one logo img
+COPY src/main/images ${HTTPD_PREFIX}/htdocs/images/
 COPY logo.png ${HTTPD_PREFIX}/htdocs/picsureui/static/logo.png
 COPY logo.png ${HTTPD_PREFIX}/htdocs/images/logo.png
