@@ -382,7 +382,7 @@ function($, BB, outputTemplate, settings, queryBuilder, modal, outputInfoModal){
 });
 
 const genomicColumns = [{title:'Site', data: 'site'}, {title:'Patients with Genomic Data', data: 'patientCount'}, {title:'Clinically Certified WGS', data: 'clinicallycertifiedwgs'}, {title:'WGS', data: 'wgs'}, {title:'WES', data: 'wes'}, {title:'Low Coverage WGS', data: 'lowcoveragewgs'}, {title:'Genotype Array', data: 'genotypearray'}];
-const biosampleColumns = [{title:'Site', data: 'site'}, {title:'Number of Biosamples', data: 'patientCount'}, {title:'Whole blood', data: 'Wholeblood'}, {title:'Plasma'}, {title:'Tissue'}, {title:'CSF'}, {title:'Extracted DNA', data: 'DNA'}];
+const biosampleColumns = [{title:'Site', data: 'site'}, {title:'Number of Biosamples', data: 'patientCount'}, {title:'Whole blood', data: 'Wholeblood'}, {title:'Plasma', data: 'Plasma'}, {title:'Tissue', data: 'Tissue'}, {title:'CSF', data: 'CSF'}, {title:'Extracted DNA', data: 'DNA'}];
 
 function createDatatable(resources, sampleFields, isGenomic) {
 	let sampleTableData = [];
@@ -393,7 +393,7 @@ function createDatatable(resources, sampleFields, isGenomic) {
 		_.each(sampleFields, function (sampleField) {
 			if (isGenomic) {
 				row[sampleField.id] = resource.genomicdataCounts[sampleField.id];
-			} else if (resource.genomicdataCounts[sampleField.id]) {
+			} else if (resource.bioSampleCounts[sampleField.id]) {
 				row[sampleField.id] = resource.bioSampleCounts[sampleField.id];
 			}
 		});
