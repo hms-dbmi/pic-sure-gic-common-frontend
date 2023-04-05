@@ -52,6 +52,9 @@
         
 		</div>
 	</div>
+	<div class="container output-button-container" id="detail-gen-data-btn-container">
+		<a class="center btn btn-default initially-hidden" id="detail-gen-data-btn">Detailed Genomic Data</a>
+	</div>
 	<script>
 	$("#institution-genomicdata-arrow").click(function(){
 		if($("#institution-genomicdata-arrow").hasClass("glyphicon-chevron-right")){
@@ -70,7 +73,7 @@
 	<div id="biosamples-div" title="Total number of biosamples in GIC institutions matching your query.">
 		<span class="center large" id="biosamples-spinner-total">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 		<span id="biosamples-count" class="blue center large">{{#if queryRan}}{{totalBiospecimenss}}{{else}}0{{/if}}</span>
-		<span class="center medium">Patients with Biosamples</span>
+		<span class="center medium">Count of Biosamples</span>
 		<span class="icon expand-icon glyphicon glyphicon-chevron-right institution-arrow" id="institution-biosamples-arrow"></span>
 	</div>
 	<br><br>
@@ -101,7 +104,7 @@
 	});
 	</script>
 	
-	<div class="container output-button-container" id="moreInformation">
-		<a class="center btn btn-default initially-hidden" id="more-info-btn">More Information</a>
+	<div class="container output-button-container" id="detail-bio-data-btn-container">
+		<a class="center btn btn-default initially-hidden" id="detail-bio-data-btn">Detailed Biosample Data</a>
 	</div>
 </div>

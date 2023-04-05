@@ -36,16 +36,7 @@
 
         {{#if authenticated}}
         <a id="user-profile-btn" class="header-btn authenticated-visible" href="#" tabindex="-1" title="User Profile" aria-haspopup="true" aria-label="User Profile">User Profile</a>
-        <button data-intro="#help-header-button" data-sequence="14" class="dropdown-toggle nav-dropdown header-btn" aria-expanded="false" id="help-dropdown-toggle" tabindex="-1" title="Help" aria-label="Help dropwdown" aria-controls="help-menu-list">
-            <span>Help</span><i class="fa fa-caret-down" aria-hidden="true"></i>
-        </button>
-        <ul id="help-menu-list" class="nav-dropdown-menu" tabindex="-1">
-            {{#if videoLink}}<li class="dropdown"><a href="{{{videoLink}}}" target="_blank">Video Demonstration</a></li>{{/if}}
-            {{#if pdfLink}}<li class="dropdown"><a href="{{{pdfLink}}}" target="_blank">User Guide</a></li>{{/if}}
-            {{#if jupyterExampleLink}}<li class="dropdown"><a href="{{{jupyterExampleLink}}}" target="_blank">Jupyter Examples</a></li>{{/if}}
-            {{#if documentationLink}}<li id="documentation-option" class="dropdown" aria-label="External documentation, clicking here will open a link  in a new tab"><a href="{{{documentationLink}}}">External Documentation</a></li>{{/if}}
-            {{#if helpLink}}<li class="dropdown"><a href="{{{helpLink}}}" target="_blank">Contact Us</a></li>{{/if}}
-        </ul>
+        <a class="header-btn header-navigation" data-href="/picsureui/help" href="#" id="help-page-btn" tabindex="-1">Help</a>
         <a href="#" id="logout-btn" class="header-btn authenticated-visible" tabindex="-1" title="Log Out" aria-label="Log Out">Log Out</a>
         {{/if}}
 

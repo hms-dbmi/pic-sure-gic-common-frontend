@@ -93,3 +93,88 @@ body {
 .td {
 	white-space: pre-line;
 }
+
+/********** Help Page **********/
+
+#help-page {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 90%;
+	height: 80vh;
+	margin: auto;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#help-page .down {
+	margin-top: auto;
+}
+
+#help-page h1 {
+	font-weight: bold;
+	text-align: center;
+}
+
+#help-page h4 {
+	font-style: italic;
+}
+
+#help-page .help-options-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	width: 90%;
+	flex-wrap: wrap;
+}
+
+#help-page .blank-option {
+	width: 200px;
+	height: 200px;
+}
+
+#help-page .help-options-wrap-helper {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	margin-bottom: 32px;
+	width: 50%;
+}
+
+@media screen and (max-width: 1200px) {
+	#help-page .help-options-wrap-helper {
+		width: 100%
+	}
+}
+
+/***** Icon Buttons *****/
+
+.btn.icon-button {
+	border: 1px solid black;
+	color: black;
+	height: 200px;
+	width: 200px;
+	max-width: 200px;
+	display: flex;
+	flex-direction: column;
+	white-space: pre-wrap;
+	align-items: center;
+}
+
+.btn.icon-button:hover {
+	color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
+
+.btn.icon-button img {
+	width: 85px;
+}
+
+.btn.icon-button h6 {
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.btn.icon-button p {
+	font-size: 12px;
+}
