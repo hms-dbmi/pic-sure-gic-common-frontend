@@ -176,7 +176,6 @@ function($, BB, outputTemplate, settings, queryBuilder, modal, outputInfoModal){
 			$("#biosamples-spinner-" + resource.uuid).hide();
 			$("#biosamples-results-" + resource.uuid + "-count").html(resources[resource.uuid].biosampleCount.toLocaleString()); 
 			$("#biosamples-count").html(model.get("totalBiosamples").toLocaleString());
-			// $("#more-info-btn").show();
 			
 			if(_.every(resources, (resource)=>{return resource.bioQueryRan==true})){
 				model.set("bioSpinning", false);
@@ -381,8 +380,24 @@ function($, BB, outputTemplate, settings, queryBuilder, modal, outputInfoModal){
 	};
 });
 
-const genomicColumns = [{title:'Site', data: 'site'}, {title:'Patients with Genomic Data', data: 'patientCount'}, {title:'Clinically Certified WGS', data: 'clinicallycertifiedwgs'}, {title:'WGS', data: 'wgs'}, {title:'WES', data: 'wes'}, {title:'Low Coverage WGS', data: 'lowcoveragewgs'}, {title:'Genotype Array', data: 'genotypearray'}];
-const biosampleColumns = [{title:'Site', data: 'site'}, {title:'Number of Biosamples', data: 'patientCount'}, {title:'Whole blood', data: 'Wholeblood'}, {title:'Plasma', data: 'Plasma'}, {title:'Tissue', data: 'Tissue'}, {title:'CSF', data: 'CSF'}, {title:'Extracted DNA', data: 'DNA'}];
+const genomicColumns = [
+	{title:'Site', data: 'site'},
+	{title:'Patients with Genomic Data', data: 'patientCount'},
+	{title:'Clinically Certified WGS', data: 'clinicallycertifiedwgs'},
+	{title:'WGS', data: 'wgs'},
+	{title:'WES', data: 'wes'},
+	{title:'Low Coverage WGS', data: 'lowcoveragewgs'},
+	{title:'Genotype Array', data: 'genotypearray'},
+];
+const biosampleColumns = [
+	{title:'Site', data: 'site'},
+	{title:'Number of Biosamples', data: 'patientCount'},
+	{title:'Whole blood', data: 'Wholeblood'},
+	{title:'Plasma', data: 'Plasma'},
+	{title:'Tissue', data: 'Tissue'},
+	{title:'CSF', data: 'CSF'},
+	{title:'Extracted DNA', data: 'DNA'},
+];
 
 function createDatatable(resources, sampleFields, isGenomic) {
 	let sampleTableData = [];
