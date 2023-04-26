@@ -272,3 +272,7 @@ body {
 	align-items: center;
 	width: 100%;
 }
+
+#package-data .query-id-span {
+	width: 276px;
+}
