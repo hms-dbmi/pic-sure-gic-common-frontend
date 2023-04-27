@@ -71,7 +71,7 @@ define(['jquery',
     updateStatus = function(query, queryUUID) {
         let queryUrlFragment = "/" + queryUUID + "/status";
         let interval = 0;
-        query.query.expectedResultType = "TODO_DATAFRAME";
+        query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: window.location.origin + "/picsure/query" + queryUrlFragment,
@@ -150,7 +150,7 @@ define(['jquery',
              * This will send a query to PICSURE to evaluate and execute; it will not return results.  Use downloadData to do that.
              */
             let queryUrlFragment = '';
-            query.query.expectedResultType = "TODO_DATAFRAME";
+            query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
             return new Promise((resolve, reject) => {
                 $.ajax({
                     url: window.location.origin + "/picsure/query" + queryUrlFragment,
