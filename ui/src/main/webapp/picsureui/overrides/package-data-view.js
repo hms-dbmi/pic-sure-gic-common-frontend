@@ -50,7 +50,7 @@ define(['jquery',
                         $('#copy-query-ids-btn').removeClass('hidden');
                     }
                 }).catch((response)=>{
-                    updateStatusIcon(response.resourceUUID, 'ERROR', response.error);
+                    updateStatusIcon(response.resourceID, 'ERROR', response.error);
                 });
             }).catch((response) => {
                 index === responses.length-1 &&  queryIdSpinnerPromise.resolve();
