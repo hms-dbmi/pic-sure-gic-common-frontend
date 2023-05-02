@@ -8,6 +8,12 @@ define(['jquery',
             return package.queryAsync(safeCopyQuery);
         });
     };
+    handleUpdateStatusError = function(response) {
+        console.log("Error preparing async download: ");
+        console.dir(response);
+        const serverMsg = JSON.parse(response.responseText).message;
+        return `There was an error preparing your query on this institution.\nPlease try again later, if the problem persists please reach out to an admin.\n Message from server: ${serverMsg}`;
+    };
     createResourceDisplay = function(queryUUID, resourceID, name, status) {
         const container = $(`<div id="${resourceID}" class="resource-container"></div>`);
         container.append(`
@@ -23,8 +29,8 @@ define(['jquery',
         return container;
     };
     updateNodesStatus = function(package, responses, queryIdSpinnerPromise) {
-        responses.forEach((promise, index) => {
-            const resourcePromise = promise.then((response) => {
+        responses.map((promise, index) => {
+            promise.then((response) => {
                 const resource = package.model.get('resources').find(resource => resource.uuid === response.resourceID);
                 if (!package.cancelPendingPromises) {
                     const resourceIdContainer = createResourceDisplay(response.picsureResultId, resource.uuid, resource.name, response.status);
@@ -32,13 +38,15 @@ define(['jquery',
                 }
                 index === responses.length-1 &&  queryIdSpinnerPromise.resolve();
                 const safeCopyQuery = {...package.query, resourceUUID: resource.uuid};
-                return updateStatus(safeCopyQuery, response.picsureResultId).then(response => {
-                    updateStatusIcon(response.resourceUUID, response.status);
-                    if (response.status === "AVAILABLE" || response.status === "COMPLETE") {
+                const deffered = $.Deferred();
+                updateStatus(safeCopyQuery, response.picsureResultId, deffered);
+                deffered.then((statusResponse) => {
+                    updateStatusIcon(statusResponse.resourceID, statusResponse.status);
+                    if (statusResponse.status === "AVAILABLE" || statusResponse.status === "COMPLETE") {
                         $('#copy-query-ids-btn').removeClass('hidden');
                     }
                 }).catch((response)=>{
-                    updateStatusIcon(response.resourceUUID, 'ERROR', response.error);
+                    updateStatusIcon(response.resourceID, 'ERROR', response.error);
                 });
             }).catch((response) => {
                 index === responses.length-1 &&  queryIdSpinnerPromise.resolve();
@@ -68,38 +76,42 @@ define(['jquery',
             statusIcon.attr('title', message);
         }
     };
-    updateStatus = function(query, queryUUID) {
+    updateStatus = function(query, queryUUID, deffered) {
         let queryUrlFragment = "/" + queryUUID + "/status";
         let interval = 0;
         query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: window.location.origin + "/picsure/query" + queryUrlFragment,
-                type: 'POST',
-                headers: { "Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token },
-                contentType: 'application/json',
-                dataType: 'text',
-                data: JSON.stringify(query),
-                success: function (response) {
-                    const respJson = JSON.parse(response);
-                    if (!respJson.status || respJson.status === "ERROR") {
-                        return;
-                    } else if (respJson.status && (respJson.status === "AVAILABLE" || respJson.status === "COMPLETE")) {
-                        //resolve any waiting functions.
-                        resolve(respJson);
-                    }
-                    //check again, but back off at 2, 4, 6, ... 30 second (max) intervals
-                    interval = Math.min(interval + 2000, 30000);
-                    setTimeout(()=>updateStatus(query, queryUUID), interval);
-                },
-                error: function (response) {
-                    console.log("Error preparing async download: ");
-                    console.dir(response);
-                    const serverMsg = JSON.parse(response.responseText).message;
-                    const errMsg = `There was an error preparing your query on this institution.\nPlease try again later, if the problem persists please reach out to an admin.\n Message from server: ${serverMsg}`;
-                    reject({resourceUUID:query.resourceUUID, error: errMsg});
+        $.ajax({
+            url: window.location.origin + "/picsure/query" + queryUrlFragment,
+            type: 'POST',
+            headers: { "Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token },
+            contentType: 'application/json',
+            dataType: 'text',
+            data: JSON.stringify(query),
+            success: function (response) {
+                const respJson = JSON.parse(response);
+                if (!respJson.status || respJson.status === "ERROR") {
+                    const errMsg = handleUpdateStatusError(response);
+                    deffered.reject({resourceUUID:query.resourceUUID, error: errMsg});
+                    return;
+                } else if (respJson.status && (respJson.status === "AVAILABLE" || respJson.status === "COMPLETE")) {
+                    //resolve any waiting functions.
+                    deffered.resolve(respJson);
+                    return;
                 }
-            });
+                //check again, but back off at 2, 4, 6, ... 30 second (max) intervals
+                interval = Math.min(interval + 2000, 30000);
+                setTimeout(()=> {updateStatus(query, queryUUID, deffered)}, interval);
+            },
+            statusCode: { 401:function() {
+                const errMsg = handleUpdateStatusError(response);
+                deffered.reject({resourceUUID:query.resourceUUID, error: errMsg});
+                return;
+                }}, 
+            error: function (response) {
+                const errMsg = handleUpdateStatusError(response);
+                deffered.reject({resourceUUID:query.resourceUUID, error: errMsg});
+                return;
+            }
         });
     }
     return {
@@ -164,11 +176,17 @@ define(['jquery',
                         queryUUID = respJson.picsureResultId;
                         console.log("Async query submitted: " + queryUUID);
                         resolve(respJson);
+                        return;
                     },
+                    statusCode: { 401:function() {
+                        reject(query.resourceUUID);
+                        return;
+                    } }, 
                     error: function (response) {
                         console.log("Error preparing async download: ");
                         console.dir(response);
                         reject(query.resourceUUID);
+                        return;
                     }
                 });
             });
@@ -192,9 +210,9 @@ define(['jquery',
             this.addEvents(package);    
             package.copyReady = false;
             package.cancelPendingPromises = false;
-            let queryIdSpinnerPromise = $.Deferred();
+            const queryIdSpinnerPromise = $.Deferred();
             spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
-            let responses = callInstituteNodes(package);
+            const responses = callInstituteNodes(package);
             updateNodesStatus(package, responses, queryIdSpinnerPromise);
 		},
     };
