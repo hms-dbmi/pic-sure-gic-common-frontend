@@ -11,20 +11,20 @@ define(['jquery',
     handleUpdateStatusError = function(response) {
         console.log("Error preparing async download: ");
         console.dir(response);
-        const serverMsg = JSON.parse(response.responseText).message;
-        return `There was an error preparing your query on this institution.\nPlease try again later, if the problem persists please reach out to an admin.\n Message from server: ${serverMsg}`;
+        const serverMsg = response && response.responseText ? JSON.parse(response.responseText)?.message : 'No Message';
+        return `There was an error preparing your query on this institution.\nPlease try again later, if the problem persists please reach out to an admin.\nMessage from server: ${serverMsg}`;
     };
     createResourceDisplay = function(queryUUID, resourceID, name, status) {
         const container = $(`<div id="${resourceID}" class="resource-container"></div>`);
         container.append(`
-            <input type="checkbox" class="resource-checkbox" id="${resourceID}" ${status !== "ERROR" ? 'checked' : ''} />
+            <input type="checkbox" class="resource-checkbox tabable" id="${resourceID}" ${status !== "ERROR" ? 'checked' : ''} />
             <div class="resource-name">${name}</div>
             <input type="text" id="${resourceID}-queryid-span" class="query-id-span ${status}" value="${queryUUID}" readonly />
-            <i id="${resourceID}-status" class="fa-solid 
+            <i role="img" id="${resourceID}-status" class="fa-solid 
             ${(status === "ERROR" || status === '' || status === undefined) ? 
             'fa-circle-xmark error' : 
             (status === "COMPLETE" || status === "AVAILABLE") ? 
-            'fa-circle-check success' : 'fa-spinner fa-spin'}"></i>
+            'fa-circle-check success' : 'fa-spinner fa-spin'}" aria-label="${status}" ></i>
         `);
         return container;
     };
@@ -35,6 +35,10 @@ define(['jquery',
                 if (!package.cancelPendingPromises) {
                     const resourceIdContainer = createResourceDisplay(response.picsureResultId, resource.uuid, resource.name, response.status);
                     $('#queryIds').append(resourceIdContainer);
+                    $(`#${resource.uuid}`).change(function() {
+                        $('#copy-query-ids-btn').html('<span>Copy Dataset IDs</span>');
+                        $('#copy-query-ids-btn').addClass('tabable');
+                    });
                 }
                 index === responses.length-1 &&  queryIdSpinnerPromise.resolve();
                 const safeCopyQuery = {...package.query, resourceUUID: resource.uuid};
@@ -46,7 +50,7 @@ define(['jquery',
                         $('#copy-query-ids-btn').removeClass('hidden');
                     }
                 }).catch((response)=>{
-                    updateStatusIcon(response.resourceID, 'ERROR', response.error);
+                    updateStatusIcon(response.resourceUUID, 'ERROR', response.error);
                 });
             }).catch((response) => {
                 index === responses.length-1 &&  queryIdSpinnerPromise.resolve();
@@ -56,6 +60,7 @@ define(['jquery',
                 $('#queryIds').append(resourceIdContainer);
             });
         });
+        package.modal.createTabIndex();
     };
     updateStatusIcon = function(resourceID, status, message) {
         let statusIcon = $('#' + resourceID + '-status');
@@ -64,12 +69,15 @@ define(['jquery',
             case 'COMPLETE':
             case 'AVAILABLE':
                 statusIcon.addClass('success fa-circle-check');
+                statusIcon.attr('aria-label', 'Complete');
                 break;
             case 'ERROR':
                 statusIcon.addClass('error fa-circle-xmark');
+                statusIcon.attr('aria-label', 'Error');
                 break;
             default:
                 statusIcon.addClass('fa-spinner fa-spin');
+                statusIcon.attr('aria-label', 'In Progress');
                 break;
         }
         if (message) {
@@ -123,8 +131,7 @@ define(['jquery',
                 });
                 let queryIdsString = queryIds.join(',');
                 navigator.clipboard.writeText(queryIdsString);
-                const text = $('#copy-query-ids-btn').html();
-                $('#copy-query-ids-btn').html('<span>'+text+' </span><i class="fa-solid fa-circle-check success"></i>')
+                $('#copy-query-ids-btn').html('<span>Copied! </span><i class="fa-solid fa-circle-check success" role="img" aria-label="Success"></i>');
             });
     
             $('#finalize-btn').on('click', function(){
@@ -141,6 +148,9 @@ define(['jquery',
                 $('#queryIds').empty();
                 $('#finalize-btn').removeClass('hidden');
                 $('#copy-query-ids-btn').addClass('hidden');
+                $('#copy-query-ids-btn').addClass('tabable');
+                $('#copy-query-ids-btn').html('<span>Copy Dataset IDs</span>');
+                package.modal.createTabIndex();
                 package.cancelPendingPromises = true;
             });
         },

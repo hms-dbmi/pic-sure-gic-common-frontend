@@ -15,7 +15,7 @@
                 <div id="concept-tree"></div>
             </div>
         </section>
-        <section id="finalize-button-container" class="package-button-container"><button id="finalize-btn" class="btn btn-outline primary hidden">Finalize Dataset</button></section>
+        <section id="finalize-button-container" class="package-button-container"><button id="finalize-btn" class="btn btn-outline primary hidden tabable">Finalize Dataset</button></section>
         <section id="query-id-container">
             <span class="circle-border">2</span>
             <div class="soft-border">
@@ -30,9 +30,8 @@
             <span class="circle-border">3</span>
             <div class="soft-border center">
                 <p>By clicking “Request Access” you will be taken to the externally linked  Request Data and Biosamples RedCap form where you can submit your request for data and biosamples.</p>
-                <a class="btn btn-primary" id="prepare-btn">{{#if queryButtonLabel}}{{queryButtonLabel}}{{else}}Request Access{{/if}}</a>
+                <a class="btn btn-primary tabable" id="prepare-btn">{{#if queryButtonLabel}}{{queryButtonLabel}}{{else}}Request Access{{/if}}</a>
             </div>
         </section>
     </div>
 </div>
-<link rel="stylesheet" href="/picsureui/webjars/jstree/3.3.7/themes/default/style.min.css"></link>
