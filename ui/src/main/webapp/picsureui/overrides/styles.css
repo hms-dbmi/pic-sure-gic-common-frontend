@@ -22,7 +22,9 @@ body {
 }
 
 #top-header .logo-img {
-	max-width: fit-content;
+	width: auto;
+	height: auto;
+	padding: 0;
 }
 
 /* GIC has some longer names, so we make the login box wider */
