@@ -8,11 +8,11 @@ require.config({
   urlArgs: "release_date=03272020",
   paths: {
     jquery: 'webjars/jquery/3.3.1/jquery.min',
-    underscore: 'webjars/underscorejs/1.8.3/underscore-min',
+    underscore: 'webjars/underscore/1.13.6/underscore-min',
     handlebars: 'webjars/handlebars/4.0.5/handlebars.min',
     bootstrap: 'webjars/bootstrap/3.3.7-1/js/bootstrap.min',
     bootstrapStyles: 'webjars/bootstrap/3.3.7-1/css/bootstrap.min.css',
-    backbone: 'webjars/backbonejs/1.3.3/backbone-min',
+    backbone: 'webjars/backbone/1.4.1/backbone-min',
     text: 'webjars/requirejs-text/2.0.15/text',
     Noty: 'webjars/noty/3.1.4/lib/noty',
     userManagement: "userManagement/",
