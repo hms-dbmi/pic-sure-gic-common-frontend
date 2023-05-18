@@ -84,7 +84,7 @@ define(['jquery',
             statusIcon.attr('title', message);
         }
     };
-    updateStatus = function(query, queryUUID, deffered) {
+    updateStatus = function(query, queryUUID, deffered, interval = 0) {
         let queryUrlFragment = "/" + queryUUID + "/status";
         let interval = 0;
         query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
@@ -108,7 +108,7 @@ define(['jquery',
                 }
                 //check again, but back off at 2, 4, 6, ... 30 second (max) intervals
                 interval = Math.min(interval + 2000, 30000);
-                setTimeout(()=> {updateStatus(query, queryUUID, deffered)}, interval);
+                setTimeout(()=> {updateStatus(query, queryUUID, deffered, interval)}, interval);
             },
             statusCode: { 401:function() {
                 const errMsg = handleUpdateStatusError(response);
