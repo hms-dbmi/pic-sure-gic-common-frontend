@@ -7,7 +7,7 @@ require.config({
   baseUrl: "/psamaui/",
   urlArgs: "release_date=03272020",
   paths: {
-    jquery: 'webjars/jquery/3.3.1/jquery.min',
+    jquery: 'webjars/jquery/3.6.2/jquery.min',
     underscore: 'webjars/underscore/1.13.6/underscore-min',
     handlebars: 'webjars/handlebars/4.0.5/handlebars.min',
     bootstrap: 'webjars/bootstrap/3.3.7-1/js/bootstrap.min',
