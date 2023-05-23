@@ -2,7 +2,7 @@ require.config({
 	baseUrl: "/picsureui",
 	urlArgs: "release_date=03272020",
 	paths: {
-		jquery: 'webjars/jquery/3.5.1/dist/jquery.min',
+		jquery: 'webjars/jquery/3.6.2/dist/jquery.min',
 		autocomplete: 'webjars/devbridge-autocomplete/1.4.7/dist/jquery.autocomplete',
 		underscore: 'webjars/underscore/1.13.6/underscore-min',
 		handlebars: 'webjars/handlebars/1.8.3/underscore-min',
