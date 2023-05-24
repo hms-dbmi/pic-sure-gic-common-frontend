@@ -1,5 +1,5 @@
-define(["jquery", "backbone", "text!overrides/output/outputPanel.hbs", "picSure/settings", "picSure/queryBuilder", "common/modal", "overrides/output/outputInfoModal"],
-function($, BB, outputTemplate, settings, queryBuilder, modal, outputInfoModal){
+define(["jquery", "backbone", "underscore", "text!overrides/output/outputPanel.hbs", "picSure/settings", "picSure/queryBuilder", "common/modal", "overrides/output/outputInfoModal"],
+function($, BB, _, outputTemplate, settings, queryBuilder, modal, outputInfoModal){
 	
 	//track the resources using a map to look up by UUID
 	var resources = {};
