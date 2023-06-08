@@ -403,7 +403,7 @@ const biosampleColumns = [
 function createDatatable(resources, sampleFields, isGenomic) {
 	let sampleTableData = [];
 
-	ressources.forEach((resource) => {
+	resources.forEach((resource) => {
 		let row = {};
 		row.site = resource.name;
 		row.patientCount = isGenomic ? resource.genomicdataCount : resource.biosampleCount;
