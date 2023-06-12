@@ -1,0 +1,37 @@
+<div id="package-data">
+    <div>
+        <section id="data-summary">
+            <div class="data-summary-border">
+                <span>Dataset Summary:</span>
+                <span id="total-patients">N/A# Patients</span>
+                <span id="total-variables">N/A# Variables</span>
+                <span id="estimated-data-points">N/A# Estimated Data Points</span>
+            </div>
+        </section>
+        <section>
+            <span class="circle-border">1</span>
+            <div class="soft-border">
+                <div><strong>Select additional</strong> phenotypic <strong>variables</strong> you would like to be included in your filtered cohort dataset.</div>
+                <div id="concept-tree"></div>
+            </div>
+        </section>
+        <section id="finalize-button-container" class="package-button-container"><button id="finalize-btn" class="btn btn-outline primary hidden tabable">Finalize Dataset</button></section>
+        <section id="query-id-container">
+            <span class="circle-border">2</span>
+            <div class="soft-border">
+                <p>Your dataset ID will be needed for the Request Data and Biosamples form.
+                    Copy your dataset ID to your clipboard by clicking the Copy Dataset ID button.</p>
+                <div id="queryIds"></div>
+                 <div id="queryIdSpinner"></div>
+            </div>
+        </section>
+        <section id="copy-button-container" class="package-button-container"><button id="copy-query-ids-btn" class="btn btn-outline primary hidden">Copy Dataset IDs</button></section>
+        <section id="buttons" class="results-div">
+            <span class="circle-border">3</span>
+            <div class="soft-border center">
+                <p>By clicking “Request Access” you will be taken to the externally linked  Request Data and Biosamples RedCap form where you can submit your request for data and biosamples.</p>
+                <a class="btn btn-primary tabable" id="prepare-btn">{{#if queryButtonLabel}}{{queryButtonLabel}}{{else}}Request Access{{/if}}</a>
+            </div>
+        </section>
+    </div>
+</div>
