@@ -1,6 +1,6 @@
-define(["jquery", "backbone", "handlebars", "text!output/moreInformation.hbs", "text!options/modal.hbs", 
+define(["jquery", "backbone", "underscore", "handlebars", "text!output/moreInformation.hbs", "text!options/modal.hbs",
         "common/config", "common/spinner"],
-    function($, BB, HBS, moreInfoTemplate, modalTemplate, config, spinner){
+    function($, BB, _, HBS, moreInfoTemplate, modalTemplate, config, spinner){
 
 
         let moreInfoView = BB.View.extend({
