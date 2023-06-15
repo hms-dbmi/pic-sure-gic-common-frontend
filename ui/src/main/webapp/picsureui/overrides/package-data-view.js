@@ -86,7 +86,6 @@ define(['jquery',
     };
     updateStatus = function(query, queryUUID, deffered, interval = 0) {
         let queryUrlFragment = "/" + queryUUID + "/status";
-        let interval = 0;
         query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
         $.ajax({
             url: window.location.origin + "/picsure/query" + queryUrlFragment,
