@@ -399,24 +399,28 @@ const biosampleColumns = [
 	{title:'Extracted DNA', data: 'DNA'},
 ];
 
+
 function createDatatable(resources, sampleFields, isGenomic) {
 	let sampleTableData = [];
-	_.each(resources, function (resource) {
+
+	Object.keys(resources).forEach((resource) => {
 		let row = {};
-		row.site = resource.name;
-		row.patientCount = isGenomic ?  resource.genomicdataCount : resource.biosampleCount;
-		_.each(sampleFields, function (sampleField) {
+		row.site = resources[resource].name;
+		row.patientCount = isGenomic ? resources[resource].genomicdataCount : resources[resource].biosampleCount;
+
+		sampleFields.forEach(sampleField => {
 			if (isGenomic) {
-				row[sampleField.id] = resource.genomicdataCounts[sampleField.id];
-			} else if (resource.bioSampleCounts[sampleField.id]) {
-				row[sampleField.id] = resource.bioSampleCounts[sampleField.id];
+				row[sampleField.id] = resources[resource].genomicdataCounts[sampleField.id];
+			} else if (resources[resource].bioSampleCounts[sampleField.id]) {
+				row[sampleField.id] = resources[resource].bioSampleCounts[sampleField.id];
 			}
 		});
+
 		sampleTableData.push(row);
 	});
+
 	return {
 		columns: isGenomic ? genomicColumns : biosampleColumns,
 		data: sampleTableData
 	};
 }
-
