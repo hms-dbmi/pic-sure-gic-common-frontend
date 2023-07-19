@@ -278,3 +278,15 @@ body {
 #package-data .query-id-span {
 	width: 276px;
 }
+
+#package-data #message-text-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+}
+
+#package-data .message-text.error-message {
+	color: var(--picsure-error);
+}

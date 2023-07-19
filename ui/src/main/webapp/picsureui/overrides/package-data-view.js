@@ -1,6 +1,7 @@
 define(['jquery', 
         'common/spinner',
-], function($, spinner) {
+        'picSure/settings',
+], function($, spinner, settings) {
 
     callInstituteNodes = function(package) {
         return package.model.get('resources').map(resource => {
@@ -209,7 +210,31 @@ define(['jquery',
         /*
 		 * hook to allow overrides to customize the updateEstimations function
 		 */
-        updateEstimations: undefined,
+        updateEstimations: function(packageView, query) {
+            let queryToUse = query || packageView.query;
+            $('#total-patients', packageView.el).text(packageView.model.get('totalPatients') + " Patients");
+            let totalVariables = (Object.keys(queryToUse.query.categoryFilters)?.length + 
+                                    queryToUse.query.anyRecordOf?.length +
+                                    Object.keys(queryToUse.query.numericFilters)?.length + 
+                                    queryToUse.query.requiredFields?.length) || 0;
+            totalVariables += queryToUse.query?.fields?.length || 0;
+            totalVariables += queryToUse.query?.requiredFields?.length || 0;
+            $('#total-variables').text(totalVariables + " Variables");
+            $('#estimated-data-points').text(packageView.model.get('totalPatients') * totalVariables + " Estimated Data Points");
+            if (totalVariables != 0 && totalVariables > settings.exportVariableLimit) {
+                $('#finalize-btn')?.attr('disabled', true);
+                if (!$('#variables-exceded-message')?.length) {
+                    $("#message-text-container")?.append(
+                      '<p id="variables-exceded-message" class="message-text error-message"><i class="fa-solid fa-circle-exclamation"></i> NUMBER OF DATA POINTS EXCEEDED (' +
+                        settings.exportVariableLimit +
+                        "). Remove data selections</p>"
+                    );
+                }
+            } else {
+                $('#finalize-btn')?.attr('disabled', false);
+                $('#variables-exceded-message')?.remove();
+            }
+        },
         /*
 		 * hook to allow overrides to customize the updateQuery function
 		 */
