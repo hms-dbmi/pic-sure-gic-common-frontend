@@ -126,7 +126,9 @@ define(['jquery',
             $('#copy-query-ids-btn').on('click', function(){
                 let queryIds = [];
                 $('#queryIds').find('input[type="checkbox"]:checked').each(function(){
-                    queryIds.push($(this).parent().find('input[type="text"]').val());
+                    let siteCode = $(this).parent().find(".resource-name").text();
+                    let queryId = $(this).parent().find('input[type="text"]').val();
+                    queryIds.push(siteCode + ": " + queryId);
                 });
                 let queryIdsString = queryIds.join(',');
                 navigator.clipboard.writeText(queryIdsString);
