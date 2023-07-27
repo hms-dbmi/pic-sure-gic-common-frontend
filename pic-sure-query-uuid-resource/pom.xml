@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>edu.harvard.hms.avillach</groupId>
-	<artifactId>pic-sure-search-resource</artifactId>
-	<name>pic-sure-search-resource</name>
+	<artifactId>pic-sure-query-id-resource</artifactId>
+	<name>pic-sure-query-id-resource</name>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	
