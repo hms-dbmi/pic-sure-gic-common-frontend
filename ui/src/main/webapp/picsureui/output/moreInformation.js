@@ -22,18 +22,6 @@ define(["jquery", "backbone", "underscore", "handlebars", "text!output/moreInfor
 					$("#" + resource.uuid + "-patients").html("-");
 				}
             	
-//            	if( resource.genomicdataCount ){
-//					$("#" + resource.uuid + "-genomicdata").html( resource.genomicdataCount.toLocaleString() )
-//				} else {
-//					$("#" + resource.uuid + "-genomicdata").html("-");
-//				}
-//            	
-//            	if( resource.biosampleCount ){
-//					$("#" + resource.uuid + "-biosamples").html( resource.biosampleCount.toLocaleString() )
-//				} else {
-//					$("#" + resource.uuid + "-biosamples").html("-");
-//				}
-            	
             	_.each(this.genomicFields, function(genomicField){
 					if( resource.genomicdataCounts[genomicField.id] ){
 						$("#" + resource.uuid + "-" + genomicField.id).html( resource.genomicdataCounts[genomicField.id].toLocaleString() )

@@ -1,6 +1,7 @@
 define(['jquery', 
         'common/spinner',
-], function($, spinner) {
+        'picSure/settings',
+], function($, spinner, settings) {
 
     callInstituteNodes = function(package) {
         return package.model.get('resources').map(resource => {
@@ -84,6 +85,31 @@ define(['jquery',
             statusIcon.attr('title', message);
         }
     };
+    generateCommonAreaUUID = function(package) {
+        // TODO: get resource from resources even though its hidden
+        var uuidGenResourceID = settings.uuidGenResourceID;
+        var uuidGenURL = window.location.origin + "/picsure/query"
+        var uuidGenQuery = {
+            "resourceUUID":uuidGenResourceID,
+            "query":{}
+        };
+        $.ajax({
+            url: uuidGenURL,
+            type: 'POST',
+            headers: { "Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token },
+            contentType: 'application/json',
+            dataType: 'text',
+            data: JSON.stringify(uuidGenQuery),
+            success: function (response) {
+                const queryIdSpinnerPromise = $.Deferred();
+                spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
+                const responses = callInstituteNodes(package);
+                const respJson = JSON.parse(response);
+                package.query.commonAreaUUID = respJson.picsureResultId;
+                updateNodesStatus(package, responses, queryIdSpinnerPromise);
+            }
+        });
+    }
     updateStatus = function(query, queryUUID, deffered, interval = 0) {
         let queryUrlFragment = "/" + queryUUID + "/status?isInstitute=true";
         query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
@@ -136,12 +162,9 @@ define(['jquery',
             });
     
             $('#finalize-btn').on('click', function(){
-                let queryIdSpinnerPromise = $.Deferred();
-                spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
                 package.queryChangedCallback();
                 package.cancelPendingPromises = false;
-                let responses = callInstituteNodes(package);
-                updateNodesStatus(package, responses, queryIdSpinnerPromise);
+                generateCommonAreaUUID(package);
                 $('#finalize-btn').addClass('hidden');
             });
     
@@ -221,10 +244,7 @@ define(['jquery',
             this.addEvents(package);    
             package.copyReady = false;
             package.cancelPendingPromises = false;
-            const queryIdSpinnerPromise = $.Deferred();
-            spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
-            const responses = callInstituteNodes(package);
-            updateNodesStatus(package, responses, queryIdSpinnerPromise);
+            generateCommonAreaUUID(package);
 		},
     };
 });
