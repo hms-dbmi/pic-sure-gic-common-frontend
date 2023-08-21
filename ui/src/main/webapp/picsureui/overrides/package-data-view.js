@@ -105,7 +105,7 @@ define(['jquery',
                 spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
                 const responses = callInstituteNodes(package);
                 const respJson = JSON.parse(response);
-                package.query.commonAreaUUID = respJson.picsureResultId;
+                package.query.commonAreaId = respJson.picsureResultId;
                 updateNodesStatus(package, responses, queryIdSpinnerPromise);
             }
         });
