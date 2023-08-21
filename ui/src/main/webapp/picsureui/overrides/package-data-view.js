@@ -103,9 +103,9 @@ define(['jquery',
             success: function (response) {
                 const queryIdSpinnerPromise = $.Deferred();
                 spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
-                const responses = callInstituteNodes(package);
                 const respJson = JSON.parse(response);
                 package.query.commonAreaUUID = respJson.picsureResultId;
+                const responses = callInstituteNodes(package);
                 updateNodesStatus(package, responses, queryIdSpinnerPromise);
             }
         });
