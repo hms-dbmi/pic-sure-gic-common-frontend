@@ -287,3 +287,23 @@ div.filter-boolean-operator {
     text-align: center;
     padding-bottom: 1.5rem;
 }
+
+.info-container-section {
+    border: 1px solid #bdbdbd;
+    padding: 5px;
+    border-radius: 5px;
+    background: rgb(223, 238, 255);
+    margin-bottom: 10px;
+}
+
+.info-container-row {
+    border-bottom: 1px solid #a1a1a1;
+    margin: 0px;
+    padding-bottom: 4px;
+    padding-top: 4px;
+}
+
+.info-container-table {
+  padding-left: 0px;
+  padding-right: 0px;
+}
