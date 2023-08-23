@@ -279,6 +279,10 @@ body {
 	width: 276px;
 }
 
+div.filter-boolean-operator {
+    display: none;
+}
+
 #genomic-info-modal-header-text {
     text-align: center;
     padding-bottom: 1.5rem;
