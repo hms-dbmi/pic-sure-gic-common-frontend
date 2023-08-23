@@ -106,6 +106,8 @@ function($, BB, _, outputTemplate, settings, queryBuilder, modal, outputInfoModa
 		 * the output panel, define it here.
 		 */
 		viewOverride : 	undefined,
+
+		titleOverride: "Select Data for Research Analysis",
 		/*
 		 * In case you want to change the update logic, but not the rendering or
 		 * anything else, you can define a function that takes an incomingQuery
