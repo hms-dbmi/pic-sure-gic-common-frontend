@@ -278,3 +278,8 @@ body {
 #package-data .query-id-span {
 	width: 276px;
 }
+
+#genomic-info-modal-header-text {
+    text-align: center;
+    padding-bottom: 1.5rem;
+}
