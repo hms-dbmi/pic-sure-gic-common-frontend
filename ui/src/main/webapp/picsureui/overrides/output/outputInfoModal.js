@@ -25,6 +25,14 @@ define(["backbone", "handlebars", 'text!overrides/output/outputInfoModal.hbs'],
                     }
                 ]
             });
+
+            // The modal doesn't know what type of modal it is. Quick hack to show correct text!
+            // sorry future Luke
+            if ($('.modal-title').text() === 'Detailed Genomic Data') {
+                $('#genomic-info-modal-header-text').css("display","");
+            } else if ($('.modal-title').text() === 'Detailed Biosample Data') {
+                $('#biosample-info-modal-header-text').css("display","");
+            }
         }
     });
     return view;
