@@ -307,3 +307,73 @@ div.filter-boolean-operator {
   padding-left: 0px;
   padding-right: 0px;
 }
+
+.institutes-header {
+    border-bottom: 1px solid #e6e6e6;
+    color: grey;
+    margin-right: 10px;
+}
+
+.variant-explorer-main-content-container {
+    color: grey;
+    border-left: 1px solid #e6e6e6;
+    padding-left: 10px;
+}
+
+.variant-explorer-left-gutter {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#variant-explorer-modal-title {
+    border-bottom: 1px solid #e6e6e6;
+    padding-bottom: 10px;
+}
+
+.institutes-header h2 {
+    text-align: center;
+}
+
+.institute {
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    margin-bottom: 5px;
+}
+
+.institutes-container {
+    margin-left: 0px;
+}
+
+.institute h3 {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    text-align: center;
+    color: grey;
+}
+
+.inactive-institute:hover {
+    background: #e6e6e6;
+}
+
+.active-institute {
+    background: rgb(223, 238, 255);
+}
+
+
+#variant-download-btn {
+    padding-left: 20%;
+    font-size: 18px;
+}
+
+#variant-explorer-modal-title-container {
+    display: flex;
+    flex-direction: row;
+    justify-items: start;
+    align-items: center;
+    height: 100%;
+}
+
+#variant-explorer-modal-title-container h4 {
+    color: grey;
+    font-size: 30px;
+}
