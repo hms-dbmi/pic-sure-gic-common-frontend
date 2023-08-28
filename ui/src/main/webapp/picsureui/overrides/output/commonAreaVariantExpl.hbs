@@ -1,0 +1,19 @@
+<div class="container" style="margin: 0px;">
+    <div class="col-md-2 variant-explorer-left-gutter">
+        <div class="institutes-header">
+            <h2>Institution</h2>
+        </div>
+        <div class="container institutes-container">
+            {{#each resources}}
+                <div id="{{uuid}}" class="col-md-12 inactive-institute institute">
+                    <h3>{{name}}</h3>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+    <div class="col-md-10 variant-explorer-main-content-container">
+        <h2 id="variant-explorer-modal-title">Variant Data</h2>
+        <div class="variant-explorer-main-content"></div>
+    </div>
+</div>
+
