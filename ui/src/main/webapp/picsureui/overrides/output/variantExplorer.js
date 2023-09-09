@@ -75,7 +75,10 @@ define([
                     modalTitleSelector: '#variant-explorer-modal-title'
                 });
                 base.render();
+
+                // clean up old header
                 $('.modal-header').css('display', 'none');
+                $(".modal-body").prepend($("#close-modal-button"));
             }
         });
         return variantExplorerView;
