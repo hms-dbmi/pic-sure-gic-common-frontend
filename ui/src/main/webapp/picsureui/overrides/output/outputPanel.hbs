@@ -1,4 +1,8 @@
-<div id="patient-count-box">
+<div class="panel panel-default">
+	<div class="panel-heading">
+        <h4 class="panel-title">Results Panel</h4>
+	</div>
+	<div id="patient-count-box">
 	<div id="enrolled-patients" title="Total number of patients in GIC institutions matching your query.">
 		<span class="center large" id="patient-spinner-total">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 		<span id="patient-count" class="blue center large">{{#if queryRan}}{{totalPatients}}{{else}}0{{/if}}</span>
@@ -116,4 +120,6 @@
 	<div class="container output-button-container" id="detail-bio-data-btn-container">
 		<a class="center btn btn-default" id="select-btn">Finalize Dataset &#38; Request Access</a>
 	</div>
+</div>
+
 </div>

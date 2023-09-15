@@ -38,7 +38,7 @@ body {
 }
 
 #main-content {
-	width: 90%;
+	width: 95%;
 }
 
 #header-underline {
@@ -70,7 +70,6 @@ body {
 .container {
     padding-right: 0;
     padding-left: 0;
-    width: 90%;
     padding-top: 10;
 }
 
@@ -277,10 +276,6 @@ body {
 
 #package-data .query-id-span {
 	width: 276px;
-}
-
-div.filter-boolean-operator {
-    display: none;
 }
 
 #genomic-info-modal-header-text {
