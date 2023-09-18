@@ -15,10 +15,15 @@
 
 body {
 	font-family: "Varela Round", "Nunito Sans", sans-serif;
+	background-color: #FFF;
 }
 
 #header-content {
 	padding: 0;
+}
+
+#top-header {
+	background-color: #FFF;
 }
 
 #top-header .logo-img {
@@ -41,12 +46,45 @@ body {
 	width: 90%;
 }
 
+.large {
+	font-size: 30px;
+}
+
 #header-underline {
 	width: 100%;
 	padding: 0;
 	margin: 0;
 	background-color: var(--picsure-dark);
 	border-top: 1px solid var(--picsure-dark);
+}
+
+#patient-count-box  {
+	padding-bottom: 16px;
+}
+
+#patient-count-box .panel-heading {
+	text-align: center;
+	margin-bottom: 8px;
+}
+
+#patient-count-box .panel-heading h3 {
+	margin: 0 auto;
+}
+
+.output-detail-text {
+	padding: 8px 0;
+}
+
+#selected-genomic-filter .panel {
+	background-color: none;
+}
+
+#selected-genomic-filter .panel .panel-heading {
+	background-color: #fff;
+}
+
+#detail-gen-data-btn {
+	margin-bottom: 8px;
 }
 
 /* result boxes are initially hidden */
@@ -61,10 +99,8 @@ body {
 .result-list {
 	margin-top: 10px;
 	margin-bottom: 10px;
-}
-
-#patient-count-box {
-	padding: 5px 0px 10px 0px;
+	border: 1px solid var(--picsure-primary);
+	border-radius: 5px;
 }
 
 .container {
@@ -84,10 +120,6 @@ body {
 
 .glyphicon {
 	color: gray;
-}
-
-.output-button-container {
-	margin-top: 10px;
 }
 
 .infotable-head {
@@ -277,10 +309,6 @@ body {
 
 #package-data .query-id-span {
 	width: 276px;
-}
-
-div.filter-boolean-operator {
-    display: none;
 }
 
 #genomic-info-modal-header-text {
