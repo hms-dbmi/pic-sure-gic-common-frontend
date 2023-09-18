@@ -49,6 +49,10 @@ define([
             },
 
             render: function() {
+                // make sure close button isn't deleted by moving it to a stable node
+                if ($("#close-modal-button").parent().attr('class') !== 'modal-header') {
+                    $(".modal-header").append($("#close-modal-button"));
+                }
                 // make sure resource is set
                 if (!resources || !resources.length) {
                     updateResourceInfo();
