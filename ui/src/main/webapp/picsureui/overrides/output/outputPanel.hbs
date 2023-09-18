@@ -1,12 +1,11 @@
-<div class="panel panel-default">
+<div id="patient-count-box" class="panel panel-default">
 	<div class="panel-heading">
-        <h4 class="panel-title">Results Panel</h4>
+		<h3>Results Panel</h3>
 	</div>
-	<div id="patient-count-box">
 	<div id="enrolled-patients" title="Total number of patients in GIC institutions matching your query.">
 		<span class="center large" id="patient-spinner-total">{{#if spinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 		<span id="patient-count" class="blue center large">{{#if queryRan}}{{totalPatients}}{{else}}0{{/if}}</span>
-		<span class="center medium">Patients</span>
+		<span class="center medium output-detail-text">Patients</span>
 		<span class="icon expand-icon glyphicon glyphicon-chevron-right institution-arrow" id="institution-patients-arrow"></span>
 	</div>
 	<br><br>
@@ -39,7 +38,7 @@
 	<div id="genomicdata-div" title="Total number of patients matching your query with genomic data available in GIC institutions.">
 		<span class="center large" id="genomicdata-spinner-total">{{#if genomicSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 		<span id="genomicdata-count" class="blue center large">{{#if genomicQueryRan}}{{totaltotalGenomicdata}}{{else}}0{{/if}}</span>
-		<span class="center medium">Patients with Genomic Data</span>
+		<span class="center medium output-detail-text">Patients with Genomic Data</span>
 		<span class="icon expand-icon glyphicon glyphicon-chevron-right institution-arrow" id="institution-genomicdata-arrow"></span>
 	</div>
 	<br><br>
@@ -80,7 +79,7 @@
 	<div id="biosamples-div" title="Total number of biosamples in GIC institutions matching your query.">
 		<span class="center large" id="biosamples-spinner-total">{{#if bioSpinning}}{{> spinner spinnerClasses}}{{/if}}</span>
 		<span id="biosamples-count" class="blue center large">{{#if queryRan}}{{totalBiospecimenss}}{{else}}0{{/if}}</span>
-		<span class="center medium">Count of Biosamples</span>
+		<span class="center medium output-detail-text">Count of Biosamples</span>
 		<span class="icon expand-icon glyphicon glyphicon-chevron-right institution-arrow" id="institution-biosamples-arrow"></span>
 	</div>
 	<br><br>
@@ -120,6 +119,4 @@
 	<div class="container output-button-container" id="detail-bio-data-btn-container">
 		<a class="center btn btn-default" id="select-btn">Finalize Dataset &#38; Request Access</a>
 	</div>
-</div>
-
 </div>
