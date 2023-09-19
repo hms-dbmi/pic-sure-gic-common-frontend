@@ -3,6 +3,7 @@
     --picsure-secondary: #74C449;
     --picsure-alt: #328FFF;
 	--picsure-error: #FF0000;
+	--picsure-tertiary: #FFBC35;
     /* --picsure-other: #90a8a4;
     --picsure-lite: #90a8a4;
     --picsure-dark: #333333; */
@@ -54,13 +55,13 @@ body {
 	border-top: 1px solid var(--picsure-dark);
 }
 
-#patient-count-box  {
-	padding-bottom: 16px;
-}
-
 #patient-count-box .panel-heading {
 	text-align: center;
 	margin-bottom: 8px;
+}
+
+.space-out i.fa-question-circle {
+    color: var(--picsure-tertiary);
 }
 
 #patient-count-box .panel-heading h3 {
