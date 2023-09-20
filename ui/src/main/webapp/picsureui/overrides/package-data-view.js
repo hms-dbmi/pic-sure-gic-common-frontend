@@ -4,8 +4,8 @@ define(['jquery',
 ], function($, spinner, settings) {
 
     callInstituteNodes = function(package) {
-        return package.model.get('resources').map(resource => {
-            const safeCopyQuery = {...package.query, resourceUUID: resource.uuid};
+        return package.outputModel.get('resources').map(resource => {
+            const safeCopyQuery = {...package.exportModel.get('query'), resourceUUID: resource.uuid};
             return package.queryAsync(safeCopyQuery);
         });
     };
@@ -32,7 +32,7 @@ define(['jquery',
     updateNodesStatus = function(package, responses, queryIdSpinnerPromise) {
         responses.map((promise, index) => {
             promise.then((response) => {
-                const resource = package.model.get('resources').find(resource => resource.uuid === response.resourceID);
+                const resource = package.outputModel.get('resources').find(resource => resource.uuid === response.resourceID);
                 if (!package.cancelPendingPromises) {
                     const resourceIdContainer = createResourceDisplay(response.picsureResultId, resource.uuid, resource.name, response.status);
                     $('#queryIds').append(resourceIdContainer);
@@ -42,7 +42,7 @@ define(['jquery',
                     });
                 }
                 index === responses.length-1 &&  queryIdSpinnerPromise.resolve();
-                const safeCopyQuery = {...package.query, resourceUUID: resource.uuid};
+                const safeCopyQuery = {...package.exportModel.get('query'), resourceUUID: resource.uuid};
                 const deffered = $.Deferred();
                 updateStatus(safeCopyQuery, response.picsureResultId, deffered);
                 deffered.then((statusResponse) => {
@@ -56,7 +56,7 @@ define(['jquery',
             }).catch((response) => {
                 index === responses.length-1 &&  queryIdSpinnerPromise.resolve();
                 console.error('UpdateNodesStatus for ' + response + ' Failed');
-                const resource = package.model.get('resources').find(resource => resource.uuid === response);
+                const resource = package.outputModel.get('resources').find(resource => resource.uuid === response);
                 const resourceIdContainer = createResourceDisplay(`${resource.name} returned an error`, resource.uuid, resource.name, 'ERROR');
                 $('#queryIds').append(resourceIdContainer);
             });
@@ -104,7 +104,7 @@ define(['jquery',
                 const queryIdSpinnerPromise = $.Deferred();
                 spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
                 const respJson = JSON.parse(response);
-                package.query.commonAreaUUID = respJson.picsureResultId;
+                package.exportModel.set('query.commonAreaUUID', respJson.picsureResultId);
                 const responses = callInstituteNodes(package);
                 updateNodesStatus(package, responses, queryIdSpinnerPromise);
             }
