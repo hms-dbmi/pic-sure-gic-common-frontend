@@ -1,18 +1,18 @@
 <div id="help-page">
     <h1 class="help-page-title">Welcome to the GIC Knowledge Center!</h1>
-    <h4 class="help-page-subtitle">Self service learning resources</h4>
+    <h4 class="help-page-subtitle">Self-service learning resources</h4>
     <hr>
     <div class="help-options-container">
         <div class="help-options-wrap-helper">
+            <a id="collaborators-btn" class="btn icon-button" href="https://redcap.link/GIC_Data_Samples_Access_Requests" aria-label="External Link to a lit of access requests. This will open in a new tab." target="_blank">
+                <img src="/images/cool-science-stuff.png" alt="A microscope and a double helix. Science stuff.">
+                <h6>Project Database</h6>
+                <p>Curious about ongoing GIC projects? Click here to view!</p>
+            </a>
             <a id="user-information-btn" class="btn icon-button" href="https://pic-sure.gitbook.io/genomic-information-commons/" aria-label="External Link to the user guide. This will open in a new tab." target="_blank">
                 <img src="/images/user-guide.png" alt="A User guide">
                 <h6>User Information</h6>
                 <p>Instructions for every step of your GIC journey</p>
-            </a>
-            <a id="collaborators-btn" class="btn icon-button" href="https://pic-sure.gitbook.io/genomic-information-commons/user-journey/find-research-collaborators" aria-label="External Link to the user guide. This will open in a new tab." target="_blank">
-                <img src="/images/teamwork.png" alt="Researches working together">
-                <h6>Find Collaborators</h6>
-                <p>Find participating investigators by research topic or institution</p>
             </a>
         </div>
         <div class="help-options-wrap-helper">
@@ -21,22 +21,10 @@
                 <h6>Video Library</h6>
                 <p>Example “how to” video demonstrations</p>
             </a>
-            <a id="assistance-btn" class="btn icon-button" href="https://bch-gic.atlassian.net/servicedesk/customer/portal/1/group/-1" aria-label="External Link to the user guide. This will open in a new tab." target="_blank">
-                <img src="/images/help.png" alt="Raised hands that have letters spelling the word help">
-                <h6>Request Assistance</h6>
-                <p>Can’t find an answer? Submit a question or request, we are here to help!</p>
-            </a>
-        </div>
-        <div class="help-options-wrap-helper">
-            <a id="bug-btn" class="btn icon-button" href="https://bch-gic.atlassian.net/servicedesk/customer/portal/1/group/1/create/6" aria-label="External Link to the user guide. This will open in a new tab." target="_blank">
-                <img src="/images/bug.png" alt="A bug with a wrench overlayed on top of it">
-                <h6>Report a Bug</h6>
-                <p>Notify the GIC support team of the problem you are experiencing</p>
-            </a>
-            <a id="improvemnet-btn" class="btn icon-button" href="https://bch-gic.atlassian.net/servicedesk/customer/portal/1/group/1/create/8" aria-label="External Link to the user guide. This will open in a new tab." target="_blank">
-                <img src="/images/performance.png" alt="A graph going up">
-                <h6>Suggest an Improvement</h6>
-                <p>Have an idea for how we can improve? Submit your idea here!</p>
+            <a id="collaborators-btn" class="btn icon-button" href="https://pic-sure.gitbook.io/genomic-information-commons/user-journey/find-research-collaborators" aria-label="External Link to the user guide. This will open in a new tab." target="_blank">
+                <img src="/images/teamwork.png" alt="Researches working together">
+                <h6>Find Collaborators</h6>
+                <p>Find participating investigators by research topic or institution</p>
             </a>
         </div>
         <div class="help-options-wrap-helper">
@@ -45,15 +33,23 @@
                 <h6>Feature Request</h6>
                 <p>Have an idea for a new feature? Submit your idea here, we're all ears!</p>
             </a>
-            {{#contains privileges 'ADMIN'}}
-            <a id="training-btn" class="btn icon-button" href="https://bch-gic.atlassian.net/wiki/display/GS/customcontent/list/ac%3Acom.mute.confluence.plugins.lms%3Acourse-type" aria-label="External Link to administrator training. This will open in a new tab." target="_blank">
-                <img src="/images/dissertation.png" alt="A graduation cap overlaying books">
-                <h6>Administrator Training</h6>
-                <p>Learn all things GIC through the admin training modules</p>
+            <a id="improvemnet-btn" class="btn icon-button" href="https://bch-gic.atlassian.net/servicedesk/customer/portal/1/group/1/create/8" aria-label="External Link to the user guide. This will open in a new tab." target="_blank">
+                <img src="/images/performance.png" alt="A graph going up">
+                <h6>Suggest an Improvement</h6>
+                <p>Have an idea for how we can improve? Submit your idea here!</p>
             </a>
-            {{else}}
-                <div class="blank-option"></div>
-            {{/contains}}
+        </div>
+        <div class="help-options-wrap-helper">
+            <a id="bug-btn" class="btn icon-button" href="https://bch-gic.atlassian.net/servicedesk/customer/portal/1/group/1/create/6" aria-label="External Link to the user guide. This will open in a new tab." target="_blank">
+                <img src="/images/bug.png" alt="A bug with a wrench overlayed on top of it">
+                <h6>Report a Bug</h6>
+                <p>Notify the GIC support team of the problem you are experiencing</p>
+            </a>
+            <a id="assistance-btn" class="btn icon-button" href="https://bch-gic.atlassian.net/servicedesk/customer/portal/1/group/-1" aria-label="External Link to the user guide. This will open in a new tab." target="_blank">
+                <img src="/images/help.png" alt="Raised hands that have letters spelling the word help">
+                <h6>Request Assistance</h6>
+                <p>Can’t find an answer? Submit a question or request, we are here to help!</p>
+            </a>
         </div>
     </div>
     <a class="down" href="https://www.flaticon.com/collections/30022806" title="Icons" target="_blank">Icons created by Freepik, Unicon Labs, and Pixel perfect - Flaticon</a>
