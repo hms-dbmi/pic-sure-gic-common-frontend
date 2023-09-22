@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import javax.ejb.Singleton;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -18,8 +21,6 @@ import edu.harvard.dbmi.avillach.data.repository.ResourceRepository;
 import edu.harvard.dbmi.avillach.domain.*;
 import edu.harvard.dbmi.avillach.service.IResourceRS;
 import edu.harvard.dbmi.avillach.service.ResourceWebClient;
-import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
-import edu.harvard.dbmi.avillach.util.exception.ResourceInterfaceException;
 
 @Path("/")
 @Produces("application/json")
@@ -164,6 +165,34 @@ public class SearchResourceRS implements IResourceRS {
 				.setSearchQuery(searchRequest.getQuery().toString());
 	}
 
+	@GET
+	@Path("/search/values/")
+	@Override
+	public PaginatedSearchResult<String> searchGenomicConceptValues(
+			@QueryParam("genomicConceptPath") String genomicConceptPath,
+			@QueryParam("query") String query,
+			@QueryParam("page") int page,
+			@QueryParam("size") int size
+	) {
+		if (page < 1) {
+			throw new IllegalArgumentException("Page must be greater than 0");
+		}
+		if (size < 1) {
+			throw new IllegalArgumentException("Size must be greater than 0");
+		}
+		SearchColumnMeta infoCol = mergedInfoStoreColumns.get(genomicConceptPath);
+		if (infoCol != null) {
+			List<String> allResults =  infoCol.getCategoryValues().stream()
+					.filter(variableValue -> variableValue.toUpperCase().contains(query.toUpperCase()))
+					.collect(Collectors.toList());;
+			int start = Math.min((page - 1) * size, allResults.size());
+			int end = Math.min(page * size, allResults.size());
+			List<String> results = allResults.subList(start, end);
+			return new PaginatedSearchResult<>(results, page, allResults.size());
+		}
+		throw new IllegalArgumentException("No such genomic concept path: " + genomicConceptPath);
+	}
+
 	/**
 	 * This method queries the database for valid resources, and retrieves a complete listing of all phenotype and info columns.
 	 * These data responses are then combined into a single merged ontology that is used to search for concepts across all resources.
@@ -297,7 +326,8 @@ public class SearchResourceRS implements IResourceRS {
 	/**
 	 * compare two sets of concept meta data and return a set of ranges or values encompassing all values
 	 * @param conceptMeta
-	 * @param value
+	 * @param searchColumnMeta
+	 * @param resourceName
 	 * @return
 	 */
 	private static SearchColumnMeta updatePhenoMetaData(Map<String, Object> conceptMeta, SearchColumnMeta searchColumnMeta, String resourceName) {

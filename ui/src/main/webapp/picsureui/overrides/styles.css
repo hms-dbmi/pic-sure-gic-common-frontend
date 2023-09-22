@@ -47,6 +47,10 @@ body {
 	font-size: 30px;
 }
 
+.large {
+	font-size: 30px;
+}
+
 #header-underline {
 	width: 100%;
 	padding: 0;
