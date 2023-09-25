@@ -1,7 +1,6 @@
 package edu.harvard.hms.dbmi.avillach.resource.search;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
@@ -10,12 +9,12 @@ import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.core.HttpHeaders;
 
+import edu.harvard.dbmi.avillach.domain.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -26,24 +25,28 @@ import org.apache.http.entity.StringEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 
-import edu.harvard.dbmi.avillach.domain.QueryFormat;
-import edu.harvard.dbmi.avillach.domain.QueryRequest;
-import edu.harvard.dbmi.avillach.domain.QueryStatus;
-import edu.harvard.dbmi.avillach.domain.ResourceInfo;
-import edu.harvard.dbmi.avillach.domain.SearchResults;
 import edu.harvard.dbmi.avillach.util.PicSureStatus;
 import edu.harvard.dbmi.avillach.util.exception.ProtocolException;
 import edu.harvard.dbmi.avillach.util.exception.ResourceInterfaceException;
-import edu.harvard.hms.dbmi.avillach.resource.search.SearchResourceRS;
 
 @ExtendWith(MockitoExtension.class)
 class SearchResourceRSTest {
 
+	@Mock
+	HttpHeaders headers;
+
+	@Mock
+	Map<String, SearchColumnMeta> mergedInfoStoreColumns;
+
+	@InjectMocks
 	SearchResourceRS resource;
 	ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -98,8 +101,8 @@ class SearchResourceRSTest {
 //		lenient().doCallRealMethod().when(httpClient).composeURL(anyString(), anyString());
 //		lenient().doCallRealMethod().when(httpClient).readObjectFromResponse(any(HttpResponse.class), any());
 //		lenient().doCallRealMethod().when(httpClient).throwResponseError(any(HttpResponse.class), anyString());
-
-//		resource = new SearchResourceRS(appProperties, httpClient);
+		resource = new SearchResourceRS();
+		mergedInfoStoreColumns = new HashMap<>();
 	}
 
 	@Test
@@ -308,6 +311,39 @@ class SearchResourceRSTest {
 		QueryRequest queryRequest = newQueryRequest(queryText);
 		SearchResults returnVal = resource.search(queryRequest);
 		assertEquals(queryText, returnVal.getSearchQuery());
+	}
+
+	@Test
+	public void testInvalidPage() {
+		UUID resourceId = UUID.randomUUID();
+		QueryRequest searchQueryRequest = new QueryRequest();
+		String genomicConceptPath = "examplePath";
+		String query = "exampleQuery";
+		int page = 0; // Invalid page
+		try {
+			resource.searchGenomicConceptValues(
+					genomicConceptPath, query, page, 10);
+			fail("Expected IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			// Expected
+		}
+	}
+
+	@Test
+	public void testInvalidSize() {
+		UUID resourceId = UUID.randomUUID();
+		QueryRequest searchQueryRequest = new QueryRequest();
+		String genomicConceptPath = "examplePath";
+		String query = "exampleQuery";
+		int page = 1;
+		int size = 0; // Invalid size
+		try {
+			resource.searchGenomicConceptValues(
+					genomicConceptPath, query, page, size);
+			fail("Expected IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			// Expected
+		}
 	}
 
 	private ResourceInfo newResourceInfo() {
