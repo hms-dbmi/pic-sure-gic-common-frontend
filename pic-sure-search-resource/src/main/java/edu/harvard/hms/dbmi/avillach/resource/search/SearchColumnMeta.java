@@ -17,7 +17,7 @@ public class SearchColumnMeta implements Serializable{
 	private Boolean continuous;  
 	private Set<String> categoryValues;
 	private Double min, max;
-//	private int observationCount;
+	private Integer observationCount;
 //	private int patientCount;
 	
 	/**
@@ -52,14 +52,14 @@ public class SearchColumnMeta implements Serializable{
 		this.categorical = !isNumber;
 		return this;
 	}
-//	
-//	public long getObservationCount() {
-//		return observationCount;
-//	}
-//	public SearchColumnMeta setObservationCount(int length) {
-//		this.observationCount = length;
-//		return this;
-//	}
+	
+	public Integer getObservationCount() {
+		return observationCount;
+	}
+	public SearchColumnMeta setObservationCount(int length) {
+		this.observationCount = length;
+		return this;
+	}
 //
 //	public long getPatientCount() {
 //		return patientCount;

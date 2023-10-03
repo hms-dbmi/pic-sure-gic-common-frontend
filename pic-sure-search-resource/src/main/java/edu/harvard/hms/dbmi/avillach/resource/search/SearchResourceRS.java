@@ -367,6 +367,12 @@ public class SearchResourceRS implements IResourceRS {
 				searchColumnMeta.setMax( (double)conceptMeta.get("max"));
 			}
 		}
+
+		if (searchColumnMeta.getObservationCount() == null) {
+			searchColumnMeta.setObservationCount((int)conceptMeta.get("observationCount"));
+		} else {
+			searchColumnMeta.setObservationCount(searchColumnMeta.getObservationCount() + (int)conceptMeta.get("observationCount"));
+		}
 		
 		searchColumnMeta.getResourceAvailability().add(resourceName);
 		return searchColumnMeta;
