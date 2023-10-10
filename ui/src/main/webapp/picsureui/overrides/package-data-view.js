@@ -104,7 +104,9 @@ define(['jquery',
                 const queryIdSpinnerPromise = $.Deferred();
                 spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
                 const respJson = JSON.parse(response);
-                package.exportModel.set('query.commonAreaUUID', respJson.picsureResultId);
+                const query = package.exportModel.get('query');
+                query.commonAreaUUID = respJson.picsureResultId;
+                package.exportModel.set('query', query);
                 const responses = callInstituteNodes(package);
                 updateNodesStatus(package, responses, queryIdSpinnerPromise);
             }
