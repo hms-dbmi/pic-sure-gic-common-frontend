@@ -39,7 +39,7 @@ public class QueryIDService {
 
         Query query = new Query();
         query.setResource(resource);
-        query.setStatus(PicSureStatus.ERROR);
+        query.setStatus(PicSureStatus.FEDERATED);
         query.setQuery(queryJson);
 
         queryRepository.persist(query);
