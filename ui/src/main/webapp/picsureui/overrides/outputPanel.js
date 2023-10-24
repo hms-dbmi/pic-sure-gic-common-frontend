@@ -1,5 +1,5 @@
-define(["jquery", "backbone", "underscore", "text!overrides/output/outputPanel.hbs", "picSure/settings", "picSure/queryBuilder", "common/modal", "overrides/output/outputInfoModal"],
-function($, BB, _, outputTemplate, settings, queryBuilder, modal, outputInfoModal){
+define(["jquery", "backbone", "underscore", "text!overrides/output/outputPanel.hbs", "picSure/settings", "picSure/queryBuilder", "common/modal", "overrides/output/outputInfoModal", "common/transportErrors"],
+function($, BB, _, outputTemplate, settings, queryBuilder, modal, outputInfoModal, transportErrors){
 	
 	//track the resources using a map to look up by UUID
 	var resources = {};
@@ -370,7 +370,7 @@ function($, BB, _, outputTemplate, settings, queryBuilder, modal, outputInfoModa
 				 	headers: {"Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token},
 				 	contentType: 'application/json',
 				 	data: JSON.stringify(query),
-				 	statusCode: { 401:function() { } },   //NOOP - don't fail on not authorized queries
+				 	statusCode: { 401:function(response) {transportErrors.handle401(response);}},   
   				 	success: function(response, textStatus, request){
   				 		dataCallBack(resource, response, model, defaultOutput);
   						}.bind(this),
