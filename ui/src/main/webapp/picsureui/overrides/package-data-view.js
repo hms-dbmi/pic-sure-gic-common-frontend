@@ -1,35 +1,35 @@
-define(['jquery', 
-        'common/spinner',
-        'picSure/settings',
-], function($, spinner, settings) {
-
-    callInstituteNodes = function(package) {
+define([
+    'jquery', 
+    'underscore',
+    'common/spinner',
+    'picSure/settings',
+    'common/modal',
+    'dataset/dataset-save'
+], function($, _, spinner, settings, modal, namedDataset) {
+    const callInstituteNodes = function(package) {
         return package.outputModel.get('resources').map(resource => {
             const safeCopyQuery = {...package.exportModel.get('query'), resourceUUID: resource.uuid};
             return package.queryAsync(safeCopyQuery);
         });
     };
-    handleUpdateStatusError = function(response) {
+    const handleUpdateStatusError = function(response) {
         console.log("Error preparing async download: ");
         console.dir(response);
         const serverMsg = response && response.responseText ? JSON.parse(response.responseText)?.message : 'No Message';
         return `There was an error preparing your query on this institution.\nPlease try again later, if the problem persists please reach out to an admin.\nMessage from server: ${serverMsg}`;
     };
-    createResourceDisplay = function(queryUUID, resourceID, name, status) {
-        const container = $(`<div id="${resourceID}" class="resource-container"></div>`);
+    const createResourceDisplay = function(queryUUID, resourceID, name, status) {
+        const container = $(`<div id="${resourceID}" data-resource-id="${resourceID}" data-resource-name="${name}" class="resource-container"></div>`);
+        const { icon, label, checked } = statusMeta(status);
         container.append(`
-            <input type="checkbox" class="resource-checkbox tabable" id="${resourceID}" ${status !== "ERROR" ? 'checked' : ''} />
+            <input type="checkbox" class="resource-checkbox tabable" id="${resourceID}" ${checked} />
             <div class="resource-name">${name}</div>
             <input type="text" id="${resourceID}-queryid-span" class="query-id-span ${status}" value="${queryUUID}" readonly />
-            <i role="img" id="${resourceID}-status" class="fa-solid 
-            ${(status === "ERROR" || status === '' || status === undefined) ? 
-            'fa-circle-xmark error' : 
-            (status === "COMPLETE" || status === "AVAILABLE") ? 
-            'fa-circle-check success' : 'fa-spinner fa-spin'}" aria-label="${status}" ></i>
+            <i role="img" id="${resourceID}-status" class="fa-solid ${icon}" aria-label="${label}" ></i>
         `);
         return container;
     };
-    updateNodesStatus = function(package, responses, queryIdSpinnerPromise) {
+    const updateNodesStatus = function(package, responses, queryIdSpinnerPromise) {
         responses.map((promise, index) => {
             promise.then((response) => {
                 const resource = package.outputModel.get('resources').find(resource => resource.uuid === response.resourceID);
@@ -38,7 +38,6 @@ define(['jquery',
                     $('#queryIds').append(resourceIdContainer);
                     $(`#${resource.uuid}`).change(function() {
                         $('#copy-query-ids-btn').html('<span>Copy Dataset IDs</span>');
-                        $('#copy-query-ids-btn').addClass('tabable');
                     });
                 }
                 index === responses.length-1 &&  queryIdSpinnerPromise.resolve();
@@ -49,6 +48,7 @@ define(['jquery',
                     updateStatusIcon(statusResponse.resourceID, statusResponse.status);
                     if (statusResponse.status === "AVAILABLE" || statusResponse.status === "COMPLETE") {
                         $('#copy-query-ids-btn').removeClass('hidden');
+                        $('#save-dataset-btn').removeClass('hidden');
                     }
                 }).catch((response)=>{
                     updateStatusIcon(response.resourceUUID, 'ERROR', response.error);
@@ -59,60 +59,72 @@ define(['jquery',
                 const resource = package.outputModel.get('resources').find(resource => resource.uuid === response);
                 const resourceIdContainer = createResourceDisplay(`${resource.name} returned an error`, resource.uuid, resource.name, 'ERROR');
                 $('#queryIds').append(resourceIdContainer);
+            }).finally(() => {
+                const sorted = $("#queryIds div.resource-container")
+                    .sort((a,b) => $(a).data("resource-name").localeCompare($(b).data("resource-name")));
+                $("#queryIds").html(sorted);
             });
         });
         package.modal.createTabIndex();
     };
-    updateStatusIcon = function(resourceID, status, message) {
-        let statusIcon = $('#' + resourceID + '-status');
-        statusIcon.removeClass('fa-spin fa-spinner success error fa-circle-check fa-circle-xmark');
+    const statusMeta = function(status){
         switch (status) {
             case 'COMPLETE':
             case 'AVAILABLE':
-                statusIcon.addClass('success fa-circle-check');
-                statusIcon.attr('aria-label', 'Complete');
-                break;
+            return { icon: 'success fa-circle-check', label: 'Complete', checked: 'checked' };
             case 'ERROR':
-                statusIcon.addClass('error fa-circle-xmark');
-                statusIcon.attr('aria-label', 'Error');
-                break;
+            return { icon: 'error fa-circle-xmark', label: 'Error', checked: '' };
             default:
-                statusIcon.addClass('fa-spinner fa-spin');
-                statusIcon.attr('aria-label', 'In Progress');
-                break;
-        }
-        if (message) {
-            statusIcon.attr('title', message);
+            return { icon: 'fa-spinner fa-spin', label: 'In Progress', checked: 'checked' };
         }
     };
-    generateCommonAreaUUID = function(package) {
+    const updateStatusIcon = function(resourceID, status, message) {
+        const { icon, label } = statusMeta(status);
+        const statusIcon = $('#' + resourceID + '-status');
+        statusIcon.removeClass('fa-spin fa-spinner success error fa-circle-check fa-circle-xmark');
+        statusIcon.addClass(icon);
+        statusIcon.attr('aria-label', label);
+        message && statusIcon.attr('title', message);
+    };
+    // Use the query endpoint to save the original query and generate a uuid,
+    // before passing it to each site.
+    const generateCommonAreaUUID = function(package) {
+        if(package.exportModel.get('lastQueryUUID')) {
+            const queryIdSpinnerPromise = $.Deferred();
+            spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
+            const responses = package.exportModel.get('siteQueries');
+            updateNodesStatus(package, responses, queryIdSpinnerPromise);
+            return;
+        }
+
         // TODO: get resource from resources even though its hidden
-        var uuidGenResourceID = settings.uuidGenResourceID;
-        var uuidGenURL = window.location.origin + "/picsure/query"
-        var uuidGenQuery = {
-            "resourceUUID":uuidGenResourceID,
-            "query":{}
-        };
+        const url = window.location.origin + "/picsure/query"
+        const queryObject = package.exportModel.get('query') || {};
+        queryObject.resourceUUID = settings.uuidGenResourceID;
+
         $.ajax({
-            url: uuidGenURL,
+            url,
             type: 'POST',
             headers: { "Authorization": "Bearer " + JSON.parse(sessionStorage.getItem("session")).token },
             contentType: 'application/json',
             dataType: 'text',
-            data: JSON.stringify(uuidGenQuery),
+            data: JSON.stringify(queryObject),
             success: function (response) {
                 const queryIdSpinnerPromise = $.Deferred();
                 spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
                 const respJson = JSON.parse(response);
-                const query = package.exportModel.get('query');
+                const query = queryObject;
                 query.commonAreaUUID = respJson.picsureResultId;
+                package.exportModel.set('lastQueryUUID', query.commonAreaUUID);
                 package.exportModel.set('query', query);
                 const responses = callInstituteNodes(package);
+                package.exportModel.set('siteQueries', responses);
                 updateNodesStatus(package, responses, queryIdSpinnerPromise);
+                package.updateNamedDatasetObjects();
             }
         });
     }
-    updateStatus = function(query, queryUUID, deffered, interval = 0) {
+    const updateStatus = function(query, queryUUID, deffered, interval = 0) {
         let queryUrlFragment = "/" + queryUUID + "/status?isInstitute=true";
         query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
         $.ajax({
@@ -149,50 +161,97 @@ define(['jquery',
             }
         });
     }
+    const getQueryIds = function(){
+        const queryIds = [];
+        $('#queryIds').find('input[type="checkbox"]:checked').each(function(){
+            const resourceId = $(this).parent().data("resource-id");
+            const name = $(this).parent().find(".resource-name").text();
+            const queryId = $(this).parent().find('input[type="text"]').val();
+            queryIds.push({ resourceId, name, queryId });
+        });
+        return queryIds;
+    }
     return {
+        saveDatasetId: function(package){
+            const siteQueryIds = getQueryIds();
+            const title = "Save the Dataset ID";
+            const onClose = () => {};
+            const onSuccess = (name) => {
+                package.exportModel.set('datasetName', name);
+                package.updateNamedDatasetObjects();
+            };
+            const options = { ...package.modalSettings.options, width: "40%" };
+            const query = package.exportModel.get('query');
+            const modalView = new namedDataset({
+                modalSettings: { title, onClose, onSuccess, options },
+                previousModal: { view: package, ...package.modalSettings },
+                queryUUID: {
+                    commonAreaUUID: query.commonAreaUUID,
+                    siteQueryIds
+                }
+            });
+            modal.displayModal(modalView, title, onClose, options);
+        },
+        queryChangedCallback: function(package){
+            const previousState = package.exportModel.get('treeState') || {};
+            const nextState = $('#concept-tree', this.$el).jstree().get_json();
+
+            if(_.isEqual(previousState, nextState)) {
+                return;
+            }
+
+            package.exportModel.set('treeState', nextState);
+            const query = package.updateQueryFields();
+            package.exportModel.set('query', query);
+            package.updateEstimations(query);
+
+            package.exportModel.set('lastQueryUUID', undefined);
+            package.exportModel.set('datasetName', undefined);
+
+            $('#queryIds').empty();
+            $('#finalize-btn').removeClass('hidden');
+            $('#copy-query-ids-btn').addClass('hidden');
+            $('#copy-query-ids-btn').html('<span>Copy Dataset IDs</span>');
+            $("#save-dataset-btn").addClass('hidden');
+            package.modal.createTabIndex();
+            package.cancelPendingPromises = true;
+            package.updateNamedDatasetObjects();
+        },
         addEvents: function(package) {
             $('#copy-query-ids-btn').on('click', function(){
-                let queryIds = [];
-                $('#queryIds').find('input[type="checkbox"]:checked').each(function(){
-                    let siteCode = $(this).parent().find(".resource-name").text();
-                    let queryId = $(this).parent().find('input[type="text"]').val();
-                    queryIds.push(siteCode + ": " + queryId);
-                });
-                let queryIdsString = queryIds.join(',');
+                const queryIdsString = getQueryIds().map(site => site.name + ": " + site.queryId ).join(',');
                 navigator.clipboard.writeText(queryIdsString);
                 $('#copy-query-ids-btn').html('<span>Copied! </span><i class="fa-solid fa-circle-check success" role="img" aria-label="Success"></i>');
             });
     
             $('#finalize-btn').on('click', function(){
-                package.queryChangedCallback();
                 package.cancelPendingPromises = false;
                 generateCommonAreaUUID(package);
-                $('#finalize-btn').addClass('hidden');
             });
-    
-            $('#concept-tree').on('changed.jstree', (e, data) => {
-                $('#queryIds').empty();
-                $('#finalize-btn').removeClass('hidden');
-                $('#copy-query-ids-btn').addClass('hidden');
-                $('#copy-query-ids-btn').addClass('tabable');
-                $('#copy-query-ids-btn').html('<span>Copy Dataset IDs</span>');
-                package.modal.createTabIndex();
-                package.cancelPendingPromises = true;
+            
+            $('#request-btn').on('click', function(){
+                this.request();
             });
         },
-        /*
-		 * hook to allow overrides to customize the download data function
-		 */
-        downloadData: undefined,
-        /*
-		 * hook to allow overrides to customize the prepare function
-		 */
-        prepare: function() {
+        updateNamedDatasetObjects: function(package) {
+            const name = package.exportModel.get('datasetName');
+            const uuid = package.exportModel.get('lastQueryUUID');
+            
+            if (!uuid){
+                $("#save-dataset-btn").addClass('hidden');
+            }
+            if (uuid && name){
+                $('#save-dataset-btn').html('<span>Dataset saved! </span><i class="fa-solid fa-circle-check success" role="img" aria-label="Success"></i>');
+                $('#save-dataset-btn').prop("disabled", true);
+            } else {
+                $("#save-dataset-btn").html('Save Dataset ID');
+                $('#save-dataset-btn').prop("disabled", false);
+            }
+        },
+        prepare: function() {}, // override to do nothing
+        request: function() {
             window.open('https://redcap.tch.harvard.edu/redcap_edc/surveys/?s=EWYX8X8XX77TTWFR', '_blank');
         },
-        /*
-		 * hook to allow overrides to customize the queryAsync function
-		 */
         queryAsync: function (query) {
             /*
              * This will send a query to PICSURE to evaluate and execute; it will not return results.  Use downloadData to do that.
@@ -210,7 +269,6 @@ define(['jquery',
                     success: function (response) {
                         respJson = JSON.parse(response);
                         queryUUID = respJson.picsureResultId;
-                        console.log("Async query submitted: " + queryUUID);
                         resolve(respJson);
                         return;
                     },
@@ -227,26 +285,13 @@ define(['jquery',
                 });
             });
         },
-        /*
-		 * hook to allow overrides to customize the querySync function
-		 */
-        querySync: undefined,
-
-        queryChangedCallback: undefined,
-        /*
-		 * hook to allow overrides to customize the updateEstimations function
-		 */
-        updateEstimations: undefined,
-        /*
-		 * hook to allow overrides to customize the updateQuery function
-		 */
-        updateQuery: undefined,
-
         renderExt: function(package){
             this.addEvents(package);    
             package.copyReady = false;
             package.cancelPendingPromises = false;
             generateCommonAreaUUID(package);
-		},
+            package.updateNamedDatasetObjects();
+            package.modal.createTabIndex();
+        },
     };
 });
