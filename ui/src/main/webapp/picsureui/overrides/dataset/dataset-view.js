@@ -1,9 +1,8 @@
 define([
     "underscore",
     "text!overrides/dataset/dataset-view.hbs",
-    "text!filter/variant-data.json",
-    "common/modal"
-], function(_, template, variantDataJson, modal) {
+    "text!filter/variant-data.json"
+], function(_, template, variantDataJson) {
     // Create an index between the consequence and it's severity so we can group in the ui
 	const variantConsequenceIndex = JSON.parse(variantDataJson)?.consequences.reduce((map, severity) => {
         severity.children.forEach(({text}) => map[text] = severity.text);
@@ -92,7 +91,6 @@ define([
 			if($.trim($("#detail-variables").html()) == ''){
 				$("#detail-variables-container").addClass("hidden");
 			}
-			modal.createTabIndex();
 		},
     };
 });

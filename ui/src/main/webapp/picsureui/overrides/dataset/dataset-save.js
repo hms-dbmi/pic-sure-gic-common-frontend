@@ -1,7 +1,6 @@
 define([
-    "text!overrides/dataset/dataset-save.hbs",
-    "common/modal"
-], function(template, modal) {
+    "text!overrides/dataset/dataset-save.hbs"
+], function(template) {
     const renderSiteIds = function(siteQueryIds){
         const ids = $("#dataset-ids");
         siteQueryIds.forEach((site) => {
@@ -50,7 +49,6 @@ define([
         },
         renderExt: function(package){
             renderSiteIds(package.queryUUID.siteQueryIds);
-            modal.createTabIndex();
         }
     };
 });
