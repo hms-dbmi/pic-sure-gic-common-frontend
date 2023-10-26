@@ -406,3 +406,38 @@ body {
     color: grey;
     font-size: 30px;
 }
+
+#package-data #package-buttons-container button {
+	margin: 0 5px;
+}
+
+#named-dataset .title {
+	font-size: medium;
+	font-weight: bold;
+}
+
+#dataset-ids .row div:first-child, 
+#dataset-ids .row div:last-child {
+	min-width: unset;
+}
+
+#dataset-view .list-title {
+	text-transform: capitalize;
+	font-weight: bold;
+}
+
+.header-btn.active.outlined, .btn.alternate.outlined {
+	color: var(--picsure-alt);
+	border: solid 1px var(--picsure-alt);
+	background-color: white;
+}
+
+.btn.action.outlined {
+	color:  var(--picsure-action);
+	border: solid 1px var(--picsure-action);
+	background-color: white;
+}
+
+.p-0 {
+	padding: 0px !important;
+}
