@@ -1,6 +1,7 @@
 define([
+    "underscore",
     "text!overrides/dataset/dataset-save.hbs"
-], function(template) {
+], function(_, template) {
     const renderSiteIds = function(siteQueryIds){
         const ids = $("#dataset-ids");
         siteQueryIds.forEach((site) => {
@@ -12,6 +13,17 @@ define([
             `);
             ids.append(container);
         });
+    };
+    const updateSaveButton = function(){
+        if($("#dataset-name").val()){
+            $('#save-btn').removeClass("secondary");
+            $('#save-btn').addClass("alternate outlined");
+            $('#save-btn').prop("disabled", false);
+        } else {
+            $('#save-btn').removeClass("alternate outlined");
+            $('#save-btn').addClass("secondary");
+            $('#save-btn').prop("disabled", true);
+        }
     };
     return {
         template,
@@ -49,6 +61,8 @@ define([
         },
         renderExt: function(package){
             renderSiteIds(package.queryUUID.siteQueryIds);
+            updateSaveButton();
+            $("#dataset-name").on('input', _.debounce(updateSaveButton, 300));
         }
     };
 });

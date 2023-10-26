@@ -36,9 +36,6 @@ define([
                 if (!package.cancelPendingPromises) {
                     const resourceIdContainer = createResourceDisplay(response.picsureResultId, resource.uuid, resource.name, response.status);
                     $('#queryIds').append(resourceIdContainer);
-                    $(`#${resource.uuid}`).change(function() {
-                        $('#copy-query-ids-btn').html('<span>Copy Dataset IDs</span>');
-                    });
                 }
                 index === responses.length-1 &&  queryIdSpinnerPromise.resolve();
                 const safeCopyQuery = {...package.exportModel.get('query'), resourceUUID: resource.uuid};
@@ -47,7 +44,6 @@ define([
                 deffered.then((statusResponse) => {
                     updateStatusIcon(statusResponse.resourceID, statusResponse.status);
                     if (statusResponse.status === "AVAILABLE" || statusResponse.status === "COMPLETE") {
-                        $('#copy-query-ids-btn').removeClass('hidden');
                         $('#save-dataset-btn').removeClass('hidden');
                     }
                 }).catch((response)=>{
@@ -174,7 +170,7 @@ define([
     return {
         saveDatasetId: function(package){
             const siteQueryIds = getQueryIds();
-            const title = "Save the Dataset ID";
+            const title = "Save Dataset ID";
             const onClose = () => {};
             const onSuccess = (name) => {
                 package.exportModel.set('datasetName', name);
@@ -243,9 +239,11 @@ define([
             if (uuid && name){
                 $('#save-dataset-btn').html('<span>Dataset saved! </span><i class="fa-solid fa-circle-check success" role="img" aria-label="Success"></i>');
                 $('#save-dataset-btn').prop("disabled", true);
+                $('#copy-query-ids-btn').removeClass('hidden');
             } else {
                 $("#save-dataset-btn").html('Save Dataset ID');
                 $('#save-dataset-btn').prop("disabled", false);
+                $('#copy-query-ids-btn').addClass('hidden');
             }
         },
         prepare: function() {}, // override to do nothing
