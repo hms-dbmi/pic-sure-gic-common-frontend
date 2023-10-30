@@ -160,10 +160,10 @@ class SearchResourceRSTest {
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(httpResponse.getStatusLine()).thenReturn(statusLine);
 		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-//		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
 
+		String nullStr = null;
 		assertThrows(ProtocolException.class, () -> {
-			resource.queryResult(null, null);
+			resource.queryResult(nullStr, null);
 		}, "QueryID is required");
 
 		assertThrows(ProtocolException.class, () -> {
@@ -201,10 +201,10 @@ class SearchResourceRSTest {
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(httpResponse.getStatusLine()).thenReturn(statusLine);
 		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-//		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
 
+		String nullStr = null;
 		assertThrows(ProtocolException.class, () -> {
-			resource.queryStatus(null, null);
+			resource.queryStatus(nullStr, null);
 		}, "QueryID is required");
 
 		assertThrows(ProtocolException.class, () -> {
