@@ -426,16 +426,8 @@ body {
 	font-weight: bold;
 }
 
-.header-btn.active.outlined, .btn.alternate.outlined {
-	color: var(--picsure-alt);
-	border: solid 1px var(--picsure-alt);
-	background-color: white;
-}
-
-.btn.action.outlined {
-	color:  var(--picsure-action);
-	border: solid 1px var(--picsure-action);
-	background-color: white;
+.btn-outline.alternate {
+    color: var(--picsure-alt);
 }
 
 .p-0 {
