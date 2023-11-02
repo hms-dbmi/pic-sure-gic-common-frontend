@@ -1,67 +1,67 @@
 :root {
-	--picsure-primary: #328FFF;
+    --picsure-primary: #328FFF;
     --picsure-secondary: #74C449;
     --picsure-alt: #328FFF;
-	--picsure-error: #FF0000;
-	--picsure-tertiary: #FFBC35;
+    --picsure-error: #FF0000;
+    --picsure-tertiary: #FFBC35;
     /* --picsure-other: #90a8a4;
     --picsure-lite: #90a8a4;
     --picsure-dark: #333333; */
 }
 
 .btn-primary {
-	background-color: var(--picsure-primary);
-	border-color: var(--picsure-primary);
+    background-color: var(--picsure-primary);
+    border-color: var(--picsure-primary);
 }
 
 body {
-	font-family: "Varela Round", "Nunito Sans", sans-serif;
-	background-color: #FFF;
+    font-family: "Varela Round", "Nunito Sans", sans-serif;
+    background-color: #FFF;
 }
 
 #header-content {
-	padding: 0;
+    padding: 0;
 }
 
 #top-header {
-	background-color: #FFF;
+    background-color: #FFF;
 }
 
 #top-header .logo-img {
-	width: auto;
-	height: auto;
-	padding: 0;
+    width: auto;
+    height: auto;
+    padding: 0;
 }
 
 /* GIC has some longer names, so we make the login box wider */
 #frmAuth0Login {
-	width: 450px;
+    width: 450px;
 }
 
 /* BCH logo is not square */
 .a0-button-ldap-connector {
-	padding-left: 9px;
+    padding-left: 9px;
 }
 
 .large {
-	font-size: 30px;
+    font-size: 30px;
 }
 
 .large {
-	font-size: 30px;
+    font-size: 30px;
 }
 
 #header-underline {
-	width: 100%;
-	padding: 0;
-	margin: 0;
-	background-color: var(--picsure-dark);
-	border-top: 1px solid var(--picsure-dark);
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: var(--picsure-dark);
+    border-top: 1px solid var(--picsure-dark);
 }
 
 #patient-count-box .panel-heading {
-	text-align: center;
-	margin-bottom: 8px;
+    text-align: center;
+    margin-bottom: 8px;
 }
 
 .space-out i.fa-question-circle {
@@ -69,39 +69,39 @@ body {
 }
 
 #patient-count-box .panel-heading h3 {
-	margin: 0 auto;
+    margin: 0 auto;
 }
 
 .output-detail-text {
-	padding: 8px 0;
+    padding: 8px 0;
 }
 
 #selected-genomic-filter .panel {
-	background-color: none;
+    background-color: none;
 }
 
 #selected-genomic-filter .panel .panel-heading {
-	background-color: #fff;
+    background-color: #fff;
 }
 
 #detail-gen-data-btn {
-	margin-bottom: 8px;
+    margin-bottom: 8px;
 }
 
 /* result boxes are initially hidden */
 .institution-results {
-	width: 90%;
-	background: #fff;
-	border-radius: 5px;
-	margin-top: 10px;
-	display: none;
+    width: 90%;
+    background: #fff;
+    border-radius: 5px;
+    margin-top: 10px;
+    display: none;
 }
 
 .result-list {
-	margin-top: 10px;
-	margin-bottom: 10px;
-	border: 1px solid var(--picsure-primary);
-	border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--picsure-primary);
+    border-radius: 5px;
 }
 
 .container {
@@ -112,7 +112,7 @@ body {
 }
 
 .institution-arrow {
-	display: block;
+    display: block;
     margin-top: -60px;
     margin-right: 5px;
     text-align: right;
@@ -120,196 +120,196 @@ body {
 }
 
 .glyphicon {
-	color: gray;
+    color: gray;
 }
 
 .infotable-head {
-	background: lightgray;
+    background: lightgray;
 }
 
 .center-cell {
-	text-align: center;
+    text-align: center;
 }
 
 .td {
-	white-space: pre-line;
+    white-space: pre-line;
 }
 
 /********** Help Page **********/
 
 #help-page {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 90%;
-	height: 80vh;
-	margin: auto;
-	font-family: Verdana, Geneva, Tahoma, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    height: 80vh;
+    margin: auto;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 #help-page .down {
-	margin-top: auto;
+    margin-top: auto;
 }
 
 #help-page h1 {
-	font-weight: bold;
-	text-align: center;
+    font-weight: bold;
+    text-align: center;
 }
 
 #help-page h4 {
-	font-style: italic;
+    font-style: italic;
 }
 
 #help-page .help-options-container {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
-	width: 90%;
-	flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 90%;
+    flex-wrap: wrap;
 }
 
 #help-page .blank-option {
-	width: 200px;
-	height: 200px;
+    width: 200px;
+    height: 200px;
 }
 
 #help-page .help-options-wrap-helper {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
-	margin-bottom: 32px;
-	width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 32px;
+    width: 50%;
 }
 
 @media screen and (max-width: 1200px) {
-	#help-page .help-options-wrap-helper {
-		width: 100%
-	}
+    #help-page .help-options-wrap-helper {
+        width: 100%
+    }
 }
 
 /***** Icon Buttons *****/
 
 .btn.icon-button {
-	border: 1px solid black;
-	color: black;
-	height: 200px;
-	width: 200px;
-	max-width: 200px;
-	display: flex;
-	flex-direction: column;
-	white-space: pre-wrap;
-	align-items: center;
+    border: 1px solid black;
+    color: black;
+    height: 200px;
+    width: 200px;
+    max-width: 200px;
+    display: flex;
+    flex-direction: column;
+    white-space: pre-wrap;
+    align-items: center;
 }
 
 .btn.icon-button:hover {
-	color: #333;
+    color: #333;
     background-color: #e6e6e6;
     border-color: #adadad;
 }
 
 .btn.icon-button img {
-	width: 85px;
+    width: 85px;
 }
 
 .btn.icon-button h6 {
-	font-weight: bold;
-	font-size: 14px;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 .btn.icon-button p {
-	font-size: 12px;
+    font-size: 12px;
 }
 
 .soft-border {
-	border: 1px solid lightgrey;
-	border-radius: 5px;
-	padding: 10px;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    padding: 10px;
 }
 
 /********** Package Data **********/
 
 #package-data {
-	flex-direction: row;
+    flex-direction: row;
 }
 
 #package-data section {
-	display: flex;
-	flex-direction: row;
-	margin: 16px 0;
-	max-width: 1050px;
+    display: flex;
+    flex-direction: row;
+    margin: 16px 0;
+    max-width: 1050px;
 }
 
 #package-data #data-summary {
-	border-color: var(--picsure-secondary);
+    border-color: var(--picsure-secondary);
 }
 
 #package-data #query-id-container {
-	display: flex;
-	flex-direction: row;
+    display: flex;
+    flex-direction: row;
 }
 
 .circle-border {
-	display: inline-table;
-	text-align: center;
-	margin: 0 16px;
-	border: 1px solid var(--picsure-primary);
-	border-radius: 50%;
-	height: 35px;
-	width: 35px;
-	line-height: 33px;
-	flex-shrink: 0;
+    display: inline-table;
+    text-align: center;
+    margin: 0 16px;
+    border: 1px solid var(--picsure-primary);
+    border-radius: 50%;
+    height: 35px;
+    width: 35px;
+    line-height: 33px;
+    flex-shrink: 0;
 }
 
 #package-data .resource-container {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
     align-items: baseline;
-	width: 50%;
-	margin-bottom: 4px;
+    width: 50%;
+    margin-bottom: 4px;
 }
 
 #package-data .resource-container .resource-name {
-	min-width: 60px;
+    min-width: 60px;
 }
 #package-data .resource-container *:not(:last-child) {
-	margin-right: 8px;
+    margin-right: 8px;
 }
 
 #package-data #queryIds {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
-	height: fit-content;
-	flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: fit-content;
+    flex-wrap: wrap;
 }
 
 #package-data #prepare-btn {
-	margin-right: 65px;
+    margin-right: 65px;
 }
 
 #package-data .fa-solid {
-	font-size: 16px;
+    font-size: 16px;
 }
 
 #package-data .error {
-	color: var(--picsure-error);
+    color: var(--picsure-error);
 }
 
 #package-data .success {
-	color: var(--picsure-secondary);
+    color: var(--picsure-secondary);
 }
 
 #package-data .package-button-container {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
-	width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 #package-data .query-id-span {
-	width: 276px;
+    width: 276px;
 }
 
 #genomic-info-modal-header-text {
@@ -408,22 +408,22 @@ body {
 }
 
 #package-data #package-buttons-container button {
-	margin: 0 5px;
+    margin: 0 5px;
 }
 
 #named-dataset .title {
-	font-size: medium;
-	font-weight: bold;
+    font-size: medium;
+    font-weight: bold;
 }
 
 #dataset-ids .row div:first-child, 
 #dataset-ids .row div:last-child {
-	min-width: unset;
+    min-width: unset;
 }
 
 #dataset-view .list-title {
-	text-transform: capitalize;
-	font-weight: bold;
+    text-transform: capitalize;
+    font-weight: bold;
 }
 
 .btn-outline.alternate {
@@ -431,5 +431,5 @@ body {
 }
 
 .p-0 {
-	padding: 0px !important;
+    padding: 0px !important;
 }
