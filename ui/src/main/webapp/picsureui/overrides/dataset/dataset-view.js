@@ -18,7 +18,7 @@ define([ "jquery" ], function($) {
             };
         },
         renderExt: function(){
-            $("#cancel-btn").removeClass("secondary");
+            $("#dataset-view-cancel-btn").removeClass("secondary");
         }
     };
 });
