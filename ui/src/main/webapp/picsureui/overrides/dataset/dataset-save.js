@@ -16,12 +16,12 @@ define([
     };
     const updateSaveButton = function(){
         if($("#dataset-name").val()){
-            $('#save-btn').removeClass("secondary");
-            $('#save-btn').addClass("alternate outlined");
+            $('#save-btn').removeClass("btn-default secondary");
+            $('#save-btn').addClass("btn-outline alternate");
             $('#save-btn').prop("disabled", false);
         } else {
-            $('#save-btn').removeClass("alternate outlined");
-            $('#save-btn').addClass("secondary");
+            $('#save-btn').removeClass("btn-outline alternate");
+            $('#save-btn').addClass("btn-default secondary");
             $('#save-btn').prop("disabled", true);
         }
     };
