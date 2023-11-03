@@ -7,10 +7,12 @@ define([ "underscore" ],  function(_){
             }
         ],
         actions: function(actions){
-            actions.active.copy.style = actions.active.copy.style + " outlined";
-            actions.active.view.style = actions.active.view.style + " outlined";
-            actions.active.archive.style = actions.active.archive.style + " outlined";
-            actions.archived.restore.style = actions.archived.restore.style + " outlined";
+            const btnStyle = item => item.replaceAll("btn-default", "btn-outline");
+            actions.active.copy.style = btnStyle(actions.active.copy.style);
+            actions.active.view.style = btnStyle(actions.active.view.style);
+            actions.active.archive.style = btnStyle(actions.active.archive.style);
+            actions.archived.restore.style = btnStyle(actions.archived.restore.style);
+
             actions.active.copy.handler = row => {
                 const { uuid, metadata } = row.data();
 
@@ -43,7 +45,8 @@ define([ "underscore" ],  function(_){
             });
         },
         renderExt: function(){
-            $("#toggle-archived-btn").addClass("outlined");
+            $("#toggle-archived-btn").removeClass("btn-default");
+            $("#toggle-archived-btn").addClass("btn-outline");
         }
     };
 });
