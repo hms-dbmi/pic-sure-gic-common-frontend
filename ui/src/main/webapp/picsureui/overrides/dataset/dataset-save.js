@@ -29,8 +29,9 @@ define([
         template,
         onSave: function(package) {
             const name = $("#dataset-name").val();
-            if(name === ""){
-                package.onError("Please input a Dataset ID Name value");
+            const validationError = package.validateError(name);
+            if(validationError){
+                package.onError(validationError);
                 $("#dataset-name").addClass('error');
                 return;
             }
