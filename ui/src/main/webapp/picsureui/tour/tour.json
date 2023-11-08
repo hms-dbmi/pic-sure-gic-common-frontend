@@ -1,0 +1,50 @@
+{
+    "#search-box": {
+        "text": "Search for clinical, genomic, or biosample data from GIC Network Database. Click anywhere to continue the tour.",
+        "position": "bottom"
+    },
+    "#genomic-filter-btn": { 
+        "text": "Use the genomic filtering button to apply a filter using genomic information. \n Note* you can also search for genomic variables using the search bar."
+    },
+    "#search-results-datatable": {
+        "text": "The results of the search are displayed in this area. Each row describes a different variable that matches your search result."
+    },
+    "#search-results-categories": {
+        "text": "Results are categorized by search result type, including biospecimens, COVID-19, demographics, diagnosis, genomic variants, laboratory results, medications, and procedures.",
+        "position": "bottom"
+    },
+    "#search-results-sub-categories": {
+        "text": "Results are categorized further by  group.",
+        "position": "bottom"
+    },
+    "#first-search-result-row": {
+        "text": "To learn more about a variable, click on the row."
+    },
+    "#first-search-result-ellipses": {
+        "text": "Click the blue ellipsis box to view the concept path for a specific search result. This path shows the hierarchical arrangement of search results, organized according to ACT ontology categories. You can also expand your filter to encompass variables and values higher in the data hierarchy.",
+        "position": "right"        
+    },
+    "#results-panel": {
+        "text": "The Results Panel displays a summary of the filtered cohort based on the variable filters applied to the query.",
+        "position": "top"
+    },
+    "#detailed-genomic-filter": {
+        "text": "Detailed Genomic Data modal displays a breakdown of the number of patients per site with different types of genomic data available.",
+        "position": "left"
+    },
+    "#detailed-biosample-filter": {
+        "text": "Detailed biosample modal displays a breakdown of the number and kind of biosamples available from each site.",
+        "position": "left"
+    },
+    "#variant-explorer": {
+        "text": "The Variant Explorer feature allows users to view the metadata of the variants found in their queried subset at the aggregate level across all participating sites.",
+        "position": "left"
+    },
+    "#package-data": {
+        "text": "The Select and Package data feature allows users to select additional unfiltered data they would like to analyze in conjunction with the data included in their cohort.",
+        "position": "left"
+    },
+    "#help-header-button": {
+        "text": "The Help tab will open a new web page displaying a variety of self service learning resources."
+    }
+}

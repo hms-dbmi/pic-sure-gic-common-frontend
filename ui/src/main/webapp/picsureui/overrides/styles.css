@@ -4,6 +4,8 @@
     --picsure-alt: #328FFF;
     --picsure-error: #FF0000;
     --picsure-tertiary: #FFBC35;
+	--gic-purple: #675AFF;
+	--gic-purple-hover: #4F3AFF;
     /* --picsure-other: #90a8a4;
     --picsure-lite: #90a8a4;
     --picsure-dark: #333333; */
@@ -12,6 +14,22 @@
 .btn-primary {
     background-color: var(--picsure-primary);
     border-color: var(--picsure-primary);
+}
+
+.btn-tertiary {
+    background-color: var(--gic-purple);
+	border-color: var(--gic-purple);
+    color: #ffffff;
+}
+
+.btn-tertiary:hover {
+    background-color: var(--gic-purple-hover);
+	border-color: var(--gic-purple-hover);
+    color: #ffffff;
+}
+
+.color-tertiary {
+	color: var(--gic-purple);
 }
 
 body {
@@ -48,7 +66,7 @@ body {
 }
 
 .large {
-    font-size: 30px;
+	font-size: 30px;
 }
 
 #header-underline {
