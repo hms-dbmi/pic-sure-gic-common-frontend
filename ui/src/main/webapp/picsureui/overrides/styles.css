@@ -224,6 +224,7 @@ body {
     border: 1px solid lightgrey;
     border-radius: 5px;
     padding: 10px;
+    width: 100%;
 }
 
 /********** Package Data **********/
