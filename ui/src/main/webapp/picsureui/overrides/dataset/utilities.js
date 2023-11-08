@@ -6,7 +6,7 @@ define(["underscore"],  function(_){
                 const variables = [];
                 filters.push(format.categories(query.categoryFilters));
                 filters.push(format.numeric(query.numericFilters));
-                query.variantInfoFilters.map(({ numericVariantInfoFilters, categoryVariantInfoFilters }) => {
+                query.variantInfoFilters.forEach(({ numericVariantInfoFilters, categoryVariantInfoFilters }) => {
                     filters.push(format.categoryVariant(categoryVariantInfoFilters));
                     filters.push(format.numericVariant(numericVariantInfoFilters));
                 });
