@@ -226,7 +226,7 @@ define([
             });
             
             $('#request-btn').on('click', function(){
-                this.request();
+                window.open('https://redcap.tch.harvard.edu/redcap_edc/surveys/?s=EWYX8X8XX77TTWFR', '_blank');
             });
         },
         updateNamedDatasetObjects: function(package) {
@@ -247,9 +247,6 @@ define([
             }
         },
         prepare: function() {}, // override to do nothing
-        request: function() {
-            window.open('https://redcap.tch.harvard.edu/redcap_edc/surveys/?s=EWYX8X8XX77TTWFR', '_blank');
-        },
         queryAsync: function (query) {
             /*
              * This will send a query to PICSURE to evaluate and execute; it will not return results.  Use downloadData to do that.
