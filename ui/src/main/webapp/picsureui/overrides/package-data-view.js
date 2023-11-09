@@ -4,8 +4,9 @@ define([
     'common/spinner',
     'picSure/settings',
     'common/modal',
+    'dataset/utilities',
     'dataset/dataset-save'
-], function($, _, spinner, settings, modal, namedDataset) {
+], function($, _, spinner, settings, modal, dataUtils, namedDataset) {
     const callInstituteNodes = function(package) {
         return package.outputModel.get('resources').map(resource => {
             const safeCopyQuery = {...package.exportModel.get('query'), resourceUUID: resource.uuid};
@@ -61,6 +62,7 @@ define([
                 $("#queryIds").html(sorted);
             });
         });
+        $("#finalize-btn").addClass("hidden");
         package.modal.createTabIndex();
     };
     const statusMeta = function(status){
@@ -206,6 +208,8 @@ define([
 
             $('#queryIds').empty();
             $('#finalize-btn').removeClass('hidden');
+            $('#copy-pheno-ids-btn').addClass('hidden');
+            $('#copy-pheno-ids-btn').html('<span>Copy Dataset Variables</span>');
             $('#copy-query-ids-btn').addClass('hidden');
             $('#copy-query-ids-btn').html('<span>Copy Dataset IDs</span>');
             $("#save-dataset-btn").addClass('hidden');
@@ -214,10 +218,21 @@ define([
             package.updateNamedDatasetObjects();
         },
         addEvents: function(package) {
+            const copyText = prefix => `<span>${prefix} Copied! </span><i class="fa-solid fa-circle-check success" role="img" aria-label="Success"></i>`;
             $('#copy-query-ids-btn').on('click', function(){
                 const queryIdsString = getQueryIds().map(site => site.name + ": " + site.queryId ).join(',');
                 navigator.clipboard.writeText(queryIdsString);
-                $('#copy-query-ids-btn').html('<span>Copied! </span><i class="fa-solid fa-circle-check success" role="img" aria-label="Success"></i>');
+                $('#copy-query-ids-btn').html(copyText("Dataset IDs"));
+            });
+
+            $('#copy-pheno-ids-btn').on('click', function(){
+                const listString = dataUtils.render.phenoToString(
+                    package.exportModel.get('query').query,
+                    dataUtils.format,
+                    dataUtils.render.string
+                );
+                navigator.clipboard.writeText(listString);
+                $('#copy-pheno-ids-btn').html(copyText("Dataset Variables"));
             });
     
             $('#finalize-btn').on('click', function(){
@@ -226,7 +241,7 @@ define([
             });
             
             $('#request-btn').on('click', function(){
-                this.request();
+                window.open('https://redcap.tch.harvard.edu/redcap_edc/surveys/?s=EWYX8X8XX77TTWFR', '_blank');
             });
         },
         updateNamedDatasetObjects: function(package) {
@@ -239,17 +254,18 @@ define([
             if (uuid && name){
                 $('#save-dataset-btn').html('<span>Dataset saved! </span><i class="fa-solid fa-circle-check success" role="img" aria-label="Success"></i>');
                 $('#save-dataset-btn').prop("disabled", true);
+                $("#dataset-saved").removeClass("hidden");
                 $('#copy-query-ids-btn').removeClass('hidden');
+                $('#copy-pheno-ids-btn').removeClass('hidden');
             } else {
                 $("#save-dataset-btn").html('Save Dataset ID');
                 $('#save-dataset-btn').prop("disabled", false);
+                $("#dataset-saved").addClass("hidden");
                 $('#copy-query-ids-btn').addClass('hidden');
+                $('#copy-pheno-ids-btn').addClass('hidden');
             }
         },
         prepare: function() {}, // override to do nothing
-        request: function() {
-            window.open('https://redcap.tch.harvard.edu/redcap_edc/surveys/?s=EWYX8X8XX77TTWFR', '_blank');
-        },
         queryAsync: function (query) {
             /*
              * This will send a query to PICSURE to evaluate and execute; it will not return results.  Use downloadData to do that.
