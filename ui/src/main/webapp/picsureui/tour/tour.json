@@ -1,16 +1,16 @@
 {
     "#search-box": {
-        "text": "Search for clinical, genomic, or biosample data from GIC Network Database. Click anywhere to continue the tour.",
+        "text": "Search for clinical, genomic, or biosample data from the GIC Network Database. Click anywhere to continue the tour.",
         "position": "bottom"
     },
     "#genomic-filter-btn": { 
-        "text": "Use the genomic filtering button to apply a filter using genomic information. \n Note* you can also search for genomic variables using the search bar."
+        "text": "Use the genomic filtering button to apply a filter using genomic information."
     },
     "#search-results-datatable": {
         "text": "The results of the search are displayed in this area. Each row describes a different variable that matches your search result."
     },
     "#search-results-categories": {
-        "text": "Results are categorized by search result type, including biospecimens, COVID-19, demographics, diagnosis, genomic variants, laboratory results, medications, and procedures.",
+        "text": "Results are grouped by categories which include biospecimens, demographics, diagnosis, genomic variants, laboratory results, medications, and procedures.",
         "position": "bottom"
     },
     "#search-results-sub-categories": {
@@ -18,10 +18,10 @@
         "position": "bottom"
     },
     "#first-search-result-row": {
-        "text": "To learn more about a variable, click on the row."
+        "text": "To add a filter, click on the variable of interest in the row."
     },
     "#first-search-result-ellipses": {
-        "text": "Click the blue ellipsis box to view the concept path for a specific search result. This path shows the hierarchical arrangement of search results, organized according to ACT ontology categories. You can also expand your filter to encompass variables and values higher in the data hierarchy.",
+        "text": "The ellipses show the variable's data hierarchy. Clicking a row in the data hierarchy expands your filter to include higher-level variables and values in the data tree.",
         "position": "right"        
     },
     "#results-panel": {
@@ -29,11 +29,11 @@
         "position": "top"
     },
     "#detailed-genomic-filter": {
-        "text": "Detailed Genomic Data modal displays a breakdown of the number of patients per site with different types of genomic data available.",
+        "text": "Shows the patient count per site with varying genomic data types; updates based on query results.",
         "position": "left"
     },
     "#detailed-biosample-filter": {
-        "text": "Detailed biosample modal displays a breakdown of the number and kind of biosamples available from each site.",
+        "text": "Shows the patient count per site with varying biosample data types; updates based on query results.",
         "position": "left"
     },
     "#variant-explorer": {
@@ -41,7 +41,7 @@
         "position": "left"
     },
     "#package-data": {
-        "text": "The Select and Package data feature allows users to select additional unfiltered data they would like to analyze in conjunction with the data included in their cohort.",
+        "text": "Finalize your dataset and request access to patient-level data.",
         "position": "left"
     },
     "#help-header-button": {
