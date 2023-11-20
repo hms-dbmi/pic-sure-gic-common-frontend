@@ -16,7 +16,7 @@ define(["underscore"],  function(_){
                 variables.push(format.selectedVariables(query.fields));
     
                 const toString = (list, prefix) => {
-                    const stringList = stringRender(_.flatten(list)).map(item => '- ' + item);
+                    const stringList = stringRender(_.flatten(list).filter(x => x)).map(item => '- ' + item);
                     return stringList.length > 0 ? [ prefix, ...stringList ] : [ `${prefix} none selected` ];
                 };
     
