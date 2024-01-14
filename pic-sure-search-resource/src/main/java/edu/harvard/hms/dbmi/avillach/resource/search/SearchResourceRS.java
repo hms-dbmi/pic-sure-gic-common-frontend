@@ -213,7 +213,7 @@ public class SearchResourceRS implements IResourceRS {
 			logger.debug("Updating ontology for resource " + resource.getName());
 			
 			try {
-				QueryRequest queryReq = new QueryRequest();
+				QueryRequest queryReq = new GeneralQueryRequest();
 				queryReq.setQuery(""); //empty search should return all results
 				SearchResults search = resourceWebClient.search(resource.getResourceRSPath(), queryReq);
 				Map<String, Object> resourceResults = (Map<String, Object>)search.getResults();

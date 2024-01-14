@@ -125,6 +125,7 @@ define([
     const updateStatus = function(query, queryUUID, deffered, interval = 0) {
         let queryUrlFragment = "/" + queryUUID + "/status?isInstitute=true";
         query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
+        query["@type"] = "FederatedQueryRequest";
         $.ajax({
             url: window.location.origin + "/picsure/query" + queryUrlFragment,
             type: 'POST',
@@ -272,6 +273,7 @@ define([
              */
             let queryUrlFragment = '?isInstitute=true';
             query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
+            query["@type"] = "FederatedQueryRequest";
             return new Promise((resolve, reject) => {
                 $.ajax({
                     url: window.location.origin + "/picsure/query" + queryUrlFragment,
