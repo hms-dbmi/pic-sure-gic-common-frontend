@@ -91,26 +91,8 @@ class SearchResourceRSTest {
 
 	@BeforeEach
 	void init() {
-//		ApplicationProperties appProperties = mock(ApplicationProperties.class);
-//		lenient().when(appProperties.getTargetPicsureToken()).thenReturn("/tmp/unit_test");
-//		lenient().when(appProperties.getTargetPicsureUrl()).thenReturn("http://test");
-//		lenient().when(appProperties.getTargetResourceId()).thenReturn(UUID.randomUUID().toString());
-
-//		httpClient = mock(HttpClient.class);
-//		// not mocking these methods...
-//		lenient().doCallRealMethod().when(httpClient).composeURL(anyString(), anyString());
-//		lenient().doCallRealMethod().when(httpClient).readObjectFromResponse(any(HttpResponse.class), any());
-//		lenient().doCallRealMethod().when(httpClient).throwResponseError(any(HttpResponse.class), anyString());
 		resource = new SearchResourceRS();
 		mergedInfoStoreColumns = new HashMap<>();
-	}
-
-	@Test
-	void testInfo() throws Exception {
-		
-//		assertThrows(ResourceInterfaceException.class, () -> {
-//			resource.info(new QueryRequest());
-//		}, "Downstream Resource returned 500 and should cause 'ResourceInterfaceException'");
 	}
 
 	@Test
@@ -122,14 +104,13 @@ class SearchResourceRSTest {
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(httpResponse.getStatusLine()).thenReturn(statusLine);
 		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-//		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
 
 		assertThrows(ProtocolException.class, () -> {
 			resource.query(null);
 		}, "QueryRequest is required");
 
 		assertThrows(ProtocolException.class, () -> {
-			resource.query(new QueryRequest());
+			resource.query(new GeneralQueryRequest());
 		}, "Query is required");
 
 		when(statusLine.getStatusCode()).thenReturn(500);
@@ -189,7 +170,6 @@ class SearchResourceRSTest {
 		QueryRequest queryRequest = newQueryRequest(null);
 		javax.ws.rs.core.Response returnVal = resource.queryResult(queryId.toString(), queryRequest);
 		assertEquals("4", IOUtils.toString((InputStream) returnVal.getEntity(), StandardCharsets.UTF_8));
-		//assertEquals(resultId, returnVal.getHeaderString("resultId"));
 	}
 
 	@Test
@@ -242,14 +222,13 @@ class SearchResourceRSTest {
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(httpResponse.getStatusLine()).thenReturn(statusLine);
 		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-//		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
 
 		assertThrows(ProtocolException.class, () -> {
 			resource.querySync(null);
 		}, "QueryRequest is required");
 
 		assertThrows(ProtocolException.class, () -> {
-			resource.querySync(new QueryRequest());
+			resource.querySync(new GeneralQueryRequest());
 		}, "Query is required");
 
 		when(statusLine.getStatusCode()).thenReturn(500);
@@ -270,7 +249,6 @@ class SearchResourceRSTest {
 		QueryRequest queryRequest = newQueryRequest(newQuery());
 		javax.ws.rs.core.Response returnVal = resource.querySync(queryRequest);
 		assertEquals("4", IOUtils.toString((InputStream) returnVal.getEntity(), StandardCharsets.UTF_8));
-		//assertEquals(resultId, returnVal.getHeaderString("resultId"));
 	}
 
 	@Test
@@ -282,14 +260,13 @@ class SearchResourceRSTest {
 		when(statusLine.getStatusCode()).thenReturn(200);
 		when(httpResponse.getStatusLine()).thenReturn(statusLine);
 		when(httpResponse.getEntity()).thenReturn(httpResponseEntity);
-//		when(httpClient.retrievePostResponse(anyString(), any(Header[].class), anyString())).thenReturn(httpResponse);
 
 		assertThrows(ProtocolException.class, () -> {
 			resource.search(null);
 		}, "QueryRequest is required");
 
 		assertThrows(ProtocolException.class, () -> {
-			resource.search(new QueryRequest());
+			resource.search(new GeneralQueryRequest());
 		}, "Query is required");
 
 		when(statusLine.getStatusCode()).thenReturn(500);
@@ -316,7 +293,7 @@ class SearchResourceRSTest {
 	@Test
 	public void testInvalidPage() {
 		UUID resourceId = UUID.randomUUID();
-		QueryRequest searchQueryRequest = new QueryRequest();
+		QueryRequest searchQueryRequest = new GeneralQueryRequest();
 		String genomicConceptPath = "examplePath";
 		String query = "exampleQuery";
 		int page = 0; // Invalid page
@@ -332,7 +309,7 @@ class SearchResourceRSTest {
 	@Test
 	public void testInvalidSize() {
 		UUID resourceId = UUID.randomUUID();
-		QueryRequest searchQueryRequest = new QueryRequest();
+		QueryRequest searchQueryRequest = new GeneralQueryRequest();
 		String genomicConceptPath = "examplePath";
 		String query = "exampleQuery";
 		int page = 1;
@@ -366,7 +343,7 @@ class SearchResourceRSTest {
 	}
 
 	private QueryRequest newQueryRequest(Object query) {
-		QueryRequest request = new QueryRequest();
+		QueryRequest request = new GeneralQueryRequest();
 		request.setResourceUUID(UUID.randomUUID());
 		request.setQuery(query);
 		return request;
