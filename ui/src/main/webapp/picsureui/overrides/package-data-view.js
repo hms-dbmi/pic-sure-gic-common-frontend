@@ -7,6 +7,9 @@ define([
     'dataset/utilities',
     'dataset/dataset-save'
 ], function($, _, spinner, settings, modal, dataUtils, namedDataset) {
+    const leafNodesWithParentsThatAreLeafs = {
+        '\\ACT Demographics\\Age\\Not recorded\\': '\\ACT Demographics\\Age\\'
+    };
     const callInstituteNodes = function(package) {
         return package.outputModel.get('resources').map(resource => {
             const safeCopyQuery = {...package.exportModel.get('query'), resourceUUID: resource.uuid};
@@ -201,6 +204,27 @@ define([
 
             package.exportModel.set('treeState', nextState);
             const query = package.updateQueryFields();
+
+            /**
+            We pass all the concepts to the frontend in one giant collection. Leafs, roots, parents, etc. Ex:
+                x//
+                x//a,
+                x//a//b,
+                x//a//c,
+                x//0,
+                x//0//1,
+                x//0//2,
+            So if you have a concept path that is BOTH a leaf and a parent, the frontend doesn't have the information
+            to make that determination. In the above example, you don't know if you should include x//a as a column,
+            or if you should only include x//a//b, and x//a//c. Same problem with x//0
+            To fix this, we have a hard coded list of places where we know this is an issue.
+            **/
+            _.each(leafNodesWithParentsThatAreLeafs, function(value, key) {
+                if (query.query.fields.includes(key)) {
+                    query.query.fields.push(value);
+                }
+            })
+
             package.exportModel.set('query', query);
             package.updateEstimations(query);
 
