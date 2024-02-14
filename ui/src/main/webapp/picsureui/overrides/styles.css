@@ -282,7 +282,7 @@ body {
 #package-data .resource-container {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: left;
     align-items: baseline;
     width: 50%;
     margin-bottom: 4px;
@@ -298,7 +298,8 @@ body {
 #package-data #queryIds {
     display: flex;
     flex-direction: row;
-    width: 100%;
+    width: 50%;
+    margin-left: 25%;
     height: fit-content;
     flex-wrap: wrap;
 }
@@ -451,4 +452,8 @@ body {
 
 .p-0 {
     padding: 0px !important;
+}
+
+.dataset-builder-header {
+    margin-top: 0px;
 }

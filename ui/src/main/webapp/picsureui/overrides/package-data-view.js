@@ -25,10 +25,12 @@ define([
     const createResourceDisplay = function(queryUUID, resourceID, name, status) {
         const container = $(`<div id="${resourceID}" data-resource-id="${resourceID}" data-resource-name="${name}" class="resource-container"></div>`);
         const { icon, label, checked } = statusMeta(status);
+        const count = $("#patient-results-" + resourceID + "-count").text();
         container.append(`
             <input type="checkbox" class="resource-checkbox tabable" id="${resourceID}" ${checked} />
             <div class="resource-name">${name}</div>
-            <input type="text" id="${resourceID}-queryid-span" class="query-id-span ${status}" value="${queryUUID}" readonly />
+            <span>(${count})</span>
+            <input type="text" id="${resourceID}-queryid-span" class="query-id-span ${status} hidden" value="${queryUUID}" readonly />
             <i role="img" id="${resourceID}-status" class="fa-solid ${icon}" aria-label="${label}" ></i>
         `);
         return container;
@@ -92,13 +94,13 @@ define([
     const generateCommonAreaUUID = function(package) {
         if(package.exportModel.get('lastQueryUUID')) {
             const queryIdSpinnerPromise = $.Deferred();
+            $('#ca-query-id').val(package.exportModel.get('lastQueryUUID'));
             spinner.small(queryIdSpinnerPromise, "#queryIdSpinner");
             const responses = package.exportModel.get('siteQueries');
             updateNodesStatus(package, responses, queryIdSpinnerPromise);
             return;
         }
 
-        // TODO: get resource from resources even though its hidden
         const url = window.location.origin + "/picsure/query"
         const queryObject = package.exportModel.get('query') || {};
         queryObject.resourceUUID = settings.uuidGenResourceID;
@@ -117,6 +119,7 @@ define([
                 const query = queryObject;
                 query.commonAreaUUID = respJson.picsureResultId;
                 package.exportModel.set('lastQueryUUID', query.commonAreaUUID);
+                $('#ca-query-id').val(query.commonAreaUUID);
                 package.exportModel.set('query', query);
                 const responses = callInstituteNodes(package);
                 package.exportModel.set('siteQueries', responses);
@@ -233,6 +236,7 @@ define([
 
             $('#queryIds').empty();
             $('#finalize-btn').removeClass('hidden');
+            $("#ca-query-id").val("");
             $('#copy-pheno-ids-btn').addClass('hidden');
             $('#copy-pheno-ids-btn').html('<span>Copy Dataset Variables</span>');
             $('#copy-query-ids-btn').addClass('hidden');
@@ -244,9 +248,10 @@ define([
         },
         addEvents: function(package) {
             const copyText = prefix => `<span>${prefix} Copied! </span><i class="fa-solid fa-circle-check success" role="img" aria-label="Success"></i>`;
+            const caUUID = package.exportModel.get('lastQueryUUID');
             $('#copy-query-ids-btn').on('click', function(){
-                const queryIdsString = getQueryIds().map(site => site.name + ": " + site.queryId ).join(',');
-                navigator.clipboard.writeText(queryIdsString);
+                const queryIdsString = getQueryIds().map(site => site.name).join(',');
+                navigator.clipboard.writeText("Common Area Query ID: " + caUUID + " \nSites queried: " + queryIdsString);
                 $('#copy-query-ids-btn').html(copyText("Dataset IDs"));
             });
 
@@ -277,13 +282,14 @@ define([
                 $("#save-dataset-btn").addClass('hidden');
             }
             if (uuid && name){
+                $('#ca-query-id').val(uuid);
                 $('#save-dataset-btn').html('<span>Dataset saved! </span><i class="fa-solid fa-circle-check success" role="img" aria-label="Success"></i>');
                 $('#save-dataset-btn').prop("disabled", true);
                 $("#dataset-saved").removeClass("hidden");
                 $('#copy-query-ids-btn').removeClass('hidden');
-                $('#copy-pheno-ids-btn').removeClass('hidden');
+
             } else {
-                $("#save-dataset-btn").html('Save Dataset ID');
+                $("#save-dataset-btn").html('<i class="fa-regular fa-floppy-disk"></i> Save');
                 $('#save-dataset-btn').prop("disabled", false);
                 $("#dataset-saved").addClass("hidden");
                 $('#copy-query-ids-btn').addClass('hidden');

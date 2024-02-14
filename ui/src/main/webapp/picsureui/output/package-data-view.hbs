@@ -10,10 +10,14 @@
         </section>
         <section>
             <span class="circle-border">1</span>
-            <div class="soft-border">
-                <div><strong>Select additional</strong> phenotypic <strong>variables</strong> you would like to be 
-                included in your filtered cohort dataset.</div>
-                <div id="concept-tree"></div>
+            <div>
+                <h2 class="dataset-builder-header">Select Additional Data &amp; Finalize Dataset</h2>
+                <div class="soft-border">
+                    <div>
+                        <b>Select additional variables</b> you would like to be included in your filtered cohort dataset.
+                    </div>
+                    <div id="concept-tree"></div>
+                </div>
             </div>
         </section>
         <section id="finalize-button-container" class="package-button-container">
@@ -21,31 +25,54 @@
         </section>
         <section id="query-id-container">
             <span class="circle-border">2</span>
-            <div class="soft-border">
-                <p><b>Save</b> the <b>information</b> included in your cohort by clicking <b>&quot;Save Dataset ID&quot;</b>.</p>
-                <div id="queryIds"></div>
-                <div id="queryIdSpinner"></div>
-                <div id="dataset-saved" class="hidden">
-                    <p class="center"><b>Dataset IDs Saved!</b></p>
-                    <p><b>Copy</b> the associated <b>dataset IDs</b> &amp; <b>variables</b> included in the dataset 
-                    to your clipboard. This information will be required fields in the Sample &amp; Data Request 
-                    form (Step 3).</p>
+            <div>
+                <h2 class="dataset-builder-header">Save &amp; Copy Dataset Request ID</h2>
+                <div class="soft-border">
+                    <p style="border-bottom: 2px lightgrey solid; padding-bottom: 5px;">
+                        Save the information included in your cohort by clicking
+                        the <b>Save Dataset Request ID</b> button. You can reference this information in
+                        the <b>Dataset Manager</b> tool listed under the <b>User Profile</b> tab.
+                    </p>
+                    <div style="display: flex; justify-content: center;align-items: center;">
+                        <b>Dataset Request ID: </b>
+                        <input type="text" id="ca-query-id" class="query-id-span QUEUED" value="" readonly="" />
+                        <button id="save-dataset-btn" class="btn btn-outline primary hidden tabable" style="margin-left: 10px;">
+                            <i class="fa-regular fa-floppy-disk" style="margin-right: 5px;"></i> Save
+                        </button>
+                        <button id="copy-query-ids-btn" class="btn btn-outline primary hidden tabable" style="margin-left: 10px;">
+                            <i class="fa-regular fa-copy" style="margin-right: 5px;"></i> Copy
+                        </button>
+                    </div>
+                    <div id="queryIds"></div>
+                    <div id="queryIdSpinner"></div>
+                    <div id="dataset-saved" class="hidden">
+                        <p class="center"><b>Dataset IDs Saved!</b></p>
+                        <p><b>Copy</b> the associated <b>dataset IDs</b> &amp; <b>variables</b> included in the dataset
+                            to your clipboard. This information will be required fields in the Sample &amp; Data Request
+                            form (Step 3).</p>
+                    </div>
                 </div>
             </div>
         </section>
         <section id="package-buttons-container" class="package-button-container">
-            <button id="save-dataset-btn" class="btn btn-outline primary hidden tabable">Save Dataset ID</button>
-            <button id="copy-query-ids-btn" class="btn btn-outline primary hidden tabable">Copy Dataset IDs</button>
             <button id="copy-pheno-ids-btn" class="btn btn-outline primary hidden tabable">Copy Dataset Variables</button>
         </section>
         <section id="request-buttons-container" class="results-div">
             <span class="circle-border">3</span>
-            <div class="soft-border center">
-                <p>By clicking “Request Access” you will be taken to the externally linked  Request Data and Biosamples 
-                    RedCap form where you can submit your request for data and biosamples.</p>
-                <a class="btn btn-primary tabable" id="request-btn">
-                    {{#if queryButtonLabel}}{{queryButtonLabel}}{{else}}Request Access{{/if}}
-                </a>
+            <div>
+                <h2 class="dataset-builder-header">Complete &amp; Submit Access Request Form</h2>
+                <div class="soft-border center">
+                    <p>
+                        By clicking "Request Access" you will be taken to the
+                        <b>
+                            externally linked  Request Data and Biosamples RedCap form where
+                            you can submit your request for data and biosamples.
+                        </b>
+                    </p>
+                    <a class="btn btn-primary tabable" id="request-btn">
+                        {{#if queryButtonLabel}}{{queryButtonLabel}}{{else}}Request Access{{/if}}
+                    </a>
+                </div>
             </div>
         </section>
     </div>
