@@ -2,17 +2,9 @@ define([
     "underscore",
     "text!overrides/dataset/dataset-save.hbs"
 ], function(_, template) {
-    const renderSiteIds = function(siteQueryIds){
+    const renderSiteIds = function(caDatasetId){
         const ids = $("#dataset-ids");
-        siteQueryIds.forEach((site) => {
-            const { name, queryId } = site;
-            const container = $(`<div id="site-${name}" class="row"></div>`);
-            container.append(`
-                <div class="col-md-3">${name}</div>
-                <div class="col-md-9"><input type="text" value="${queryId}" maxlength="38" size="38" readonly /></div>
-            `);
-            ids.append(container);
-        });
+        $("#ca-dataset-id").val(caDatasetId);
     };
     const updateSaveButton = function(){
         if($("#dataset-name").val()){
@@ -61,7 +53,7 @@ define([
             });
         },
         renderExt: function(package){
-            renderSiteIds(package.queryUUID.siteQueryIds);
+            renderSiteIds(package.queryUUID.commonAreaUUID);
             updateSaveButton();
             $("#dataset-name").on('input', _.debounce(updateSaveButton, 300));
         }
