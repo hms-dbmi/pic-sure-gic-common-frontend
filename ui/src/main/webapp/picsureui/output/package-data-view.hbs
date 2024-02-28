@@ -11,7 +11,7 @@
         <section>
             <span class="circle-border">1</span>
             <div>
-                <h2 class="dataset-builder-header">Select Additional Data &amp; Finalize Dataset</h2>
+                <h4 class="dataset-builder-header">Select Additional Data &amp; Finalize Dataset</h4>
                 <div class="soft-border">
                     <div>
                         <b>Select additional variables</b> you would like to be included in your filtered cohort dataset.
@@ -26,9 +26,9 @@
         <section id="query-id-container">
             <span class="circle-border">2</span>
             <div>
-                <h2 class="dataset-builder-header">Save &amp; Copy Dataset Request ID</h2>
+                <h4 class="dataset-builder-header">Save &amp; Copy Dataset Request ID</h4>
                 <div class="soft-border">
-                    <p style="border-bottom: 2px lightgrey solid; padding-bottom: 5px;">
+                    <p id="save-or-submit-inst" style="border-bottom: 2px lightgrey solid; padding-bottom: 5px;">
                         Save the information included in your cohort by clicking
                         the <b>Save Dataset Request ID</b> button. You can reference this information in
                         the <b>Dataset Manager</b> tool listed under the <b>User Profile</b> tab.
@@ -60,7 +60,7 @@
         <section id="request-buttons-container" class="results-div">
             <span class="circle-border">3</span>
             <div>
-                <h2 class="dataset-builder-header">Complete &amp; Submit Access Request Form</h2>
+                <h4 class="dataset-builder-header">Complete &amp; Submit Access Request Form</h4>
                 <div class="soft-border center">
                     <p>
                         By clicking "Request Access" you will be taken to the
@@ -69,7 +69,7 @@
                             you can submit your request for data and biosamples.
                         </b>
                     </p>
-                    <a class="btn btn-primary tabable" id="request-btn">
+                    <a class="btn btn-primary tabable" id="request-btn" disabled>
                         {{#if queryButtonLabel}}{{queryButtonLabel}}{{else}}Request Access{{/if}}
                     </a>
                 </div>
