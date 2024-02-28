@@ -252,7 +252,8 @@ define([
             $('#copy-query-ids-btn').on('click', function(){
                 const queryIdsString = getQueryIds().map(site => site.name).join(',');
                 navigator.clipboard.writeText("Common Area Query ID: " + caUUID + " \nSites queried: " + queryIdsString);
-                $('#copy-query-ids-btn').html(copyText("Dataset IDs"));
+                $('#copy-query-ids-btn').html(copyText(""));
+                $("#request-btn").removeAttr("disabled");
             });
 
             $('#copy-pheno-ids-btn').on('click', function(){
@@ -283,8 +284,10 @@ define([
             }
             if (uuid && name){
                 $('#ca-query-id').val(uuid);
-                $('#save-dataset-btn').html('<span>Dataset saved! </span><i class="fa-solid fa-circle-check success" role="img" aria-label="Success"></i>');
                 $('#save-dataset-btn').prop("disabled", true);
+                $('#save-dataset-btn').css("display", "none");
+                $('#save-or-submit-inst').text("Copy your Dataset Request ID, this information will be required in the Sample & Data Request form (Step 3).");
+                $("#request-btn").removeAttr("disabled");
                 $("#dataset-saved").removeClass("hidden");
                 $('#copy-query-ids-btn').removeClass('hidden');
 
