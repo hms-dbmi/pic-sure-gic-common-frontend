@@ -4,15 +4,10 @@ define([ "jquery" ], function($) {
             return {
                 ...map,
                 uuid: {
-                    path: ['metadata', 'siteQueryIds'],
+                    path: ['query', 'resourceResultId'],
                     renderId: "detail-summary-id",
-                    render: function(siteList){
-                        return siteList.map(({ name, queryId }) => 
-                            `<div id="site-${name}" class="row p-0">` +
-                                `<div class="col-md-3 p-0">${name}</div>` +
-                                `<div class="col-md-9 p-0">${queryId}</div>` +
-                            `</div>`
-                        ).join('');
+                    render: function(caUUID){
+                        return caUUID;
                     }
                 }
             };
