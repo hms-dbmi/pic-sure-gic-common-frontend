@@ -288,9 +288,6 @@ body {
     margin-bottom: 4px;
 }
 
-#package-data .resource-container .resource-name {
-    min-width: 60px;
-}
 #package-data .resource-container *:not(:last-child) {
     margin-right: 8px;
 }
