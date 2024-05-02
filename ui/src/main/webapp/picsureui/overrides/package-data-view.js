@@ -29,7 +29,7 @@ define([
         container.append(`
             <input type="checkbox" class="resource-checkbox tabable" id="${resourceID}" ${checked} />
             <div class="resource-name">${name}</div>
-            <span>(${count})</span>
+            <span>${count} Patients</span>
             <input type="text" id="${resourceID}-queryid-span" class="query-id-span ${status} hidden" value="${queryUUID}" readonly />
             <i role="img" id="${resourceID}-status" class="fa-solid ${icon}" aria-label="${label}" ></i>
         `);
@@ -49,11 +49,12 @@ define([
                 updateStatus(safeCopyQuery, response.picsureResultId, deffered);
                 deffered.then((statusResponse) => {
                     updateStatusIcon(statusResponse.resourceID, statusResponse.status);
-                    if (statusResponse.status === "AVAILABLE" || statusResponse.status === "COMPLETE") {
+                    if (statusResponse.status === "AVAILABLE" || statusResponse.status === "COMPLETE" || statusResponse.status === "ERROR") {
                         $('#save-dataset-btn').removeClass('hidden');
                     }
                 }).catch((response)=>{
                     updateStatusIcon(response.resourceUUID, 'ERROR', response.error);
+                    $('#save-dataset-btn').removeClass('hidden');
                 });
             }).catch((response) => {
                 index === responses.length-1 &&  queryIdSpinnerPromise.resolve();
@@ -74,9 +75,8 @@ define([
         switch (status) {
             case 'COMPLETE':
             case 'AVAILABLE':
-            return { icon: 'success fa-circle-check', label: 'Complete', checked: 'checked' };
             case 'ERROR':
-            return { icon: 'error fa-circle-xmark', label: 'Error', checked: '' };
+            return { icon: 'success fa-circle-check', label: 'Complete', checked: 'checked' };
             default:
             return { icon: 'fa-spinner fa-spin', label: 'In Progress', checked: 'checked' };
         }
@@ -130,7 +130,7 @@ define([
     }
     const updateStatus = function(query, queryUUID, deffered, interval = 0) {
         let queryUrlFragment = "/" + queryUUID + "/status?isInstitute=true";
-        query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
+        query.query.expectedResultType = "COUNT";
         query["@type"] = "FederatedQueryRequest";
         $.ajax({
             url: window.location.origin + "/picsure/query" + queryUrlFragment,
@@ -141,11 +141,11 @@ define([
             data: JSON.stringify(query),
             success: function (response) {
                 const respJson = JSON.parse(response);
-                if (!respJson.status || respJson.status === "ERROR") {
+                if (!respJson.status) {
                     const errMsg = handleUpdateStatusError(response);
                     deffered.reject({resourceUUID:query.resourceUUID, error: errMsg});
                     return;
-                } else if (respJson.status && (respJson.status === "AVAILABLE" || respJson.status === "COMPLETE")) {
+                } else if (respJson.status && (respJson.status === "AVAILABLE" || respJson.status === "COMPLETE" || respJson.status === "ERROR")) {
                     //resolve any waiting functions.
                     deffered.resolve(respJson);
                     return;
@@ -305,7 +305,7 @@ define([
              * This will send a query to PICSURE to evaluate and execute; it will not return results.  Use downloadData to do that.
              */
             let queryUrlFragment = '?isInstitute=true';
-            query.query.expectedResultType = "SECRET_ADMIN_DATAFRAME";
+            query.query.expectedResultType = "COUNT";
             query["@type"] = "FederatedQueryRequest";
             return new Promise((resolve, reject) => {
                 $.ajax({
