@@ -24,6 +24,6 @@ define(["backbone"], function(BB){
 
 
         // Describe the frequency to the user. Used for the tool tip
-        frequencyDescription: 'The variant allele frequency in gnomAD genomes of combined population as discrete text categories. Possible values: Rare (variant frequency less than 1%), Common (variant frequency greater than or equal to 1%).',
+        frequencyDescription: undefined,
 	};
 });
