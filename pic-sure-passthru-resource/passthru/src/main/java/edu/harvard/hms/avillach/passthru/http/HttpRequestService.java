@@ -1,12 +1,13 @@
 package edu.harvard.hms.avillach.passthru.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.harvard.hms.avillach.passthru.status.ResourceStatusService;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Optional;
@@ -28,19 +30,25 @@ public class HttpRequestService {
     private final HttpClient client;
     private final HttpClientContext context;
     private final ObjectMapper mapper = new ObjectMapper();
+    private final ResourceStatusService statusService;
 
     @Autowired
-    public HttpRequestService(HttpClient client, HttpClientContext context) {
+    public HttpRequestService(HttpClient client, HttpClientContext context, ResourceStatusService statusService) {
         this.client = client;
         this.context = context;
+        this.statusService = statusService;
     }
 
-    public <T> Optional<T> post(URI path, Object body, Class<T> responseType, String... headers) {
+    public <T> Optional<T> post(URI site, String path, Object body, Class<T> responseType, String... headers) {
+        if (statusService.isSiteDown(site)) {
+            log.info("Site marked as down. Short circuiting to failed request.");
+            return Optional.empty();
+        }
         if (headers.length % 2 == 1) {
             log.error("Headers should be sent in key value pairs. Got this: {}", String.join(", ", headers));
             return Optional.empty();
         }
-        HttpPost request = new HttpPost(path);
+        HttpPost request = new HttpPost(site.resolve(path));
         Arrays.stream(headers)
             .gather(Gatherers.windowFixed(2))
             .map(pair -> new BasicHeader(pair.get(0), pair.get(1)))
@@ -51,11 +59,19 @@ public class HttpRequestService {
             request.setEntity(new StringEntity(bodyStr));
             request.setHeader("Content-Type", "application/json");
             HttpResponse response = client.execute(request, context);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 504 || statusCode == 503 || statusCode == 408) {
+                statusService.markAsOffline(site);
+            }
             if (isErrored(response)) {
                 return Optional.empty();
+            } else {
+                statusService.markAsOnline(site);
             }
             String entityStr = EntityUtils.toString(response.getEntity());
             return responseType == null ? Optional.empty() : Optional.ofNullable(mapper.readValue(entityStr, responseType));
+        } catch (ConnectTimeoutException | SocketTimeoutException e) {
+            statusService.markAsOffline(site);
         } catch (JsonProcessingException e) {
             log.warn("Error writing body to str: ", e);
         } catch (UnsupportedEncodingException e) {
