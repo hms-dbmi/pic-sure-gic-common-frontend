@@ -14,13 +14,12 @@ import java.util.stream.Collectors;
 @Service
 public class RemoteResourceService {
 
-
     private static final Logger log = LoggerFactory.getLogger(RemoteResourceService.class);
 
     @PostConstruct
     public void logServices() {
-        log.info("Passthru resource configured with {} sites: ", sites.size());
-        log.info(sites.stream().map(RemoteResource::name).collect(Collectors.joining(", ")));
+        String sitesStr = "\n\t" + sites.stream().map(RemoteResource::name).collect(Collectors.joining("\n\t"));
+        log.info("Passthru resource configured with {} sites: {}", sites.size(), sitesStr);
     }
 
     private final List<RemoteResource> sites;
