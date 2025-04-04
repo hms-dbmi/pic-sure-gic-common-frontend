@@ -3,6 +3,7 @@ package edu.harvard.hms.avillach.passthru.http;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.harvard.hms.avillach.passthru.status.ResourceStatusService;
+import edu.harvard.hms.avillach.passthru.status.StatusTranslatorService;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -14,6 +15,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,15 +33,17 @@ public class HttpRequestService {
     private final HttpClientContext context;
     private final ObjectMapper mapper = new ObjectMapper();
     private final ResourceStatusService statusService;
+    private final StatusTranslatorService translatorService;
 
     @Autowired
-    public HttpRequestService(HttpClient client, HttpClientContext context, ResourceStatusService statusService) {
+    public HttpRequestService(HttpClient client, HttpClientContext context, ResourceStatusService statusService, StatusTranslatorService translatorService) {
         this.client = client;
         this.context = context;
         this.statusService = statusService;
+        this.translatorService = translatorService;
     }
 
-    public <T> Optional<T> post(URI site, String path, Object body, Class<T> responseType, String... headers) {
+    public <T> Optional<T> post(URI site, String path, Object body, @NonNull Class<T> responseType, String... headers) {
         if (statusService.isSiteDown(site)) {
             log.info("Site marked as down. Short circuiting to failed request.");
             return Optional.empty();
@@ -54,31 +58,27 @@ public class HttpRequestService {
             .map(pair -> new BasicHeader(pair.get(0), pair.get(1)))
             .forEach(request::setHeader);
 
+        Exception ex = null;
+        HttpResponse response = null;
         try {
             String bodyStr = mapper.writeValueAsString(body);
             request.setEntity(new StringEntity(bodyStr));
             request.setHeader("Content-Type", "application/json");
-            HttpResponse response = client.execute(request, context);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == 504 || statusCode == 503 || statusCode == 408) {
-                statusService.markAsOffline(site);
-            }
+            response = client.execute(request, context);
             if (isErrored(response)) {
                 return Optional.empty();
-            } else {
-                statusService.markAsOnline(site);
             }
             String entityStr = EntityUtils.toString(response.getEntity());
-            return responseType == null ? Optional.empty() : Optional.ofNullable(mapper.readValue(entityStr, responseType));
+            return Optional.ofNullable(mapper.readValue(entityStr, responseType));
         } catch (ConnectTimeoutException | SocketTimeoutException e) {
-            statusService.markAsOffline(site);
-        } catch (JsonProcessingException e) {
-            log.warn("Error writing body to str: ", e);
-        } catch (UnsupportedEncodingException e) {
-            log.warn("Error encoding body: ", e);
+            ex = e;
         } catch (IOException e) {
-            log.warn("Error sending request: ", e);
+            log.warn("Error writing, encoding or sending request: ", e);
+            ex = e;
+        } finally {
+            translatorService.translateResponseAndSetStatus(ex, response, site);
         }
+
         return Optional.empty();
     }
 
