@@ -1,0 +1,21 @@
+---
+version: '3'
+services:
+  uploader:
+    image: lukesikinabch/passthru:1.2.3
+    container_name: passthru
+    build: ./
+    env_file:
+      - .env
+    restart: always
+    volumes:
+      - $DOCKER_CONFIG_DIR/passthru/application.properties:/application.properties
+    networks:
+      - picsure
+    profiles:
+      - "production"
+  properties-updater:
+
+networks:
+  picsure:
+    external: true
