@@ -6,8 +6,9 @@ down.
 
 ## Requirements
 
-JDK 24
-PIC-SURE Resource API artifacts
+1. JDK 24
+2. Maven
+3. PIC-SURE Resource API artifacts
 
 ## Setup
 
