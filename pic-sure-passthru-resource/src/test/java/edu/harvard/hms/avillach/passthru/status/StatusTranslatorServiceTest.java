@@ -31,24 +31,14 @@ class StatusTranslatorServiceTest {
 
     @Test
     void shouldMarkOfflineForCode() {
-        HttpResponse response = Mockito.mock(HttpResponse.class);
-        StatusLine status = Mockito.mock(StatusLine.class);
-        Mockito.when(status.getStatusCode()).thenReturn(504);
-        Mockito.when(response.getStatusLine()).thenReturn(status);
-
-        subject.translateResponseAndSetStatus(null, response, site);
+        subject.translateResponseAndSetStatus(null, 504, site);
 
         Mockito.verify(statusService, Mockito.times(1)).markAsOffline(site);
     }
 
     @Test
     void shouldMarkOnline() {
-        HttpResponse response = Mockito.mock(HttpResponse.class);
-        StatusLine status = Mockito.mock(StatusLine.class);
-        Mockito.when(status.getStatusCode()).thenReturn(200);
-        Mockito.when(response.getStatusLine()).thenReturn(status);
-
-        subject.translateResponseAndSetStatus(null, response, site);
+        subject.translateResponseAndSetStatus(null, 200, site);
 
         Mockito.verify(statusService, Mockito.times(1)).markAsOnline(site);
     }

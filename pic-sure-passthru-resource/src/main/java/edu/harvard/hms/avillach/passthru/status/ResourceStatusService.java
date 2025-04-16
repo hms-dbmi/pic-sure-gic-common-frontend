@@ -25,8 +25,10 @@ public class ResourceStatusService {
     }
 
     public boolean isSiteDown(URI site) {
-        return repository.getStatus(site).status() == Status.Online
-            || repository.getStatus(site).status() == Status.Unstable;
+        return switch (repository.getStatus(site).status()) {
+            case Status.Online, Status.Unstable -> false;
+            case Status.Offline -> true;
+        };
     }
 
     public void markAsOffline(URI site) {
