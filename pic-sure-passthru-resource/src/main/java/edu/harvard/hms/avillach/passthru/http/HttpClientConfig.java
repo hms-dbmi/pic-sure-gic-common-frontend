@@ -6,6 +6,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
@@ -25,15 +26,16 @@ public class HttpClientConfig {
     @Value("${http.proxyPassword:}")
     private String proxyPassword;
 
-    @Bean
-    public HttpClient getHttpClient() {
-        if (!StringUtils.hasLength(proxyUser)) {
-            LOG.info("No proxy user found, making default client.");
-            return HttpClients.createDefault();
-        }
-        LOG.info("Found proxy user {}, will configure proxy", proxyUser);
+     @Bean
+    public CloseableHttpClient getHttpClient() {
         PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
         manager.setMaxTotal(100);
+        if (!StringUtils.hasLength(proxyUser)) {
+            LOG.info("No proxy user found, making default client.");
+            return HttpClients.custom().setConnectionManager(manager).build();
+        }
+        LOG.info("Found proxy user {}, will configure proxy", proxyUser);
+
         return HttpClients
             .custom()
             .setConnectionManager(new PoolingHttpClientConnectionManager())

@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.harvard.hms.avillach.passthru.status.ResourceStatusService;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,7 +30,7 @@ class HttpRequestServiceTest {
     HttpRequestService subject;
 
     @MockitoBean
-    HttpClient client;
+    CloseableHttpClient client;
     
     @MockitoBean
     ResourceStatusService statusService;
@@ -52,7 +52,7 @@ class HttpRequestServiceTest {
     @Test
     void shouldHandleErrorCodes() throws IOException {
         Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(false);
-        HttpResponse response = Mockito.mock(HttpResponse.class);
+        CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
         StatusLine status = Mockito.mock(StatusLine.class);
         Mockito.when(status.getStatusCode()).thenReturn(500);
         Mockito.when(response.getStatusLine()).thenReturn(status);
@@ -70,7 +70,7 @@ class HttpRequestServiceTest {
     void shouldPost() throws IOException {
         Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(false);
         HttpEntity entity = makeEntity(new TestObj("Bill"));
-        HttpResponse response = Mockito.mock(HttpResponse.class);
+        CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
         StatusLine status = Mockito.mock(StatusLine.class);
         Mockito.when(status.getStatusCode()).thenReturn(200);
         Mockito.when(response.getStatusLine()).thenReturn(status);
@@ -90,7 +90,7 @@ class HttpRequestServiceTest {
     void shouldPostForWeirdCodes() throws IOException {
         Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(false);
         HttpEntity entity = makeEntity(new TestObj("Bill"));
-        HttpResponse response = Mockito.mock(HttpResponse.class);
+        CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
         StatusLine status = Mockito.mock(StatusLine.class);
         Mockito.when(status.getStatusCode()).thenReturn(100);
         Mockito.when(response.getStatusLine()).thenReturn(status);
@@ -118,7 +118,7 @@ class HttpRequestServiceTest {
     @Test
     void shouldMarkSiteASDownForCodes() throws IOException {
         Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(false);
-        HttpResponse response = Mockito.mock(HttpResponse.class);
+        CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
         StatusLine status = Mockito.mock(StatusLine.class);
         Mockito.when(status.getStatusCode()).thenReturn(504); // simulate site timeout
         Mockito.when(response.getStatusLine()).thenReturn(status);
@@ -137,7 +137,7 @@ class HttpRequestServiceTest {
     @Test
     void shouldMarkSiteASDownForException() throws IOException {
         Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(false);
-        HttpResponse response = Mockito.mock(HttpResponse.class);
+        CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
         StatusLine status = Mockito.mock(StatusLine.class);
         Mockito.when(status.getStatusCode()).thenReturn(200); // ok http code, but throw exception
         Mockito.when(response.getStatusLine()).thenReturn(status);

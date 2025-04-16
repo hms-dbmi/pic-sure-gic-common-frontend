@@ -6,10 +6,12 @@ import edu.harvard.hms.avillach.passthru.status.ResourceStatusService;
 import edu.harvard.hms.avillach.passthru.status.StatusTranslatorService;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -29,14 +31,14 @@ import java.util.stream.Gatherers;
 @Service
 public class HttpRequestService {
     private static final Logger log = LoggerFactory.getLogger(HttpRequestService.class);
-    private final HttpClient client;
+    private final CloseableHttpClient client;
     private final HttpClientContext context;
     private final ObjectMapper mapper = new ObjectMapper();
     private final ResourceStatusService statusService;
     private final StatusTranslatorService translatorService;
 
     @Autowired
-    public HttpRequestService(HttpClient client, HttpClientContext context, ResourceStatusService statusService, StatusTranslatorService translatorService) {
+    public HttpRequestService(CloseableHttpClient client, HttpClientContext context, ResourceStatusService statusService, StatusTranslatorService translatorService) {
         this.client = client;
         this.context = context;
         this.statusService = statusService;
@@ -58,39 +60,46 @@ public class HttpRequestService {
             .map(pair -> new BasicHeader(pair.get(0), pair.get(1)))
             .forEach(request::setHeader);
 
-        Exception ex = null;
-        HttpResponse response = null;
         try {
             String bodyStr = mapper.writeValueAsString(body);
             request.setEntity(new StringEntity(bodyStr));
             request.setHeader("Content-Type", "application/json");
-            response = client.execute(request, context);
-            if (isErrored(response)) {
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
+            log.warn("Error creating request object");
+            return Optional.empty();
+        }
+
+        Exception ex = null;
+        Integer responseCode = null;
+        try (CloseableHttpResponse response = client.execute(request, context)){
+            responseCode = response.getStatusLine().getStatusCode();
+            if (isErrored(responseCode)) {
                 return Optional.empty();
             }
             String entityStr = EntityUtils.toString(response.getEntity());
             return Optional.ofNullable(mapper.readValue(entityStr, responseType));
         } catch (ConnectTimeoutException | SocketTimeoutException e) {
+            log.warn("Site timeout: ", e);
             ex = e;
         } catch (IOException e) {
-            log.warn("Error writing, encoding or sending request: ", e);
+            log.warn("Error sending request: ", e);
             ex = e;
         } finally {
-            translatorService.translateResponseAndSetStatus(ex, response, site);
+            translatorService.translateResponseAndSetStatus(ex, responseCode, site);
         }
 
         return Optional.empty();
     }
 
-    private static boolean isErrored(HttpResponse response) {
-        return switch (response.getStatusLine().getStatusCode() / 100) {
+    private static boolean isErrored(Integer responseCode) {
+        return switch (responseCode / 100) {
             case 1, 3 -> {
-                log.info("Strange response code, will attempt to complete req: {}", response.getStatusLine().getStatusCode());
+                log.info("Strange response code, will attempt to complete req: {}", responseCode);
                 yield false;
             }
             case 2 -> false;
             default -> {
-                log.info("Error code for http request. Will not attempt to complete request. Code: {}", response.getStatusLine().getStatusCode());
+                log.info("Error code for http request. Will not attempt to complete request. Code: {}", responseCode);
                 yield true;
             }
         };

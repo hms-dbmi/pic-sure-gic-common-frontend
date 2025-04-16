@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.net.URI;
 import java.util.Optional;
@@ -31,43 +32,43 @@ public class PicSureController {
     }
 
     @PostMapping("/info")
-    public ResponseEntity<ResourceInfo> info(QueryRequest request) {
-        return formatRequestAndRunPost(request, "./info", ResourceInfo.class);
+    public ResponseEntity<ResourceInfo> info(@RequestBody QueryRequest request) {
+        return formatRequestAndRunPost(request, "./picsure/info", ResourceInfo.class);
     }
 
     @PostMapping("/query")
-    public ResponseEntity<QueryStatus> query(QueryRequest request) {
-        return formatRequestAndRunPost(request, "./query", QueryStatus.class);
+    public ResponseEntity<QueryStatus> query(@RequestBody QueryRequest request) {
+        return formatRequestAndRunPost(request, "./picsure/query", QueryStatus.class);
     }
 
     @PostMapping("/query/{resourceQueryId}/result")
     public ResponseEntity<Object> queryResult(@PathVariable("resourceQueryId") String queryId, QueryRequest request) {
-        return formatRequestAndRunPost(request, "./query/" + queryId + "/result", Object.class);
+        return formatRequestAndRunPost(request, "./picsure/query/" + queryId + "/result", Object.class);
     }
 
     @PostMapping("/query/{resourceQueryId}/status")
     public ResponseEntity<QueryStatus> queryStatus(@PathVariable("resourceQueryId") String queryId, QueryRequest request) {
-        return formatRequestAndRunPost(request, "./query/" + queryId + "/status", QueryStatus.class);
+        return formatRequestAndRunPost(request, "./picsure/query/" + queryId + "/status", QueryStatus.class);
     }
 
     @PostMapping("/query/sync")
-    public ResponseEntity<Object> querySync(QueryRequest request) {
-        return formatRequestAndRunPost(request, "./query/sync", Object.class);
+    public ResponseEntity<Object> querySync(@RequestBody QueryRequest request) {
+        return formatRequestAndRunPost(request, "./picsure/query/sync", Object.class);
     }
 
     @PostMapping("/search")
-    public ResponseEntity<SearchResults> search(QueryRequest request) {
+    public ResponseEntity<SearchResults> search(@RequestBody QueryRequest request) {
         String path = request == null ? "" : request.getResourceUUID().toString();
-        return formatRequestAndRunPost(request, "./search/" + path, SearchResults.class);
+        return formatRequestAndRunPost(request, "./picsure/search/" + path, SearchResults.class);
     }
 
     @PostMapping
-    public ResponseEntity<Object> queryFormat(QueryRequest request) {
-        String relativePath = "./query/format";
+    public ResponseEntity<Object> queryFormat(@RequestBody QueryRequest request) {
+        String relativePath = "./picsure/query/format";
         return formatRequestAndRunPost(request, relativePath, Object.class);
     }
 
-    private <T> ResponseEntity<T> formatRequestAndRunPost(QueryRequest request, String relativePath, Class<T> returnType) {
+    private <T> ResponseEntity<T> formatRequestAndRunPost(@RequestBody QueryRequest request, String relativePath, Class<T> returnType) {
         if (request == null || request.getQuery() == null) {
             log.info("Bad request. QueryRequest was null or malformed.");
             return ResponseEntity.badRequest().build();
