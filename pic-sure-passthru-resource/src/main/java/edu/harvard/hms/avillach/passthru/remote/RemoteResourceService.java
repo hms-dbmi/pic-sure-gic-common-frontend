@@ -34,4 +34,10 @@ public class RemoteResourceService {
             .filter(r -> r.common().equals(commonResource))
             .findFirst();
     }
+
+    public Optional<RemoteResource> getRemoteResource(String siteName) {
+        return sites.stream()
+            .filter(r -> r.name().equals(siteName))
+            .findFirst();
+    }
 }

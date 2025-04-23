@@ -7,7 +7,9 @@ import edu.harvard.hms.avillach.passthru.status.StatusTranslatorService;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
@@ -55,20 +57,42 @@ public class HttpRequestService {
             return Optional.empty();
         }
         HttpPost request = new HttpPost(site.resolve(path));
-        Arrays.stream(headers)
-            .gather(Gatherers.windowFixed(2))
-            .map(pair -> new BasicHeader(pair.get(0), pair.get(1)))
-            .forEach(request::setHeader);
+        addHeaders(headers, request);
 
         try {
             String bodyStr = mapper.writeValueAsString(body);
             request.setEntity(new StringEntity(bodyStr));
-            request.setHeader("Content-Type", "application/json");
         } catch (JsonProcessingException | UnsupportedEncodingException e) {
             log.warn("Error creating request object");
             return Optional.empty();
         }
 
+        return runRequest(site, responseType, request);
+    }
+
+    private static void addHeaders(String[] headers, HttpRequestBase request) {
+        Arrays.stream(headers)
+            .gather(Gatherers.windowFixed(2))
+            .map(pair -> new BasicHeader(pair.get(0), pair.get(1)))
+            .forEach(request::setHeader);
+        request.setHeader("Content-Type", "application/json");
+    }
+
+    public <T> Optional<T> get(URI site, String path, @NonNull Class<T> responseType, String... headers) {
+        if (statusService.isSiteDown(site)) {
+            log.info("Site marked as down. Short circuiting to failed request.");
+            return Optional.empty();
+        }
+        if (headers.length % 2 == 1) {
+            log.error("Headers should be sent in key value pairs. Got this: {}", String.join(", ", headers));
+            return Optional.empty();
+        }
+        HttpGet request = new HttpGet(site.resolve(path));
+        addHeaders(headers, request);
+        return runRequest(site, responseType, request);
+    }
+
+    private <T> Optional<T> runRequest(URI site, Class<T> responseType, HttpRequestBase request) {
         Exception ex = null;
         Integer responseCode = null;
         try (CloseableHttpResponse response = client.execute(request, context)){
