@@ -7,6 +7,7 @@ import edu.harvard.dbmi.avillach.domain.SearchResults;
 import edu.harvard.hms.avillach.passthru.http.HttpRequestService;
 import edu.harvard.hms.avillach.passthru.remote.RemoteResource;
 import edu.harvard.hms.avillach.passthru.remote.RemoteResourceService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,9 @@ import static org.mockito.ArgumentMatchers.eq;
 
 @SpringBootTest
 class PicSureControllerTest {
+
+    UUID common = UUID.fromString("f29529a0-d8c7-4fed-8b27-0beccd706dad");
+    UUID remote = UUID.fromString("87220121-aa95-4fd9-97bf-4a09bd739596");
 
     @MockitoBean
     HttpRequestService requestService;
@@ -70,8 +74,6 @@ class PicSureControllerTest {
 
     @Test
     void should400IfSiteFails() {
-        UUID common = UUID.fromString("f29529a0-d8c7-4fed-8b27-0beccd706dad");
-        UUID remote = UUID.fromString("87220121-aa95-4fd9-97bf-4a09bd739596");
         URI site = URI.create("bch.invalid");
         RemoteResource resource = new RemoteResource("bch", common, remote, site, "token");
         QueryRequest request = new GeneralQueryRequest();
@@ -93,8 +95,6 @@ class PicSureControllerTest {
 
     @Test
     void shouldWorkIfSiteWorks() {
-        UUID common = UUID.fromString("f29529a0-d8c7-4fed-8b27-0beccd706dad");
-        UUID remote = UUID.fromString("87220121-aa95-4fd9-97bf-4a09bd739596");
         URI site = URI.create("bch.invalid");
         RemoteResource resource = new RemoteResource("bch", common, remote, site, "token");
         QueryRequest request = new GeneralQueryRequest();
@@ -106,7 +106,7 @@ class PicSureControllerTest {
         QueryRequest chain = request.copy();
         chain.setResourceUUID(remote);
         Mockito.when(requestService.post(
-                eq(site), eq("./query/query-id/result"), Mockito.any(QueryRequest.class),
+                eq(site), eq("./picsure/query/query-id/result"), Mockito.any(QueryRequest.class),
                 eq(Object.class), eq(HttpHeaders.AUTHORIZATION), eq("Bearer token")
             ))
             .thenReturn(Optional.of(":)"));
@@ -117,5 +117,67 @@ class PicSureControllerTest {
         Assertions.assertEquals(expected, actual);
     }
 
+    @Test
+    void shouldDoDictionaryPost() {
+        URI site = URI.create("bch.invalid");
+        RemoteResource resource = new RemoteResource("bch", common, remote, site, "token");
+        Mockito.when(remoteResourceService.getRemoteResource("bch"))
+            .thenReturn(Optional.of(resource));
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("/dictionary/bch/my/path/with/slashes"));
+        Mockito.when(request.getQueryString()).thenReturn("?foo=asda%20foo&bar=asda");
+        Mockito.when(requestService.post(
+                eq(site), eq("./picsure/proxy/dictionary-api/my/path/with/slashes?foo=asda foo&bar=asda"),
+                eq(":)"), eq(Object.class), eq(HttpHeaders.AUTHORIZATION), eq("Bearer token")
+            ))
+            .thenReturn(Optional.of(":)"));
 
+        ResponseEntity<Object> response = subject.postDictionaryRequest(":)", "bch", request);
+
+        Assertions.assertEquals(200, response.getStatusCode().value());
+        Assertions.assertEquals(":)", response.getBody());
+    }
+
+    @Test
+    void shouldNotDoInvalidDictionaryPost() {
+        Mockito.when(remoteResourceService.getRemoteResource("bch"))
+            .thenReturn(Optional.empty());
+
+        ResponseEntity<Object> response =
+            subject.postDictionaryRequest(":)", "bch", Mockito.mock(HttpServletRequest.class));
+
+        Assertions.assertEquals(404, response.getStatusCode().value());
+    }
+
+    @Test
+    void shouldDoDictionaryGet() {
+        URI site = URI.create("bch.invalid");
+        RemoteResource resource = new RemoteResource("bch", common, remote, site, "token");
+        Mockito.when(remoteResourceService.getRemoteResource("bch"))
+            .thenReturn(Optional.of(resource));
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("/dictionary/bch/my/path/with/slashes"));
+        Mockito.when(request.getQueryString()).thenReturn("?foo=asda%20foo&bar=asda");
+        Mockito.when(requestService.get(
+                eq(site), eq("./picsure/proxy/dictionary-api/my/path/with/slashes?foo=asda foo&bar=asda"),
+                eq(Object.class), eq(HttpHeaders.AUTHORIZATION), eq("Bearer token")
+            ))
+            .thenReturn(Optional.of(":)"));
+
+        ResponseEntity<Object> response = subject.getDictionaryRequest("bch", request);
+
+        Assertions.assertEquals(200, response.getStatusCode().value());
+        Assertions.assertEquals(":)", response.getBody());
+    }
+
+    @Test
+    void shouldNotDoInvalidDictionaryGet() {
+        Mockito.when(remoteResourceService.getRemoteResource("bch"))
+            .thenReturn(Optional.empty());
+
+        ResponseEntity<Object> response =
+            subject.getDictionaryRequest("bch", Mockito.mock(HttpServletRequest.class));
+
+        Assertions.assertEquals(404, response.getStatusCode().value());
+    }
 }

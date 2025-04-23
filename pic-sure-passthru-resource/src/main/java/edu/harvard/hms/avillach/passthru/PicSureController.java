@@ -4,17 +4,21 @@ import edu.harvard.dbmi.avillach.domain.*;
 import edu.harvard.hms.avillach.passthru.http.HttpRequestService;
 import edu.harvard.hms.avillach.passthru.remote.RemoteResource;
 import edu.harvard.hms.avillach.passthru.remote.RemoteResourceService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.util.UriUtils;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Controller
@@ -62,10 +66,50 @@ public class PicSureController {
         return formatRequestAndRunPost(request, "./picsure/search/" + path, SearchResults.class);
     }
 
-    @PostMapping
+    @PostMapping("/query/format")
     public ResponseEntity<Object> queryFormat(@RequestBody QueryRequest request) {
         String relativePath = "./picsure/query/format";
         return formatRequestAndRunPost(request, relativePath, Object.class);
+    }
+
+    @PostMapping("/dictionary/{site}/**")
+    public ResponseEntity<Object> postDictionaryRequest(
+        @RequestBody Object body, @PathVariable String site, HttpServletRequest request
+    ) {
+        Optional<RemoteResource> maybeSite = remoteResourceService.getRemoteResource(site);
+        if (maybeSite.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        RemoteResource remote = maybeSite.get();
+
+        String dictionaryPath = extractPath(request, "/dictionary/" + site + "/");
+        return http.post(remote.base(), dictionaryPath, body, Object.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
+            .map(ResponseEntity.ok()::body)
+            .orElse(ResponseEntity.internalServerError().build());
+    }
+
+    @GetMapping("/dictionary/{site}/**")
+    public ResponseEntity<Object> getDictionaryRequest(
+        @PathVariable String site, HttpServletRequest request
+    ) {
+        Optional<RemoteResource> maybeSite = remoteResourceService.getRemoteResource(site);
+        if (maybeSite.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        RemoteResource remote = maybeSite.get();
+
+        String dictionaryPath = extractPath(request, "/dictionary/" + site + "/");
+        return http.get(remote.base(), dictionaryPath, Object.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
+            .map(ResponseEntity.ok()::body)
+            .orElse(ResponseEntity.internalServerError().build());
+    }
+
+    private String extractPath(HttpServletRequest request, String prefix) {
+        String unsafePath = request.getRequestURL().toString().split(prefix)[1];
+        String unsafeQuery = request.getQueryString();
+        return "./picsure/proxy/dictionary-api/" +
+            UriUtils.decode(unsafePath, StandardCharsets.UTF_8) +
+            UriUtils.decode(unsafeQuery, StandardCharsets.UTF_8);
     }
 
     private <T> ResponseEntity<T> formatRequestAndRunPost(@RequestBody QueryRequest request, String relativePath, Class<T> returnType) {
