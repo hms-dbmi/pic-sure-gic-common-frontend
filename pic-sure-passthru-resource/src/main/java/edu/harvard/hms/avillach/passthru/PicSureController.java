@@ -72,7 +72,7 @@ public class PicSureController {
         return formatRequestAndRunPost(request, relativePath, Object.class);
     }
 
-    @PostMapping("/dictionary/{site}/**")
+    @PostMapping("/dictionary-dump/{site}/**")
     public ResponseEntity<Object> postDictionaryRequest(
         @RequestBody Object body, @PathVariable String site, HttpServletRequest request
     ) {
@@ -88,7 +88,7 @@ public class PicSureController {
             .orElse(ResponseEntity.internalServerError().build());
     }
 
-    @GetMapping("/dictionary/{site}/**")
+    @GetMapping("/dictionary-dump/{site}/**")
     public ResponseEntity<Object> getDictionaryRequest(
         @PathVariable String site, HttpServletRequest request
     ) {
