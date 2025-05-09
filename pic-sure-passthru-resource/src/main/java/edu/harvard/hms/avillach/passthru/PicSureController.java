@@ -72,7 +72,7 @@ public class PicSureController {
         return formatRequestAndRunPost(request, relativePath, Object.class);
     }
 
-    @PostMapping("/dictionary/{site}/**")
+    @PostMapping("/dictionary-dump/{site}/**")
     public ResponseEntity<Object> postDictionaryRequest(
         @RequestBody Object body, @PathVariable String site, HttpServletRequest request
     ) {
@@ -82,13 +82,13 @@ public class PicSureController {
         }
         RemoteResource remote = maybeSite.get();
 
-        String dictionaryPath = extractPath(request, "/dictionary/" + site + "/");
+        String dictionaryPath = extractPath(request, "/dictionary-dump/" + site + "/");
         return http.post(remote.base(), dictionaryPath, body, Object.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
             .map(ResponseEntity.ok()::body)
             .orElse(ResponseEntity.internalServerError().build());
     }
 
-    @GetMapping("/dictionary/{site}/**")
+    @GetMapping("/dictionary-dump/{site}/**")
     public ResponseEntity<Object> getDictionaryRequest(
         @PathVariable String site, HttpServletRequest request
     ) {
@@ -98,7 +98,7 @@ public class PicSureController {
         }
         RemoteResource remote = maybeSite.get();
 
-        String dictionaryPath = extractPath(request, "/dictionary/" + site + "/");
+        String dictionaryPath = extractPath(request, "/dictionary-dump/" + site + "/");
         return http.get(remote.base(), dictionaryPath, Object.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
             .map(ResponseEntity.ok()::body)
             .orElse(ResponseEntity.internalServerError().build());
@@ -107,7 +107,7 @@ public class PicSureController {
     private String extractPath(HttpServletRequest request, String prefix) {
         String unsafePath = request.getRequestURL().toString().split(prefix)[1];
         String unsafeQuery = request.getQueryString();
-        return "./picsure/proxy/dictionary-api/" +
+        return "./picsure/proxy/dictionary-dump/" +
             UriUtils.decode(unsafePath, StandardCharsets.UTF_8) +
             UriUtils.decode(unsafeQuery, StandardCharsets.UTF_8);
     }
