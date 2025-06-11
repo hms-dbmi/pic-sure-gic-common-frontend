@@ -1,131 +1,134 @@
-package edu.harvard.hms.avillach.passthru.http;
+package edu.harvard.hms.avillach.passthru;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.harvard.hms.avillach.passthru.status.ResourceStatusService;
-import edu.harvard.hms.avillach.passthru.status.StatusTranslatorService;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
+import edu.harvard.dbmi.avillach.domain.*;
+import edu.harvard.hms.avillach.passthru.http.HttpRequestService;
+import edu.harvard.hms.avillach.passthru.remote.RemoteResource;
+import edu.harvard.hms.avillach.passthru.remote.RemoteResourceService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.util.UriUtils;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
 import java.net.URI;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.stream.Gatherers;
 
-@Service
-public class HttpRequestService {
-    private static final Logger log = LoggerFactory.getLogger(HttpRequestService.class);
-    private final CloseableHttpClient client;
-    private final HttpClientContext context;
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final ResourceStatusService statusService;
-    private final StatusTranslatorService translatorService;
+@Controller
+public class PicSureController {
+    private static final String BEARER = "Bearer ";
+    private static final Logger log = LoggerFactory.getLogger(PicSureController.class);
+
+    private final HttpRequestService http;
+    private final RemoteResourceService remoteResourceService;
 
     @Autowired
-    public HttpRequestService(CloseableHttpClient client, HttpClientContext context, ResourceStatusService statusService, StatusTranslatorService translatorService) {
-        this.client = client;
-        this.context = context;
-        this.statusService = statusService;
-        this.translatorService = translatorService;
+    public PicSureController(HttpRequestService http, RemoteResourceService remoteResourceService) {
+        this.http = http;
+        this.remoteResourceService = remoteResourceService;
     }
 
-    public <T> Optional<T> post(URI site, String path, Object body, @NonNull Class<T> responseType, String... headers) {
-        if (statusService.isSiteDown(site)) {
-            log.info("Site marked as down. Short circuiting to failed request.");
-            return Optional.empty();
-        }
-        if (headers.length % 2 == 1) {
-            log.error("Headers should be sent in key value pairs. Got this: {}", String.join(", ", headers));
-            return Optional.empty();
-        }
-        HttpPost request = new HttpPost(site.resolve(path));
-        addHeaders(headers, request);
-
-        try {
-            String bodyStr = mapper.writeValueAsString(body);
-            request.setEntity(new StringEntity(bodyStr));
-        } catch (JsonProcessingException | UnsupportedEncodingException e) {
-            log.warn("Error creating request object");
-            return Optional.empty();
-        }
-
-        return runRequest(site, responseType, request);
+    @PostMapping("/info")
+    public ResponseEntity<ResourceInfo> info(@RequestBody QueryRequest request) {
+        return formatRequestAndRunPost(request, "./info", ResourceInfo.class);
     }
 
-    private static void addHeaders(String[] headers, HttpRequestBase request) {
-        Arrays.stream(headers)
-            .gather(Gatherers.windowFixed(2))
-            .map(pair -> new BasicHeader(pair.get(0), pair.get(1)))
-            .forEach(request::setHeader);
-        request.setHeader("Content-Type", "application/json");
+    @PostMapping("/query")
+    public ResponseEntity<QueryStatus> query(@RequestBody QueryRequest request) {
+        return formatRequestAndRunPost(request, "./query", QueryStatus.class);
     }
 
-    public <T> Optional<T> get(URI site, String path, @NonNull Class<T> responseType, String... headers) {
-        if (statusService.isSiteDown(site)) {
-            log.info("Site marked as down. Short circuiting to failed request.");
-            return Optional.empty();
-        }
-        if (headers.length % 2 == 1) {
-            log.error("Headers should be sent in key value pairs. Got this: {}", String.join(", ", headers));
-            return Optional.empty();
-        }
-        HttpGet request = new HttpGet(site.resolve(path));
-        addHeaders(headers, request);
-        return runRequest(site, responseType, request);
+    @PostMapping("/query/{resourceQueryId}/result")
+    public ResponseEntity<Object> queryResult(@PathVariable("resourceQueryId") String queryId, QueryRequest request) {
+        return formatRequestAndRunPost(request, "./query/" + queryId + "/result", Object.class);
     }
 
-    private <T> Optional<T> runRequest(URI site, Class<T> responseType, HttpRequestBase request) {
-        Exception ex = null;
-        Integer responseCode = null;
-        try (CloseableHttpResponse response = client.execute(request, context)){
-            responseCode = response.getStatusLine().getStatusCode();
-            if (isErrored(responseCode)) {
-                return Optional.empty();
-            }
-            String entityStr = EntityUtils.toString(response.getEntity());
-            return String.class.equals(responseType) ? (Optional<T>) Optional.of(entityStr) : Optional.ofNullable(mapper.readValue(entityStr, responseType));
-        } catch (ConnectTimeoutException | SocketTimeoutException e) {
-            log.warn("Site timeout: ", e);
-            ex = e;
-        } catch (IOException e) {
-            log.warn("Error sending request: ", e);
-            ex = e;
-        } finally {
-            translatorService.translateResponseAndSetStatus(ex, responseCode, site);
-        }
-
-        return Optional.empty();
+    @PostMapping("/query/{resourceQueryId}/status")
+    public ResponseEntity<QueryStatus> queryStatus(@PathVariable("resourceQueryId") String queryId, QueryRequest request) {
+        return formatRequestAndRunPost(request, "./query/" + queryId + "/status", QueryStatus.class);
     }
 
-    private static boolean isErrored(Integer responseCode) {
-        return switch (responseCode / 100) {
-            case 1, 3 -> {
-                log.info("Strange response code, will attempt to complete req: {}", responseCode);
-                yield false;
-            }
-            case 2 -> false;
-            default -> {
-                log.info("Error code for http request. Will not attempt to complete request. Code: {}", responseCode);
-                yield true;
-            }
-        };
+    @PostMapping("/query/sync")
+    public ResponseEntity<Object> querySync(@RequestBody QueryRequest request) {
+        return formatRequestAndRunPost(request, "./query/sync", Object.class);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<SearchResults> search(@RequestBody QueryRequest request) {
+        String path = request == null ? "" : request.getResourceUUID().toString();
+        return formatRequestAndRunPost(request, "./search/" + path, SearchResults.class);
+    }
+
+    @PostMapping("/query/format")
+    public ResponseEntity<Object> queryFormat(@RequestBody QueryRequest request) {
+        String relativePath = "./query/format";
+        return formatRequestAndRunPost(request, relativePath, Object.class);
+    }
+
+    @PostMapping("/dictionary-dump/{site}/**")
+    public ResponseEntity<Object> postDictionaryRequest(
+        @RequestBody Object body, @PathVariable String site, HttpServletRequest request
+    ) {
+        Optional<RemoteResource> maybeSite = remoteResourceService.getRemoteResource(site);
+        if (maybeSite.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        RemoteResource remote = maybeSite.get();
+
+        String dictionaryPath = extractPath(request, "/dictionary-dump/" + site + "/");
+        return http.post(remote.base(), dictionaryPath, body, Object.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
+            .map(ResponseEntity.ok()::body)
+            .orElse(ResponseEntity.internalServerError().build());
+    }
+
+    @GetMapping("/dictionary-dump/{site}/**")
+    public ResponseEntity<Object> getDictionaryRequest(
+        @PathVariable String site, HttpServletRequest request
+    ) {
+        Optional<RemoteResource> maybeSite = remoteResourceService.getRemoteResource(site);
+        if (maybeSite.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        RemoteResource remote = maybeSite.get();
+
+        String dictionaryPath = extractPath(request, "/dictionary-dump/" + site + "/");
+        return http.get(remote.base(), dictionaryPath, Object.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
+            .map(ResponseEntity.ok()::body)
+            .orElse(ResponseEntity.internalServerError().build());
+    }
+
+    private String extractPath(HttpServletRequest request, String prefix) {
+        String unsafePath = request.getRequestURL().toString().split(prefix)[1];
+        String unsafeQuery = request.getQueryString();
+        return "./proxy/dictionary-dump/" +
+            UriUtils.decode(unsafePath, StandardCharsets.UTF_8) +
+            UriUtils.decode(unsafeQuery == null ? "" : unsafeQuery, StandardCharsets.UTF_8);
+    }
+
+    private <T> ResponseEntity<T> formatRequestAndRunPost(@RequestBody QueryRequest request, String relativePath, Class<T> returnType) {
+        if (request == null || request.getQuery() == null) {
+            log.info("Bad request. QueryRequest was null or malformed.");
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<RemoteResource> maybeResource = remoteResourceService.getRemoteResource(request.getResourceUUID());
+        if (maybeResource.isEmpty()) {
+            log.info("Could not find remote resource with uuid of {}", request.getResourceUUID());
+            return ResponseEntity.notFound().build();
+        }
+
+        RemoteResource remoteResource = maybeResource.get();
+        URI path = remoteResource.base();
+        QueryRequest chainRequest = request.copy();
+        chainRequest.setResourceUUID(remoteResource.remote());
+        return http.post(path, relativePath, chainRequest, returnType, HttpHeaders.AUTHORIZATION, BEARER + remoteResource.token())
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.internalServerError().build());
     }
 }
