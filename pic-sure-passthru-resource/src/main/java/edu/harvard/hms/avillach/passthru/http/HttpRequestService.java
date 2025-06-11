@@ -101,7 +101,7 @@ public class HttpRequestService {
                 return Optional.empty();
             }
             String entityStr = EntityUtils.toString(response.getEntity());
-            return Optional.ofNullable(mapper.readValue(entityStr, responseType));
+            return String.class.equals(responseType) ? (Optional<T>) Optional.of(entityStr) : Optional.ofNullable(mapper.readValue(entityStr, responseType));
         } catch (ConnectTimeoutException | SocketTimeoutException e) {
             log.warn("Site timeout: ", e);
             ex = e;
