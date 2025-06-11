@@ -132,7 +132,7 @@ class PicSureControllerTest {
             ))
             .thenReturn(Optional.of(":)"));
 
-        ResponseEntity<Object> response = subject.postDictionaryRequest(":)", "bch", request);
+        ResponseEntity<String> response = subject.postDictionaryRequest(":)", "bch", request);
 
         Assertions.assertEquals(200, response.getStatusCode().value());
         Assertions.assertEquals(":)", response.getBody());
@@ -143,7 +143,7 @@ class PicSureControllerTest {
         Mockito.when(remoteResourceService.getRemoteResource("bch"))
             .thenReturn(Optional.empty());
 
-        ResponseEntity<Object> response =
+        ResponseEntity<String> response =
             subject.postDictionaryRequest(":)", "bch", Mockito.mock(HttpServletRequest.class));
 
         Assertions.assertEquals(404, response.getStatusCode().value());
@@ -164,7 +164,7 @@ class PicSureControllerTest {
             ))
             .thenReturn(Optional.of(":)"));
 
-        ResponseEntity<Object> response = subject.getDictionaryRequest("bch", request);
+        ResponseEntity<String> response = subject.getDictionaryRequest("bch", request);
 
         Assertions.assertEquals(200, response.getStatusCode().value());
         Assertions.assertEquals(":)", response.getBody());
@@ -175,7 +175,7 @@ class PicSureControllerTest {
         Mockito.when(remoteResourceService.getRemoteResource("bch"))
             .thenReturn(Optional.empty());
 
-        ResponseEntity<Object> response =
+        ResponseEntity<String> response =
             subject.getDictionaryRequest("bch", Mockito.mock(HttpServletRequest.class));
 
         Assertions.assertEquals(404, response.getStatusCode().value());
