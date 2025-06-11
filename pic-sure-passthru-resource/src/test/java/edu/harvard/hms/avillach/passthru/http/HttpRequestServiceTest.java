@@ -6,6 +6,7 @@ import edu.harvard.hms.avillach.passthru.status.ResourceStatusService;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ConnectTimeoutException;
@@ -151,6 +152,45 @@ class HttpRequestServiceTest {
             .execute(Mockito.any(HttpPost.class), Mockito.any(HttpClientContext.class));
         Mockito.verify(statusService, Mockito.times(1))
             .markAsOffline(URI.create("foo.invalid"));
+    }
+
+    @Test
+    void shouldGetRaw() throws IOException {
+        Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(false);
+        HttpEntity entity = makeEntity(new TestObj("Bill"));
+        CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
+        StatusLine status = Mockito.mock(StatusLine.class);
+        Mockito.when(status.getStatusCode()).thenReturn(200);
+        Mockito.when(response.getStatusLine()).thenReturn(status);
+        Mockito.when(response.getEntity()).thenReturn(entity);
+        Mockito.when(client.execute(Mockito.any(HttpGet.class), Mockito.any(HttpClientContext.class)))
+            .thenReturn(response);
+
+        Optional<CloseableHttpResponse> actual = subject.getRaw(URI.create("foo.invalid"), "./", "a", "1");
+
+        String jsonActual = new String(actual.get().getEntity().getContent().readAllBytes());
+        String jsonExpected = "{\"name\":\"Bill\"}";
+        Assertions.assertEquals(jsonExpected, jsonActual);
+    }
+
+    @Test
+    void shouldGetRawSiteDown() {
+        Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(true);
+
+        Optional<CloseableHttpResponse> actual = subject.getRaw(URI.create("foo.invalid"), "./", "a", "1");
+
+        Optional<CloseableHttpResponse> expected = Optional.empty();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void shouldGetRawBadHEaders() {
+        Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(false);
+
+        Optional<CloseableHttpResponse> actual = subject.getRaw(URI.create("foo.invalid"), "./", "a");
+
+        Optional<CloseableHttpResponse> expected = Optional.empty();
+        Assertions.assertEquals(expected, actual);
     }
 
     private HttpEntity makeEntity(TestObj obj) throws JsonProcessingException {
