@@ -109,7 +109,7 @@ public class PicSureController {
         String unsafeQuery = request.getQueryString();
         return "./proxy/dictionary-dump/" +
             UriUtils.decode(unsafePath, StandardCharsets.UTF_8) +
-            UriUtils.decode(unsafeQuery, StandardCharsets.UTF_8);
+            UriUtils.decode(unsafeQuery == null ? "" : unsafeQuery, StandardCharsets.UTF_8);
     }
 
     private <T> ResponseEntity<T> formatRequestAndRunPost(@RequestBody QueryRequest request, String relativePath, Class<T> returnType) {
