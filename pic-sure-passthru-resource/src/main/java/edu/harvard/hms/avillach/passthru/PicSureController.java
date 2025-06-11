@@ -73,7 +73,7 @@ public class PicSureController {
     }
 
     @PostMapping("/dictionary-dump/{site}/**")
-    public ResponseEntity<Object> postDictionaryRequest(
+    public ResponseEntity<String> postDictionaryRequest(
         @RequestBody Object body, @PathVariable String site, HttpServletRequest request
     ) {
         Optional<RemoteResource> maybeSite = remoteResourceService.getRemoteResource(site);
@@ -83,13 +83,13 @@ public class PicSureController {
         RemoteResource remote = maybeSite.get();
 
         String dictionaryPath = extractPath(request, "/dictionary-dump/" + site + "/");
-        return http.post(remote.base(), dictionaryPath, body, Object.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
+        return http.post(remote.base(), dictionaryPath, body, String.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
             .map(ResponseEntity.ok()::body)
             .orElse(ResponseEntity.internalServerError().build());
     }
 
     @GetMapping("/dictionary-dump/{site}/**")
-    public ResponseEntity<Object> getDictionaryRequest(
+    public ResponseEntity<String> getDictionaryRequest(
         @PathVariable String site, HttpServletRequest request
     ) {
         Optional<RemoteResource> maybeSite = remoteResourceService.getRemoteResource(site);
@@ -99,7 +99,7 @@ public class PicSureController {
         RemoteResource remote = maybeSite.get();
 
         String dictionaryPath = extractPath(request, "/dictionary-dump/" + site + "/");
-        return http.get(remote.base(), dictionaryPath, Object.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
+        return http.get(remote.base(), dictionaryPath, String.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
             .map(ResponseEntity.ok()::body)
             .orElse(ResponseEntity.internalServerError().build());
     }
