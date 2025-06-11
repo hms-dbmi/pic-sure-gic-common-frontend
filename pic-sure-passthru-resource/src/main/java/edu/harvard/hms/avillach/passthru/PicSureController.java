@@ -37,38 +37,38 @@ public class PicSureController {
 
     @PostMapping("/info")
     public ResponseEntity<ResourceInfo> info(@RequestBody QueryRequest request) {
-        return formatRequestAndRunPost(request, "./picsure/info", ResourceInfo.class);
+        return formatRequestAndRunPost(request, "./info", ResourceInfo.class);
     }
 
     @PostMapping("/query")
     public ResponseEntity<QueryStatus> query(@RequestBody QueryRequest request) {
-        return formatRequestAndRunPost(request, "./picsure/query", QueryStatus.class);
+        return formatRequestAndRunPost(request, "./query", QueryStatus.class);
     }
 
     @PostMapping("/query/{resourceQueryId}/result")
     public ResponseEntity<Object> queryResult(@PathVariable("resourceQueryId") String queryId, QueryRequest request) {
-        return formatRequestAndRunPost(request, "./picsure/query/" + queryId + "/result", Object.class);
+        return formatRequestAndRunPost(request, "./query/" + queryId + "/result", Object.class);
     }
 
     @PostMapping("/query/{resourceQueryId}/status")
     public ResponseEntity<QueryStatus> queryStatus(@PathVariable("resourceQueryId") String queryId, QueryRequest request) {
-        return formatRequestAndRunPost(request, "./picsure/query/" + queryId + "/status", QueryStatus.class);
+        return formatRequestAndRunPost(request, "./query/" + queryId + "/status", QueryStatus.class);
     }
 
     @PostMapping("/query/sync")
     public ResponseEntity<Object> querySync(@RequestBody QueryRequest request) {
-        return formatRequestAndRunPost(request, "./picsure/query/sync", Object.class);
+        return formatRequestAndRunPost(request, "./query/sync", Object.class);
     }
 
     @PostMapping("/search")
     public ResponseEntity<SearchResults> search(@RequestBody QueryRequest request) {
         String path = request == null ? "" : request.getResourceUUID().toString();
-        return formatRequestAndRunPost(request, "./picsure/search/" + path, SearchResults.class);
+        return formatRequestAndRunPost(request, "./search/" + path, SearchResults.class);
     }
 
     @PostMapping("/query/format")
     public ResponseEntity<Object> queryFormat(@RequestBody QueryRequest request) {
-        String relativePath = "./picsure/query/format";
+        String relativePath = "./query/format";
         return formatRequestAndRunPost(request, relativePath, Object.class);
     }
 
@@ -107,9 +107,9 @@ public class PicSureController {
     private String extractPath(HttpServletRequest request, String prefix) {
         String unsafePath = request.getRequestURL().toString().split(prefix)[1];
         String unsafeQuery = request.getQueryString();
-        return "./picsure/proxy/dictionary-dump/" +
+        return "./proxy/dictionary-dump/" +
             UriUtils.decode(unsafePath, StandardCharsets.UTF_8) +
-            UriUtils.decode(unsafeQuery == null ? "" : unsafeQuery, StandardCharsets.UTF_8);
+            UriUtils.decode(unsafeQuery, StandardCharsets.UTF_8);
     }
 
     private <T> ResponseEntity<T> formatRequestAndRunPost(@RequestBody QueryRequest request, String relativePath, Class<T> returnType) {
