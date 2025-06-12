@@ -19,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -34,14 +35,19 @@ import java.util.stream.Gatherers;
 public class HttpRequestService {
     private static final Logger log = LoggerFactory.getLogger(HttpRequestService.class);
     private final CloseableHttpClient client;
+    private final CloseableHttpClient noTimeoutClient;
     private final HttpClientContext context;
     private final ObjectMapper mapper = new ObjectMapper();
     private final ResourceStatusService statusService;
     private final StatusTranslatorService translatorService;
 
     @Autowired
-    public HttpRequestService(CloseableHttpClient client, HttpClientContext context, ResourceStatusService statusService, StatusTranslatorService translatorService) {
+    public HttpRequestService(
+        @Qualifier("default") CloseableHttpClient client, @Qualifier("no-timeout") CloseableHttpClient noTimeoutClient,
+        HttpClientContext context, ResourceStatusService statusService, StatusTranslatorService translatorService
+    ) {
         this.client = client;
+        this.noTimeoutClient = noTimeoutClient;
         this.context = context;
         this.statusService = statusService;
         this.translatorService = translatorService;
@@ -78,7 +84,15 @@ public class HttpRequestService {
         request.setHeader("Content-Type", "application/json");
     }
 
+    public <T> Optional<T> getNoTimeout(URI site, String path, @NonNull Class<T> responseType, String... headers) {
+        return getForClient(noTimeoutClient, site, path, responseType, headers);
+    }
+
     public <T> Optional<T> get(URI site, String path, @NonNull Class<T> responseType, String... headers) {
+        return getForClient(client, site, path, responseType, headers);
+    }
+
+    private  <T> Optional<T> getForClient(CloseableHttpClient client, URI site, String path, @NonNull Class<T> responseType, String... headers) {
         if (statusService.isSiteDown(site)) {
             log.info("Site marked as down. Short circuiting to failed request.");
             return Optional.empty();
@@ -91,6 +105,8 @@ public class HttpRequestService {
         addHeaders(headers, request);
         return runRequest(site, responseType, request);
     }
+
+
 
     private <T> Optional<T> runRequest(URI site, Class<T> responseType, HttpRequestBase request) {
         Exception ex = null;
