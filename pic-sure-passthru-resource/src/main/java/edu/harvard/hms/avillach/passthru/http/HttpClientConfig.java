@@ -4,6 +4,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -14,9 +15,11 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.util.StringUtils;
 
 import javax.net.ssl.SSLContext;
@@ -45,6 +48,7 @@ public class HttpClientConfig {
     private String keystorePassword;
 
     @Bean
+    @Qualifier("default")
     public CloseableHttpClient getHttpClient(@Autowired SSLContext context) throws KeyManagementException, NoSuchAlgorithmException {
         // Create trust manager that trusts all certificates
         TrustManager[] trustAllCerts = new TrustManager[]{
@@ -62,6 +66,36 @@ public class HttpClientConfig {
         // Create HttpClient with relaxed SSL settings
         return HttpClients.custom()
             .setSSLContext(sslContext)
+            .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+            .build();
+    }
+
+    @Bean()
+    @Qualifier("no-timeout")
+    public CloseableHttpClient getNoTimeoutHttpClient(@Autowired SSLContext context) throws KeyManagementException, NoSuchAlgorithmException {
+        // Create trust manager that trusts all certificates
+        TrustManager[] trustAllCerts = new TrustManager[]{
+            new X509TrustManager() {
+                public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+                public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+                public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+            }
+        };
+
+        // Create SSL context with trust-all manager
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+        RequestConfig config = RequestConfig.custom()
+            .setConnectionRequestTimeout(0)  // No timeout for getting a connection from pool
+            .setConnectTimeout(0)            // No timeout for establishing connection
+            .setSocketTimeout(0)             // No timeout between packets
+            .build();
+
+        // Create HttpClient with relaxed SSL settings
+        return HttpClients.custom()
+            .setSSLContext(sslContext)
+            .setDefaultRequestConfig(config)
             .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
             .build();
     }
