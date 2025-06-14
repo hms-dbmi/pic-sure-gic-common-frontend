@@ -95,7 +95,9 @@ public class HttpRequestService {
         addHeaders(headers, request);
         Exception ex = null;
         Integer responseCode = null;
-        try (CloseableHttpResponse response = client.execute(request, context)){
+        try {
+            // deliberately leaving response open, will close in controller
+            CloseableHttpResponse response = client.execute(request, context);
             responseCode = response.getStatusLine().getStatusCode();
             return Optional.of(response);
         } catch (ConnectTimeoutException | SocketTimeoutException e) {
