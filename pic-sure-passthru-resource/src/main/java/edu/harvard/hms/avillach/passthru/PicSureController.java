@@ -110,7 +110,9 @@ public class PicSureController {
         }
         // Create output stream first via StreamingResponseBody
         StreamingResponseBody responseBody = out -> {
-            try (out; InputStream in = raw.get().getEntity().getContent()) { in.transferTo(out); }
+            try (InputStream in = raw.get().getEntity().getContent()) { 
+                in.transferTo(out); 
+            }
         };
 
         return ResponseEntity.status(raw.get().getStatusLine().getStatusCode())
