@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.net.URI;
 import java.util.Optional;
@@ -132,7 +133,7 @@ class PicSureControllerTest {
             ))
             .thenReturn(Optional.of(":)"));
 
-        ResponseEntity<Object> response = subject.postDictionaryRequest(":)", "bch", request);
+        ResponseEntity<String> response = subject.postDictionaryRequest(":)", "bch", request);
 
         Assertions.assertEquals(200, response.getStatusCode().value());
         Assertions.assertEquals(":)", response.getBody());
@@ -143,7 +144,7 @@ class PicSureControllerTest {
         Mockito.when(remoteResourceService.getRemoteResource("bch"))
             .thenReturn(Optional.empty());
 
-        ResponseEntity<Object> response =
+        ResponseEntity<String> response =
             subject.postDictionaryRequest(":)", "bch", Mockito.mock(HttpServletRequest.class));
 
         Assertions.assertEquals(404, response.getStatusCode().value());
@@ -164,7 +165,8 @@ class PicSureControllerTest {
             ))
             .thenReturn(Optional.of(":)"));
 
-        ResponseEntity<Object> response = subject.getDictionaryRequest("bch", request);
+
+        ResponseEntity<StreamingResponseBody> response = subject.getDictionaryRequest("bch", request);
 
         Assertions.assertEquals(200, response.getStatusCode().value());
         Assertions.assertEquals(":)", response.getBody());
@@ -175,7 +177,8 @@ class PicSureControllerTest {
         Mockito.when(remoteResourceService.getRemoteResource("bch"))
             .thenReturn(Optional.empty());
 
-        ResponseEntity<Object> response =
+
+        ResponseEntity<StreamingResponseBody> response =
             subject.getDictionaryRequest("bch", Mockito.mock(HttpServletRequest.class));
 
         Assertions.assertEquals(404, response.getStatusCode().value());

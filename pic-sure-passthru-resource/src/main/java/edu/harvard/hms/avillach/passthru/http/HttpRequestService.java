@@ -19,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,10 @@ public class HttpRequestService {
     private final StatusTranslatorService translatorService;
 
     @Autowired
-    public HttpRequestService(CloseableHttpClient client, HttpClientContext context, ResourceStatusService statusService, StatusTranslatorService translatorService) {
+    public HttpRequestService(
+        @Qualifier("default") CloseableHttpClient client, @Qualifier("no-timeout") CloseableHttpClient noTimeoutClient,
+        HttpClientContext context, ResourceStatusService statusService, StatusTranslatorService translatorService
+    ) {
         this.client = client;
         this.context = context;
         this.statusService = statusService;
@@ -78,7 +82,42 @@ public class HttpRequestService {
         request.setHeader("Content-Type", "application/json");
     }
 
+    public Optional<CloseableHttpResponse> getRaw(URI site, String path, String... headers) {
+        if (statusService.isSiteDown(site)) {
+            log.info("Site marked as down. Short circuiting to failed request.");
+            return Optional.empty();
+        }
+        if (headers.length % 2 == 1) {
+            log.error("Headers should be sent in key value pairs. Got this: {}", String.join(", ", headers));
+            return Optional.empty();
+        }
+        HttpGet request = new HttpGet(site.resolve(path));
+        addHeaders(headers, request);
+        Exception ex = null;
+        Integer responseCode = null;
+        try {
+            // deliberately leaving response open, will close in controller
+            CloseableHttpResponse response = client.execute(request, context);
+            responseCode = response.getStatusLine().getStatusCode();
+            return Optional.of(response);
+        } catch (ConnectTimeoutException | SocketTimeoutException e) {
+            log.warn("Site timeout: ", e);
+            ex = e;
+        } catch (IOException e) {
+            log.warn("Error sending request: ", e);
+            ex = e;
+        } finally {
+            translatorService.translateResponseAndSetStatus(ex, responseCode, site);
+        }
+
+        return Optional.empty();
+    }
+
     public <T> Optional<T> get(URI site, String path, @NonNull Class<T> responseType, String... headers) {
+        return getForClient(client, site, path, responseType, headers);
+    }
+
+    private  <T> Optional<T> getForClient(CloseableHttpClient client, URI site, String path, @NonNull Class<T> responseType, String... headers) {
         if (statusService.isSiteDown(site)) {
             log.info("Site marked as down. Short circuiting to failed request.");
             return Optional.empty();
@@ -92,6 +131,8 @@ public class HttpRequestService {
         return runRequest(site, responseType, request);
     }
 
+
+
     private <T> Optional<T> runRequest(URI site, Class<T> responseType, HttpRequestBase request) {
         Exception ex = null;
         Integer responseCode = null;
@@ -101,7 +142,7 @@ public class HttpRequestService {
                 return Optional.empty();
             }
             String entityStr = EntityUtils.toString(response.getEntity());
-            return Optional.ofNullable(mapper.readValue(entityStr, responseType));
+            return String.class.equals(responseType) ? (Optional<T>) Optional.of(entityStr) : Optional.ofNullable(mapper.readValue(entityStr, responseType));
         } catch (ConnectTimeoutException | SocketTimeoutException e) {
             log.warn("Site timeout: ", e);
             ex = e;
