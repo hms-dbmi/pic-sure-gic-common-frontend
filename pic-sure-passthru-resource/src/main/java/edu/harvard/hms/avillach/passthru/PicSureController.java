@@ -6,17 +6,22 @@ import edu.harvard.hms.avillach.passthru.remote.RemoteResource;
 import edu.harvard.hms.avillach.passthru.remote.RemoteResourceService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.springframework.web.util.UriUtils;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -89,7 +94,7 @@ public class PicSureController {
     }
 
     @GetMapping("/dictionary-dump/{site}/**")
-    public ResponseEntity<String> getDictionaryRequest(
+    public ResponseEntity<StreamingResponseBody> getDictionaryRequest(
         @PathVariable String site, HttpServletRequest request
     ) {
         Optional<RemoteResource> maybeSite = remoteResourceService.getRemoteResource(site);
@@ -99,9 +104,17 @@ public class PicSureController {
         RemoteResource remote = maybeSite.get();
 
         String dictionaryPath = extractPath(request, "/dictionary-dump/" + site + "/");
-        return http.get(remote.base(), dictionaryPath, String.class, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
-            .map(ResponseEntity.ok()::body)
-            .orElse(ResponseEntity.internalServerError().build());
+        Optional<CloseableHttpResponse> raw = http.getRaw(remote.base(), dictionaryPath, HttpHeaders.AUTHORIZATION, BEARER + remote.token());
+        if (raw.isEmpty()) {
+            return ResponseEntity.internalServerError().build();
+        }
+        // Create output stream first via StreamingResponseBody
+        StreamingResponseBody responseBody = out -> {
+            try (out; InputStream in = raw.get().getEntity().getContent()) { in.transferTo(out); }
+        };
+
+        return ResponseEntity.status(raw.get().getStatusLine().getStatusCode())
+            .body(responseBody);
     }
 
     private String extractPath(HttpServletRequest request, String prefix) {
