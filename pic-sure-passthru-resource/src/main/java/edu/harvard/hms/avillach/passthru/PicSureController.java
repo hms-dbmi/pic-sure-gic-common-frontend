@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class PicSureController {
