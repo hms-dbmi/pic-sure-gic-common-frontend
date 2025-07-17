@@ -215,6 +215,7 @@ public class SearchResourceRS implements IResourceRS {
 			try {
 				QueryRequest queryReq = new GeneralQueryRequest();
 				queryReq.setQuery(""); //empty search should return all results
+				queryReq.setResourceUUID(resource.getUuid());
 				SearchResults search = resourceWebClient.search(resource.getResourceRSPath(), queryReq);
 				Map<String, Object> resourceResults = (Map<String, Object>)search.getResults();
 					
