@@ -50,12 +50,12 @@ public class PicSureController {
     }
 
     @PostMapping("/query/{resourceQueryId}/result")
-    public ResponseEntity<Object> queryResult(@PathVariable("resourceQueryId") String queryId, QueryRequest request) {
+    public ResponseEntity<Object> queryResult(@PathVariable("resourceQueryId") String queryId, @RequestBody QueryRequest request) {
         return formatRequestAndRunPost(request, "./picsure/query/" + queryId + "/result", Object.class);
     }
 
     @PostMapping("/query/{resourceQueryId}/status")
-    public ResponseEntity<QueryStatus> queryStatus(@PathVariable("resourceQueryId") String queryId, QueryRequest request) {
+    public ResponseEntity<QueryStatus> queryStatus(@PathVariable("resourceQueryId") String queryId, @RequestBody QueryRequest request) {
         return formatRequestAndRunPost(request, "./picsure/query/" + queryId + "/status", QueryStatus.class);
     }
 
