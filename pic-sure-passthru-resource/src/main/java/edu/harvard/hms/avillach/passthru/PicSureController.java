@@ -46,7 +46,7 @@ public class PicSureController {
 
     @PostMapping("/query")
     public ResponseEntity<QueryStatus> query(@RequestBody QueryRequest request) {
-        return formatRequestAndRunPost(request, "./picsure/query", QueryStatus.class);
+        return formatRequestAndRunPost(request, "./picsure/query?isInstitute=true", QueryStatus.class);
     }
 
     @PostMapping("/query/{resourceQueryId}/result")
@@ -56,7 +56,7 @@ public class PicSureController {
 
     @PostMapping("/query/{resourceQueryId}/status")
     public ResponseEntity<QueryStatus> queryStatus(@PathVariable("resourceQueryId") String queryId, @RequestBody QueryRequest request) {
-        return formatRequestAndRunPost(request, "./picsure/query/" + queryId + "/status", QueryStatus.class);
+        return formatRequestAndRunPost(request, "./picsure/query/" + queryId + "/status?isInstitute=true", QueryStatus.class);
     }
 
     @PostMapping("/query/sync")
