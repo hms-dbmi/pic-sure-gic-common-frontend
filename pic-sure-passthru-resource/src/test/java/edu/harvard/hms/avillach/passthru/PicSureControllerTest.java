@@ -60,7 +60,7 @@ class PicSureControllerTest {
         QueryRequest request = new GeneralQueryRequest();
         request.setQuery(null);
 
-        ResponseEntity<Object> actual = subject.querySync(request);
+        ResponseEntity<StreamingResponseBody> actual = subject.querySync(request);
         ResponseEntity<Object> expected = ResponseEntity.badRequest().build();
 
         Assertions.assertEquals(expected, actual);
