@@ -60,8 +60,8 @@ public class PicSureController {
     }
 
     @PostMapping("/query/sync")
-    public ResponseEntity<Object> querySync(@RequestBody QueryRequest request) {
-        return formatRequestAndRunPost(request, "./picsure/query/sync", Object.class);
+    public ResponseEntity<StreamingResponseBody> querySync(@RequestBody QueryRequest request) {
+        return formatRequestAndPostRaw(request, "./picsure/query/sync");
     }
 
     @PostMapping("/search")
@@ -133,7 +133,44 @@ public class PicSureController {
             UriUtils.decode(unsafeQuery == null ? "" : unsafeQuery, StandardCharsets.UTF_8);
     }
 
-    private <T> ResponseEntity<T> formatRequestAndRunPost(@RequestBody QueryRequest request, String relativePath, Class<T> returnType) {
+    private ResponseEntity<StreamingResponseBody> formatRequestAndPostRaw(
+        @RequestBody QueryRequest request,
+        String relativePath
+    ) {
+        if (request == null || request.getQuery() == null) {
+            log.info("Bad request. QueryRequest was null or malformed.");
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<RemoteResource> maybeResource = remoteResourceService.getRemoteResource(request.getResourceUUID());
+        if (maybeResource.isEmpty()) {
+            log.info("Could not find remote resource with uuid of {}", request.getResourceUUID());
+            return ResponseEntity.notFound().build();
+        }
+
+        RemoteResource remoteResource = maybeResource.get();
+        String[] headers = { HttpHeaders.AUTHORIZATION, BEARER + remoteResource.token() };
+        URI resourcePath = remoteResource.base();
+
+        Optional<CloseableHttpResponse> raw = http.postRaw(resourcePath, relativePath, request, headers);
+
+        if (raw.isEmpty()) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+        StreamingResponseBody responseBody = out -> {
+            try (InputStream in = raw.get().getEntity().getContent()) {
+                in.transferTo(out);
+            }
+        };
+
+        return ResponseEntity.status(raw.get().getStatusLine().getStatusCode()).body(responseBody);
+    }
+
+    private <T> ResponseEntity<T> formatRequestAndRunPost(
+        @RequestBody QueryRequest request,
+        String relativePath,
+        Class<T> returnType
+    ) {
         if (request == null || request.getQuery() == null) {
             log.info("Bad request. QueryRequest was null or malformed.");
             return ResponseEntity.badRequest().build();
