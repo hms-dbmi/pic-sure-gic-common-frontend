@@ -86,10 +86,7 @@ public class HttpRequestService {
             log.error("Headers should be sent in key value pairs. Got this: {}", String.join(", ", headers));
             return Optional.empty();
         }
-        if (headers.length % 2 == 1) {
-            log.error("Headers should be sent in key value pairs. Got this: {}", String.join(", ", headers));
-            return Optional.empty();
-        }
+
         HttpPost request = new HttpPost(site.resolve(path));
         addHeaders(headers, request);
 
