@@ -141,8 +141,10 @@ public class PicSureController {
 
         RemoteResource remoteResource = maybeResource.get();
         URI resourcePath = remoteResource.base();
+        QueryRequest chainRequest = request.copy();
+        chainRequest.setResourceUUID(remoteResource.remote());
 
-        Optional<CloseableHttpResponse> raw = http.postRaw(resourcePath, relativePath, request, HttpHeaders.AUTHORIZATION, BEARER + remoteResource.token());
+        Optional<CloseableHttpResponse> raw = http.postRaw(resourcePath, relativePath, chainRequest, HttpHeaders.AUTHORIZATION, BEARER + remoteResource.token());
 
         if (raw.isEmpty()) {
             return ResponseEntity.internalServerError().build();
