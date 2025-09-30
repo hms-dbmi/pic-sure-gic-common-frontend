@@ -101,7 +101,7 @@ public class HttpRequestService {
             return Optional.empty();
         }
 
-        return getRawRequest(site, path, request);
+        return getRawRequest(site, request);
     }
 
     public Optional<CloseableHttpResponse> getRaw(URI site, String path, String... headers) {
@@ -111,10 +111,10 @@ public class HttpRequestService {
         }
         HttpGet request = new HttpGet(site.resolve(path));
         addHeaders(headers, request);
-        return getRawRequest(site, path, request);
+        return getRawRequest(site, request);
     }
 
-    private Optional<CloseableHttpResponse> getRawRequest(URI site, String path, HttpUriRequest request) {
+    private Optional<CloseableHttpResponse> getRawRequest(URI site, HttpUriRequest request) {
         if (statusService.isSiteDown(site)) {
             log.info("Site marked as down. Short circuiting to failed request.");
             return Optional.empty();
