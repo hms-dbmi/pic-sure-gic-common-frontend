@@ -91,6 +91,16 @@ public class PicSureController {
             .orElse(ResponseEntity.internalServerError().build());
     }
 
+    private ResponseEntity<StreamingResponseBody> rawResponseEntity(CloseableHttpResponse raw){
+        StreamingResponseBody responseBody = out -> {
+            try (InputStream in = raw.getEntity().getContent()) {
+                in.transferTo(out);
+            }
+        };
+
+        return ResponseEntity.status(raw.getStatusLine().getStatusCode()).body(responseBody);
+    }
+
     @GetMapping("/dictionary-dump/{site}/**")
     public ResponseEntity<StreamingResponseBody> getDictionaryRequest(
         @PathVariable String site, HttpServletRequest request
@@ -102,19 +112,11 @@ public class PicSureController {
         RemoteResource remote = maybeSite.get();
 
         String dictionaryPath = extractPath(request, "/dictionary-dump/" + site + "/");
-        Optional<CloseableHttpResponse> raw = http.getRaw(remote.base(), dictionaryPath, HttpHeaders.AUTHORIZATION, BEARER + remote.token());
-        if (raw.isEmpty()) {
-            return ResponseEntity.internalServerError().build();
-        }
 
-        StreamingResponseBody responseBody = out -> {
-            try (InputStream in = raw.get().getEntity().getContent()) {
-                in.transferTo(out);
-            }
-        };
-
-        return ResponseEntity.status(raw.get().getStatusLine().getStatusCode())
-            .body(responseBody);
+        return http
+            .getRaw(remote.base(), dictionaryPath, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
+            .map(this::rawResponseEntity)
+            .orElseGet(() -> ResponseEntity.internalServerError().build());
     }
 
     private String extractPath(HttpServletRequest request, String prefix) {
@@ -139,24 +141,15 @@ public class PicSureController {
             return ResponseEntity.notFound().build();
         }
 
-        RemoteResource remoteResource = maybeResource.get();
-        URI resourcePath = remoteResource.base();
+        RemoteResource remote = maybeResource.get();
+        URI resourcePath = remote.base();
         QueryRequest chainRequest = request.copy();
-        chainRequest.setResourceUUID(remoteResource.remote());
+        chainRequest.setResourceUUID(remote.remote());
 
-        Optional<CloseableHttpResponse> raw = http.postRaw(resourcePath, relativePath, chainRequest, HttpHeaders.AUTHORIZATION, BEARER + remoteResource.token());
-
-        if (raw.isEmpty()) {
-            return ResponseEntity.internalServerError().build();
-        }
-
-        StreamingResponseBody responseBody = out -> {
-            try (InputStream in = raw.get().getEntity().getContent()) {
-                in.transferTo(out);
-            }
-        };
-
-        return ResponseEntity.status(raw.get().getStatusLine().getStatusCode()).body(responseBody);
+        return http
+            .postRaw(resourcePath, relativePath, chainRequest, HttpHeaders.AUTHORIZATION, BEARER + remote.token())
+            .map(this::rawResponseEntity)
+            .orElseGet(() -> ResponseEntity.internalServerError().build());
     }
 
     private <T> ResponseEntity<T> formatRequestAndRunPost(

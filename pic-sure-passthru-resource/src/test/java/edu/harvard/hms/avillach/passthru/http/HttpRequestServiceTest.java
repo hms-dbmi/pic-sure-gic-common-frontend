@@ -193,6 +193,44 @@ class HttpRequestServiceTest {
         Assertions.assertEquals(expected, actual);
     }
 
+    @Test
+    void shouldPostRaw() throws IOException {
+        Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(false);
+        HttpEntity entity = makeEntity(new TestObj("Bill"));
+        CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
+        StatusLine status = Mockito.mock(StatusLine.class);
+        Mockito.when(status.getStatusCode()).thenReturn(200);
+        Mockito.when(response.getStatusLine()).thenReturn(status);
+        Mockito.when(response.getEntity()).thenReturn(entity);
+        Mockito.when(client.execute(Mockito.any(HttpPost.class), Mockito.any(HttpClientContext.class)))
+                .thenReturn(response);
+
+        Optional<CloseableHttpResponse> actual = subject.postRaw(URI.create("foo.invalid"), "./", "{}", "a", "1");
+
+        String jsonActual = new String(actual.get().getEntity().getContent().readAllBytes());
+        String jsonExpected = "{\"name\":\"Bill\"}";
+        Assertions.assertEquals(jsonExpected, jsonActual);
+    }
+
+    @Test
+    void shouldPostRawSiteDown() {
+        Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(true);
+
+        Optional<CloseableHttpResponse> actual = subject.postRaw(URI.create("foo.invalid"), "./", "", "a", "1");
+
+        Optional<CloseableHttpResponse> expected = Optional.empty();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void shouldPostRawBadHeaders(){
+        Mockito.when(statusService.isSiteDown(URI.create("foo.invalid"))).thenReturn(false);
+
+        Optional<CloseableHttpResponse> actual = subject.postRaw(URI.create("foo.invalid"), "./", "", "a");
+        Optional<CloseableHttpResponse> expected = Optional.empty();
+        Assertions.assertEquals(expected, actual);
+    }
+
     private HttpEntity makeEntity(TestObj obj) throws JsonProcessingException {
         BasicHttpEntity e = new BasicHttpEntity();
         String content = mapper.writeValueAsString(obj);
