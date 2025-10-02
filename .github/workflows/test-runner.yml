@@ -1,0 +1,26 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 24
+      uses: actions/setup-java@v3
+      with:
+        java-version: '24'
+        distribution: 'corretto'
+        cache: maven
+    - name: Build with Maven
+      run: "for dir in 'pic-sure-passthru-resource'; do cd $dir; mvn verify; cd ..; done"
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
