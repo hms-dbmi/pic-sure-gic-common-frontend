@@ -118,7 +118,7 @@ class PicSureControllerTest {
         QueryRequest chain = request.copy();
         chain.setResourceUUID(remote);
         Mockito.when(requestService.post(
-                eq(site), eq("./query/query-id/result"), Mockito.any(QueryRequest.class),
+                eq(site), eq("./picsure/query/query-id/result"), Mockito.any(QueryRequest.class),
                 eq(Object.class), eq(HttpHeaders.AUTHORIZATION), eq("Bearer token")
             ))
             .thenReturn(Optional.of(":)"));
@@ -139,7 +139,7 @@ class PicSureControllerTest {
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("/dictionary-dump/bch/my/path/with/slashes"));
         Mockito.when(request.getQueryString()).thenReturn("?foo=asda%20foo&bar=asda");
         Mockito.when(requestService.post(
-                eq(site), eq("./proxy/dictionary-dump/my/path/with/slashes?foo=asda foo&bar=asda"),
+                eq(site), eq("./picsure/proxy/dictionary-dump/my/path/with/slashes?foo=asda foo&bar=asda"),
                 eq(":)"), eq(String.class), eq(HttpHeaders.AUTHORIZATION), eq("Bearer token")
             ))
             .thenReturn(Optional.of(":)"));
@@ -180,7 +180,7 @@ class PicSureControllerTest {
         Mockito.when(request.getQueryString()).thenReturn("?foo=asda%20foo&bar=asda");
 
         Mockito.when(requestService.getRaw(
-                eq(site), eq("./proxy/dictionary-dump/my/path/with/slashes?foo=asda foo&bar=asda"),
+                eq(site), eq("./picsure/proxy/dictionary-dump/my/path/with/slashes?foo=asda foo&bar=asda"),
                 eq(HttpHeaders.AUTHORIZATION), eq("Bearer token")
             ))
             .thenReturn(Optional.of(rawResponse));
