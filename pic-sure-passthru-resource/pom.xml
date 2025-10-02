@@ -85,5 +85,15 @@
 			</plugin>
 		</plugins>
 	</build>
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>GitHub HMS-DBMI Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/hms-dbmi/pic-sure</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>
