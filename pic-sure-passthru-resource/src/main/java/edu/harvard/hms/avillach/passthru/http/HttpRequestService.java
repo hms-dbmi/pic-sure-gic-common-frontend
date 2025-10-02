@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.harvard.hms.avillach.passthru.status.ResourceStatusService;
 import edu.harvard.hms.avillach.passthru.status.StatusTranslatorService;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -80,17 +81,41 @@ public class HttpRequestService {
         request.setHeader("Content-Type", "application/json");
     }
 
-    public Optional<CloseableHttpResponse> getRaw(URI site, String path, String... headers) {
-        if (statusService.isSiteDown(site)) {
-            log.info("Site marked as down. Short circuiting to failed request.");
+    public Optional<CloseableHttpResponse> postRaw(URI site, String path, Object body, String... headers) {
+        if (headers.length % 2 == 1) {
+            log.error("Headers should be sent in key value pairs. Got this: {}", String.join(", ", headers));
             return Optional.empty();
         }
+
+        HttpPost request = new HttpPost(site.resolve(path));
+        addHeaders(headers, request);
+
+        try {
+            String bodyStr = mapper.writeValueAsString(body);
+            request.setEntity(new StringEntity(bodyStr));
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
+            log.warn("Error creating request object");
+            return Optional.empty();
+        }
+
+        return getRawRequest(site, request);
+    }
+
+    public Optional<CloseableHttpResponse> getRaw(URI site, String path, String... headers) {
         if (headers.length % 2 == 1) {
             log.error("Headers should be sent in key value pairs. Got this: {}", String.join(", ", headers));
             return Optional.empty();
         }
         HttpGet request = new HttpGet(site.resolve(path));
         addHeaders(headers, request);
+        return getRawRequest(site, request);
+    }
+
+    private Optional<CloseableHttpResponse> getRawRequest(URI site, HttpUriRequest request) {
+        if (statusService.isSiteDown(site)) {
+            log.info("Site marked as down. Short circuiting to failed request.");
+            return Optional.empty();
+        }
         Exception ex = null;
         Integer responseCode = null;
         try {
