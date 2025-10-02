@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import javax.net.ssl.SSLContext;
 import java.net.URI;
 
 @SpringBootTest
@@ -19,6 +20,9 @@ class StatusTranslatorServiceTest {
 
     @Autowired
     StatusTranslatorService subject;
+
+    @MockitoBean
+    SSLContext context;
 
     private final URI site = URI.create("foo.invalid");
 

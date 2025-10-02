@@ -11,8 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpVersion;
-import org.apache.http.ProtocolVersion;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,8 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import javax.net.ssl.SSLContext;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
@@ -46,6 +46,9 @@ class PicSureControllerTest {
 
     @Autowired
     PicSureController subject;
+
+    @MockitoBean
+    SSLContext context;
 
     @Test
     void shouldBailOnNullQuery() {

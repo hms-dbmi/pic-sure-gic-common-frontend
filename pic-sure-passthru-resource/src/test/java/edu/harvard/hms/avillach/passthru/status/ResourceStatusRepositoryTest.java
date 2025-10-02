@@ -5,7 +5,9 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import javax.net.ssl.SSLContext;
 import java.net.URI;
 
 @SpringBootTest
@@ -14,6 +16,9 @@ class ResourceStatusRepositoryTest {
 
     @Autowired
     private ResourceStatusRepository subject;
+
+    @MockitoBean
+    SSLContext context;
 
     @Value("${passthru.base_timeout_secs}")
     int backoffBaseTimeSeconds;

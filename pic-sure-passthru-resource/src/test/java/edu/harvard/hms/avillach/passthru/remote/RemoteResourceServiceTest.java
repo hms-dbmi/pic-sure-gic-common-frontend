@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import javax.net.ssl.SSLContext;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Optional;
@@ -15,6 +17,9 @@ class RemoteResourceServiceTest {
 
     @Autowired
     RemoteResourceService subject;
+
+    @MockitoBean
+    SSLContext context;
 
     @Test
     void shouldGetSiteFromConfig() throws MalformedURLException {

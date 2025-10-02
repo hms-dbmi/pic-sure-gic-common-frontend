@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import javax.net.ssl.SSLContext;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +19,9 @@ class ResourceStatusServiceTest {
 
     @Autowired
     ResourceStatusService subject;
+
+    @MockitoBean
+    SSLContext context;
 
     @Test
     void shouldMarkUnstableAsOffline() {
