@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
+import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
 
@@ -30,6 +31,11 @@ public class HttpClientConfig {
 
     @Value("${http.keystore.password:password}")
     private String keystorePassword;
+
+    @Bean
+    public SSLContext sslContext() throws NoSuchAlgorithmException {
+        return SSLContext.getDefault();
+    }
 
     @Bean
     public CloseableHttpClient getHttpClient(@Autowired SSLContext context) {
