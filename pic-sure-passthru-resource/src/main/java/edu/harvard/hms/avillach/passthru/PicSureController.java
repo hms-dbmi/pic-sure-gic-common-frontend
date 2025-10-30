@@ -66,7 +66,15 @@ public class PicSureController {
     @PostMapping("/search")
     public ResponseEntity<SearchResults> search(@RequestBody QueryRequest request) {
         String path = request == null ? "" : request.getResourceUUID().toString();
-        return formatRequestAndRunPost(request, "./picsure/search/" + path, SearchResults.class);
+
+        Optional<RemoteResource> maybeResource = remoteResourceService.getRemoteResource(request.getResourceUUID());
+        if (maybeResource.isEmpty()) {
+            log.info("Could not find remote resource with uuid of {}", request.getResourceUUID());
+            return ResponseEntity.notFound().build();
+        }
+        RemoteResource remote = maybeResource.get();
+
+        return formatRequestAndRunPost(request, "./search/" + remote.remote(), SearchResults.class);
     }
 
     @PostMapping("/query/format")
