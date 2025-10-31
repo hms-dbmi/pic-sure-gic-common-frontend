@@ -130,6 +130,30 @@ class PicSureControllerTest {
     }
 
     @Test
+    void shouldSendSearchToSiteResource(){
+        RemoteResource resource = new RemoteResource("bch", remote, common, URI.create("bch.invalid"), "token");
+        Mockito.when(remoteResourceService.getRemoteResource(common))
+            .thenReturn(Optional.of(resource));
+
+        Mockito.when(requestService.post(
+            Mockito.any(URI.class),
+            eq("./picsure/search/" + remote.toString()),
+            Mockito.any(GeneralQueryRequest.class),
+            Mockito.any(Class.class),
+            Mockito.any(String.class),
+            Mockito.any(String.class)
+        )).thenReturn(Optional.of(":)"));
+
+        QueryRequest request = new GeneralQueryRequest();
+        request.setQuery(new Object());
+        request.setResourceUUID(common);
+        ResponseEntity<SearchResults> actual = subject.search(request);
+        ResponseEntity<Object> expected = ResponseEntity.ok().body(":)");
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
     void shouldDoDictionaryPost() {
         URI site = URI.create("bch.invalid");
         RemoteResource resource = new RemoteResource("bch", common, remote, site, "token");
